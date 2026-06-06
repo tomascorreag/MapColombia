@@ -1,0 +1,35 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "sync-data": "node scripts/sync-data.mjs",
+    "predev": "npm run sync-data",
+    "dev": "vite",
+    "prebuild": "npm run sync-data",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.12.3",
+    "playwright": "^1.60.0",
+    "svelte": "^5.55.5",
+    "svelte-check": "^4.4.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "@deck.gl/core": "^9.3.3",
+    "@deck.gl/extensions": "^9.3.3",
+    "@deck.gl/layers": "^9.3.3",
+    "@deck.gl/mapbox": "^9.3.3",
+    "@fontsource/archivo": "^5.2.8",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@fontsource/spectral": "^5.2.8",
+    "maplibre-gl": "^5.24.0"
+  }
+}

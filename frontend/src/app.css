@@ -1,0 +1,167 @@
+/* ============================================================
+   La violencia y el voto — design system
+   Aesthetic: forensic archive. Dark ink canvas, floating
+   "fichas" (catalog cards) with hairline rules and paper-toned
+   type. Spectral (display serif) / Archivo (UI) / IBM Plex Mono
+   (data). The map is the protagonist; chrome stays quiet.
+   ============================================================ */
+
+:root {
+  --ink: #0b0d11;
+  --ink-2: #11141a;
+  --panel: rgba(15, 17, 23, 0.86);
+  --hairline: #2a2f3a;
+  --hairline-soft: #1d212b;
+  --paper: #e9e4d8;
+  --paper-dim: #9b968a;
+  /* 4.6:1 on the panel bg — used for body-size text (WCAG AA) */
+  --paper-faint: #8b8577;
+  /* decorative only (tick dots, hairline accents) — never body text */
+  --paper-ghost: #6b675e;
+  --accent: #e8403a;
+  --gold: #c9a227;
+  --blue: #2d6fd6;
+
+  --font-display: 'Spectral', 'Georgia', serif;
+  --font-ui: 'Archivo', 'Helvetica Neue', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+/* ---------- ficha: the floating catalog card ---------- */
+
+.ficha {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.ficha::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  background-size: 160px;
+  opacity: 0.05;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
+/* staggered entrance */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise {
+  animation: rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- type utilities ---------- */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.dim {
+  color: var(--paper-dim);
+}
+
+/* ---------- shared controls ---------- */
+
+button {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--paper-dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline);
+}
+
+a:hover {
+  color: var(--paper);
+}
+
+hr.rule {
+  border: none;
+  border-top: 1px solid var(--hairline-soft);
+  margin: 10px 0;
+}
+
+/* maplibre chrome, muted to fit the archive */
+.maplibregl-ctrl-attrib {
+  background: rgba(11, 13, 17, 0.7) !important;
+  font-family: var(--font-mono);
+  font-size: 9px !important;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: var(--paper-faint) !important;
+  border-bottom: none;
+}
