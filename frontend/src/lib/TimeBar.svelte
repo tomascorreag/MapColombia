@@ -1,10 +1,20 @@
 <script lang="ts">
   import type { ViolenceData, ElectionsData } from './data';
   import { formatInt } from './data';
+  import {
+    type MemoriaData,
+    MAX_DAY,
+    dayOfISO,
+    formatMonthYear,
+  } from './memoria';
   import { app } from './state.svelte';
   import { t, ui, electionLabel } from './i18n.svelte';
 
-  let { violence, elections }: { violence: ViolenceData; elections: ElectionsData } = $props();
+  let {
+    violence,
+    elections,
+    memoria,
+  }: { violence: ViolenceData; elections: ElectionsData; memoria: MemoriaData } = $props();
 
   const yearMin = $derived(violence.meta.yearMin);
   const yearMax = $derived(violence.meta.yearMax);
@@ -29,9 +39,29 @@
   const electionList = $derived(elections.bodies[app.body]);
   const electionSel = $derived(electionList[app.electionIdx[app.body]]);
 
+  // memoria: massacre VICTIMS per year (the wound metric — area follows victims)
+  const maHist = $derived.by(() => {
+    const out = new Array<number>(nYears).fill(0);
+    const ma = violence.meta.modalities[0];
+    for (let i = 0; i < ma.n; i++) {
+      out[violence.year[ma.start + i] - yearMin] += violence.victims[ma.start + i];
+    }
+    return out;
+  });
+  const maHistMax = $derived(Math.max(1, ...maHist));
+  const memoriaTicks = $derived(
+    memoria.bodies[app.mbody]
+      .filter((e) => e.date)
+      .map((e) => ({
+        day: dayOfISO(e.date as string),
+        label: electionLabel(e),
+        fn: !!e.fn_consensus,
+      }))
+  );
+
   // playback: advance one year (violence) or one election (elections) per tick
   $effect(() => {
-    if (!app.playing) return;
+    if (!app.playing || app.tab === 'memoria') return;
     const id = setInterval(() => {
       if (app.tab === 'violence') {
         app.allYears = false;
@@ -43,6 +73,52 @@
     }, 420);
     return () => clearInterval(id);
   });
+
+  // memoria playback: continuous time via rAF; stops at the window end (a
+  // memorial should not loop). Scrubbing pauses.
+  $effect(() => {
+    if (!app.playing || app.tab !== 'memoria') return;
+    let raf = 0;
+    let last = performance.now();
+    const step = (now: number) => {
+      app.mday = Math.min(MAX_DAY, app.mday + ((now - last) / 1000) * app.mspeed);
+      last = now;
+      if (app.mday >= MAX_DAY) {
+        app.playing = false;
+        return;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  });
+
+  const SPEEDS = [
+    { v: 90, label: '½×' },
+    { v: 180, label: '1×' },
+    { v: 720, label: '4×' },
+  ];
+
+  // keyboard steps for the day slider: ±1 day per keypress over a 25k-day range
+  // is unusable — arrows move a month, PageUp/Down a year
+  function mdayKeys(ev: KeyboardEvent) {
+    const step: Record<string, number> = {
+      ArrowLeft: -30,
+      ArrowDown: -30,
+      ArrowRight: 30,
+      ArrowUp: 30,
+      PageDown: -365,
+      PageUp: 365,
+    };
+    let next: number | null = null;
+    if (ev.key in step) next = app.mday + step[ev.key];
+    else if (ev.key === 'Home') next = 0;
+    else if (ev.key === 'End') next = MAX_DAY;
+    if (next === null) return;
+    ev.preventDefault();
+    app.playing = false;
+    app.mday = Math.max(0, Math.min(MAX_DAY, next));
+  }
 
   function barYear(i: number): number {
     return yearMin + i;
@@ -102,6 +178,76 @@
         }}
         aria-label={t('year')}
       />
+      <div class="axis mono dim" aria-hidden="true">
+        <span>{yearMin}</span><span>1975</span><span>1990</span><span>2005</span><span
+          >{yearMax}</span
+        >
+      </div>
+    </div>
+  {:else if app.tab === 'memoria'}
+    <div class="readout">
+      <button
+        class="play mono"
+        onclick={() => (app.playing = !app.playing)}
+        aria-label={app.playing ? t('pause') : t('play')}
+        title={app.playing ? t('pause') : t('play')}
+      >
+        {app.playing ? '❚❚' : '▶'}
+      </button>
+      <span class="year mono mdate">{formatMonthYear(app.mday, ui.lang)}</span>
+      <span class="speeds mono" role="group" aria-label={t('speed')}>
+        {#each SPEEDS as s (s.v)}
+          <button
+            class="spd"
+            class:active={app.mspeed === s.v}
+            aria-pressed={app.mspeed === s.v}
+            onclick={() => (app.mspeed = s.v)}
+          >
+            {s.label}
+          </button>
+        {/each}
+      </span>
+    </div>
+
+    <div class="strip">
+      <svg class="hist" viewBox="0 0 {nYears} 30" preserveAspectRatio="none" aria-hidden="true">
+        {#each maHist as v, i (i)}
+          <rect
+            class="ma"
+            x={i + 0.12}
+            y={30 - Math.sqrt(v / maHistMax) * 30}
+            width="0.76"
+            height={Math.sqrt(v / maHistMax) * 30}
+          />
+        {/each}
+      </svg>
+      <input
+        class="slider"
+        type="range"
+        min="0"
+        max={MAX_DAY}
+        step="1"
+        bind:value={app.mday}
+        oninput={() => (app.playing = false)}
+        onkeydown={mdayKeys}
+        aria-label={t('date')}
+        aria-valuetext={formatMonthYear(app.mday, ui.lang)}
+      />
+      <div class="mticks">
+        {#each memoriaTicks as tk (tk.day)}
+          <button
+            class="mtick"
+            class:fn={tk.fn}
+            style:left="{(tk.day / MAX_DAY) * 100}%"
+            title={tk.label}
+            aria-label={`${t(app.mbody)} ${tk.label}`}
+            onclick={() => {
+              app.mday = tk.day;
+              app.playing = false;
+            }}
+          ></button>
+        {/each}
+      </div>
       <div class="axis mono dim" aria-hidden="true">
         <span>{yearMin}</span><span>1975</span><span>1990</span><span>2005</span><span
           >{yearMax}</span
@@ -276,6 +422,72 @@
 
   .elections-strip {
     padding-top: 16px;
+  }
+
+  /* ---------- memoria mode ---------- */
+  .mdate {
+    font-size: 19px;
+    /* widest case "septiembre de 2026" — keep the readout from jittering
+       between months during playback */
+    min-width: 19ch;
+  }
+
+  .speeds {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+
+  .spd {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--paper-faint);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    padding: 3px 7px;
+  }
+
+  .spd:hover {
+    color: var(--paper);
+  }
+
+  .spd.active {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .hist rect.ma {
+    fill: rgba(255, 47, 64, 0.42);
+  }
+
+  .mticks {
+    position: relative;
+    height: 8px;
+    margin: 1px 6px 0;
+  }
+
+  .mtick {
+    position: absolute;
+    transform: translateX(-50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    opacity: 0.75;
+  }
+
+  .mtick:hover {
+    opacity: 1;
+  }
+
+  .mtick:focus-visible {
+    opacity: 1;
+    outline: 1px solid var(--paper);
+    outline-offset: 2px;
+  }
+
+  .mtick.fn {
+    background: transparent;
+    border: 1px solid var(--gold);
   }
 
   .ticks {

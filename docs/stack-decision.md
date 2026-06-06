@@ -77,9 +77,39 @@
   scrubbing, avoiding any date imputation for the ~7% of events with unknown month/day.
 - Versions pinned by install: svelte 5.55, vite 8.0, maplibre-gl 5.24, deck.gl 9.3.3.
 
+## Memoria view additions (2026-06-05)
+
+- **Day-resolution time on the GPU**: the memoria tab animates continuous time by
+  filtering on a SECOND filter-value array (days-since-1958 as f32) with the same
+  `DataFilterExtension` — `filterRange`/`filterSoftRange` are per-frame uniform updates,
+  zero re-upload. The soft range (30 days) + default `filterTransformSize/Color` give
+  the wound fade/contract for free; the scar layer is a hard `[-0.5, t]` range over a
+  separate appearance-day array (unknown-day events appear at Dec 31 of their year —
+  display rule, the binary keeps −1).
+- **Additive blending** on the wound-glow layer via luma.gl v9 parameter names
+  (`blendColorOperation/SrcFactor/DstFactor`); the parameters object is hoisted to a
+  constant — per-frame identity churn would register as a pipeline change.
+- **Choropleth colour epoch**: per-muni LR blend recomputes on a 15-sim-day bucket
+  (≈11×/s at default speed), not per frame; `updateTriggers.getFillColor` carries the
+  epoch string. Polygon data identity stays constant so tessellation runs once.
+- **LOAD-BEARING: `$state.raw` for loaded artifacts.** Deep `$state` proxies over the
+  parsed JSON registered one Svelte signal per array element; with a `$derived` reading
+  them, every per-frame `mday` write re-validated ~10⁵ dependencies (measured 3 fps,
+  ~300 ms/frame inside Svelte `is_dirty`). `$state.raw` on the five loaded artifacts
+  restored 68 fps. Any future loaded-data state must be `$state.raw`.
+- **deck data identity under animation**: `electionPoints()` is memoized per election
+  rec — `buildLayers()` now runs per animation frame, and any fresh `data` array forces
+  a full attribute regen. Same rule as the violence binary objects, now load-bearing
+  for every layer.
+- Perf harness: `frontend/scripts/probe-fps.mjs` (headed Chrome; idle vs playing FPS +
+  long tasks). Headless Playwright renders WebGL on SwiftShader — use it for console
+  errors and layout, not for performance conclusions.
+
 ## Unverified / to confirm during build
 
-- DANE MGN exact download URL + license text (geoportal pages 404'd during research).
+- ~~DANE MGN exact download URL + license text~~ → verified 2026-06-05
+  (`geoportal.dane.gov.co/descargas/mgn_2023/MGN2023_MPIO_POLITICO.zip`, open download,
+  DANE attribution; see docs/data-sources.md).
 - Colombia PMTiles extract size (`pmtiles extract --dry-run`).
 - ~~Exact current deck.gl npm version~~ → 9.3.3 (verified 2026-06-05).
 - DataFilterExtension composition with GPU aggregation layers (still untested — MVP uses

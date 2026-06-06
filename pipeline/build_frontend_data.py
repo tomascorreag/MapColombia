@@ -5,6 +5,7 @@ Inputs (all under data/raw/, fetched by the download_* scripts):
   - cede/electoral/*.tab         : camara/senado/presidencia 1958-2022, candidate-level
   - cede/electoral/Partidos_Electorales.dta : codigo_partido -> party name labels
   - divipola/municipios.csv      : DANE municipio centroids (MinSalud)
+  - mgn/MGN2023_MPIO_POLITICO.zip : DANE MGN municipio boundary polygons
 
 Outputs (data/processed/frontend/):
   - munis.json          : municipio lookup — DANE code, name, dept, centroid
@@ -14,6 +15,9 @@ Outputs (data/processed/frontend/):
                           responsible-group tables, exclusion accounting, citations
   - elections.json      : per body/election: winner party per municipio (sum of
                           votos by codmpio x partido), party color table, citations
+  - munis_shapes.json   : simplified MGN municipio polygons keyed to munis.json
+  - memoria.json        : per body/election: vote-share-weighted left-right score
+                          per municipio + coverage, from the cited party_lr table
 
 Data-integrity rules (CLAUDE.md):
   - No fabrication: events with unknown year (Anio_hecho<=0) or out-of-range coords
@@ -295,6 +299,101 @@ def build_violence(muni_idx):
 
 # ------------------------------------------------------------------ elections
 
+SPANISH_MONTHS = {
+    "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+    "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10,
+    "noviembre": 11, "diciembre": 12,
+}
+
+# CEDE's fecha_eleccion is wrong on several files: presidencia 1958/1978 carry
+# the congressional date of the same year, and camara/senado 1990/2010/2014 plus
+# senado 2022 carry the presidential date. Overrides are documented historical
+# facts, each with a citation; everything else uses the source value. All
+# verified 2026-06-05 — see docs/data-sources.md. 1991's October date is an
+# override-as-confirmation: the value is correct (special post-Constitution
+# congressional election) but falls outside the Feb-Apr sanity envelope.
+_W = "https://es.wikipedia.org/wiki/Elecciones_"
+DATE_OVERRIDES = {
+    ("presidencia", 1958, 0): (
+        "1958-05-04",
+        "Presidential vote held Sunday 4 May 1958 (Lleras Camargo 2,482,948 "
+        "votes; cross-checked Georgetown PDBA); CEDE's 16 March is the 1958 "
+        f"congressional date. {_W}presidenciales_de_Colombia_de_1958"),
+    ("presidencia", 1978, 0): (
+        "1978-06-04",
+        "Presidential vote held Sunday 4 June 1978 (Turbay 2,503,681 votes); "
+        f"CEDE's 26 February is the 1978 congressional date. {_W}presidenciales_de_Colombia_de_1978"),
+    ("camara", 1990, 0): (
+        "1990-03-11",
+        "Congressional vote held Sunday 11 March 1990; CEDE's 27 May is the "
+        f"presidential date. {_W}legislativas_de_Colombia_de_1990"),
+    # (senado 1990 already carries 11 March correctly in the source — no override)
+    ("camara", 1991, 0): (
+        "1991-10-27",
+        "CONFIRMATION, not correction: the special congressional election under "
+        "the new 1991 Constitution was held Sunday 27 October 1991. "
+        f"{_W}legislativas_de_Colombia_de_1991"),
+    ("senado", 1991, 0): (
+        "1991-10-27",
+        f"Same confirmation as camara 1991. {_W}legislativas_de_Colombia_de_1991"),
+    ("camara", 2010, 0): (
+        "2010-03-14",
+        "Congressional vote held Sunday 14 March 2010; CEDE's 30 May is the "
+        f"presidential first-round date. {_W}legislativas_de_Colombia_de_2010"),
+    ("senado", 2010, 0): (
+        "2010-03-14",
+        f"Same correction as camara 2010. {_W}legislativas_de_Colombia_de_2010"),
+    ("camara", 2014, 0): (
+        "2014-03-09",
+        "Congressional vote held Sunday 9 March 2014; CEDE's 25 May is the "
+        f"presidential first-round date. {_W}legislativas_de_Colombia_de_2014"),
+    ("senado", 2014, 0): (
+        "2014-03-09",
+        f"Same correction as camara 2014. {_W}legislativas_de_Colombia_de_2014"),
+    ("senado", 2022, 0): (
+        "2022-03-13",
+        "Congressional vote held Sunday 13 March 2022 (the 2022 camara file "
+        "carries it correctly); CEDE's senado value 25 May 2022 matches no "
+        f"election that year. {_W}legislativas_de_Colombia_de_2022"),
+}
+
+
+def parse_fecha(raw):
+    """'29 de mayo de 1994' -> '1994-05-29'; None when unparseable (never guessed)."""
+    if raw is None or (isinstance(raw, float) and pd.isna(raw)):
+        return None
+    m = re.match(r"\s*(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})\s*$",
+                 strip_accents(str(raw)).lower())
+    if not m:
+        return None
+    day, month_name, year = int(m.group(1)), m.group(2), int(m.group(3))
+    month = SPANISH_MONTHS.get(month_name)
+    if not month:
+        return None
+    try:
+        return date(year, month, day).isoformat()
+    except ValueError:
+        return None
+
+
+def election_date(df, year, body, rnd):
+    """Source fecha_eleccion (modal value) -> ISO date, with documented overrides."""
+    if (body, year, rnd) in DATE_OVERRIDES:
+        return DATE_OVERRIDES[(body, year, rnd)][0]
+    vals = df.fecha_eleccion.dropna()
+    iso = parse_fecha(vals.mode().iat[0]) if len(vals) else None
+    if iso is None:
+        print(f"  WARNING: {year} {body} r{rnd}: fecha_eleccion unparseable -> date null")
+        return None
+    month = int(iso[5:7])
+    # sanity envelope: Colombian congressional elections fall Feb-Apr,
+    # presidential Feb-Jun (incl. June runoffs) in the 1958-2022 window
+    ok = (1 <= month <= 4) if body in ("camara", "senado") else (2 <= month <= 6)
+    if not ok or int(iso[:4]) != year:
+        print(f"  WARNING: {year} {body} r{rnd}: suspicious source date {iso} (kept; verify)")
+    return iso
+
+
 def load_party_labels():
     with StataReader(RAW / "cede" / "electoral" / "Partidos_Electorales.dta") as r:
         r.read(convert_categoricals=False)
@@ -332,10 +431,12 @@ def build_elections(muni_idx):
         year, body, round_sfx = int(m.group(1)), m.group(2), m.group(3)
         rnd = {None: 0, "_primera_vuelta": 1, "_segunda_vuelta": 2}[round_sfx]
 
-        cols = ["codmpio", "codigo_partido", "votos", "circunscripcion"]
+        cols = ["codmpio", "codigo_partido", "votos", "circunscripcion",
+                "fecha_eleccion"]
         if body == "presidencia":
             cols += ["primer_apellido", "segundo_apellido", "nombres"]
         df = pd.read_csv(path, sep="\t", usecols=cols, low_memory=False)
+        fecha = election_date(df, year, body, rnd)
 
         df["votos"] = pd.to_numeric(df.votos, errors="coerce").fillna(0)
         null_muni = int(df.codmpio.isna().sum())
@@ -410,7 +511,7 @@ def build_elections(muni_idx):
 
         label = str(year) + {0: "", 1: " · 1ª vuelta", 2: " · 2ª vuelta"}[rnd]
         rec = {
-            "year": year, "round": rnd, "label": label,
+            "year": year, "round": rnd, "label": label, "date": fecha,
             "circunscripcion": str(principal),
             "m": mi, "p": pi, "w": wv, "t": tv,
             "dropped": {"nullMuni": null_muni, "unmatchedMuni": unmatched,
@@ -464,7 +565,11 @@ def build_elections(muni_idx):
                        "recorded votes are no-data (dropped.zeroVote), never a "
                        "winner. Ties broken by first occurrence. Party codes newer "
                        "than the Partidos_Electorales.dta snapshot (some 2018-2022 "
-                       "coalitions) appear as 'CODIGO N' in gray."),
+                       "coalitions) appear as 'CODIGO N' in gray. Election dates "
+                       "come from the source fecha_eleccion column; documented "
+                       "overrides (DATE_OVERRIDES, cited in docs/data-sources.md) "
+                       "correct files where CEDE carries the congressional date on "
+                       "a presidential election."),
             "generated": datetime.now(timezone.utc).isoformat(),
         },
         "parties": parties,
@@ -476,13 +581,220 @@ def build_elections(muni_idx):
           f"{len(parties)} parties, {p.stat().st_size / 1e6:.1f} MB")
 
 
+# -------------------------------------------------------------------- shapes
+
+SIMPLIFY_TOL = 0.004  # degrees (~440 m): topology-preserving coverage simplify
+
+
+def build_shapes(muni_idx):
+    """DANE MGN municipio polygons -> simplified GeoJSON keyed to munis.json index."""
+    import geopandas as gpd          # heavy geo stack only needed for this step
+    from shapely import coverage_simplify, get_num_coordinates
+
+    mgn_manifest = json.loads((RAW / "mgn" / "manifest.json").read_text(encoding="utf-8"))
+    gdf = gpd.read_file(f"zip://{RAW / 'mgn' / 'MGN2023_MPIO_POLITICO.zip'}"
+                        "!MGN_ADM_MPIO_GRAFICO.shp", engine="pyogrio")
+    gdf = gdf.to_crs(4326)
+    n_in = int(get_num_coordinates(gdf.geometry.values).sum())
+    gdf["geometry"] = coverage_simplify(gdf.geometry.values, SIMPLIFY_TOL)
+    n_out = int(get_num_coordinates(gdf.geometry.values).sum())
+
+    def ring(coords):
+        return [[round(x, 4), round(y, 4)] for x, y in coords]
+
+    def geom_json(g):
+        if g.geom_type == "Polygon":
+            return {"type": "Polygon",
+                    "coordinates": [ring(g.exterior.coords)]
+                    + [ring(r.coords) for r in g.interiors]}
+        return {"type": "MultiPolygon",
+                "coordinates": [[ring(p.exterior.coords)]
+                                + [ring(r.coords) for r in p.interiors]
+                                for p in g.geoms]}
+
+    features, unmatched = [], []
+    for code_str, geom in zip(gdf.mpio_cdpmp, gdf.geometry):
+        code = int(code_str)
+        idx = muni_idx.get(code)
+        if idx is None:
+            unmatched.append(code)
+        features.append({"type": "Feature",
+                         "properties": {"i": idx, "c": code},
+                         "geometry": geom_json(geom)})
+
+    out = {
+        "type": "FeatureCollection",
+        "meta": {
+            "source": mgn_manifest["name"],
+            "publisher": mgn_manifest["publisher"],
+            "vintage": mgn_manifest["vintage"],
+            "license_note": mgn_manifest["license_note"],
+            "simplify": {"method": "shapely.coverage_simplify (topology-preserving)",
+                         "tolerance_deg": SIMPLIFY_TOL,
+                         "vertices_in": n_in, "vertices_out": n_out},
+            "join": "properties.i = index into munis.json arrays (null when the "
+                    "MGN code has no DIVIPOLA centroid row); properties.c = DANE code",
+            "unmatched_codes": unmatched,
+            "centroids_without_polygon": sorted(
+                set(muni_idx) - {int(c) for c in gdf.mpio_cdpmp}),
+        },
+        "features": features,
+    }
+    p = OUT / "munis_shapes.json"
+    p.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")),
+                 encoding="utf-8")
+    print(f"munis_shapes.json: {len(features)} polygons, {n_out}/{n_in} vertices, "
+          f"{p.stat().st_size / 1e6:.1f} MB; unmatched codes: {unmatched or 'none'}")
+
+
+# ------------------------------------------------------------------- memoria
+# Interpretive layer for the "Memoria" view: per election, a vote-share-weighted
+# left-right score per municipio, from a curated, citation-per-row party table
+# (pipeline/party_lr.py). Separate artifact from elections.json because scores
+# are scholarly interpretation, not raw results — it carries its own method and
+# source table.
+
+def build_memoria(muni_idx):
+    from party_lr import PARTY_LR, CONSTITUENT_PATTERNS, LR_METHOD_NOTE
+
+    code_labels = load_party_labels()
+    compiled = [(re.compile("^" + re.escape(name) + "$"), score)
+                for name, score, _basis, _url in PARTY_LR]
+    constituents = [(re.compile(pat), score) for pat, score in CONSTITUENT_PATTERNS]
+    score_cache = {}
+
+    def party_score(name):
+        """Curated score; coalitions without a direct row get the mean of their
+        matched constituent parties (documented derivation rule); else None."""
+        if name in score_cache:
+            return score_cache[name]
+        s = None
+        for rx, sc in compiled:
+            if rx.search(name):
+                s = sc
+                break
+        if s is None and "COALICION" in name:
+            hits = [sc for rx, sc in constituents if rx.search(name)]
+            if hits:
+                s = round(sum(hits) / len(hits), 2)
+        score_cache[name] = s
+        return s
+
+    files = sorted(glob.glob(str(RAW / "cede" / "electoral" / "*.tab")))
+    bodies = {"presidencia": [], "senado": [], "camara": []}
+    unscored_total = {}
+
+    for path in files:
+        fname = Path(path).name
+        m = re.match(r"(\d{4})_(camara|senado|presidencia)(_primera_vuelta|_segunda_vuelta)?\.tab",
+                     fname)
+        if not m:
+            continue
+        year, body, round_sfx = int(m.group(1)), m.group(2), m.group(3)
+        rnd = {None: 0, "_primera_vuelta": 1, "_segunda_vuelta": 2}[round_sfx]
+
+        df = pd.read_csv(path, sep="\t", low_memory=False,
+                         usecols=["codmpio", "codigo_partido", "votos",
+                                  "circunscripcion", "fecha_eleccion"])
+        df["votos"] = pd.to_numeric(df.votos, errors="coerce").fillna(0)
+        fecha = election_date(df, year, body, rnd)
+        df = df.dropna(subset=["codmpio"])
+        df["codmpio"] = df.codmpio.astype(int)
+
+        # same principal-constituency rule as build_elections
+        circ_totals = df.groupby("circunscripcion", dropna=False).votos.sum()
+        df = df[df.circunscripcion == circ_totals.idxmax()]
+        df = df[df.codigo_partido.notna()].copy()  # blanco/nulos excluded entirely
+
+        if pd.api.types.is_numeric_dtype(df.codigo_partido):
+            codes = df.codigo_partido.astype(int)
+            df["party"] = [code_labels.get(c, f"CODIGO {c}") for c in codes]
+        else:
+            df["party"] = df.codigo_partido.map(norm_party)
+        df["score"] = df.party.map(party_score)
+
+        # per-election unscored accounting (national vote share per party)
+        nat_total = df.votos.sum()
+        unsc = (df[df.score.isna()].groupby("party").votos.sum()
+                .sort_values(ascending=False))
+        unscored = [{"party": p, "share": round(float(v / nat_total), 4)}
+                    for p, v in unsc.items() if v / nat_total >= 0.001]
+        for p, v in unsc.items():
+            unscored_total[p] = unscored_total.get(p, 0) + int(v)
+
+        g = df.groupby("codmpio").votos.sum()
+        scored = df[df.score.notna()].copy()
+        scored["weighted"] = scored.votos * scored.score
+        gs = scored.groupby("codmpio").agg(sv=("votos", "sum"),
+                                           ss=("weighted", "sum"))
+
+        mi, ss, cov = [], [], []
+        for codmpio, total in g.items():
+            idx = muni_idx.get(codmpio)
+            if idx is None or total <= 0:
+                continue  # consulados/unmatched/zero — accounted in elections.json
+            if codmpio in gs.index and gs.loc[codmpio, "sv"] > 0:
+                sv = gs.loc[codmpio, "sv"]
+                mi.append(idx)
+                ss.append(int(round(100 * gs.loc[codmpio, "ss"] / sv)))
+                cov.append(int(round(100 * sv / total)))
+            else:
+                mi.append(idx)
+                ss.append(127)  # sentinel: no scored votes in this municipio
+                cov.append(0)
+
+        rec = {"year": year, "round": rnd, "date": fecha,
+               "m": mi, "s": ss, "cov": cov, "unscored": unscored}
+        if body == "presidencia" and year in (1962, 1966):
+            # Frente Nacional alternation: the excluded party did not compete —
+            # a left-right reading of these maps is an artifact of the pact
+            rec["fn_consensus"] = True
+        bodies[body].append(rec)
+        mean_cov = (sum(cov) / len(cov)) if cov else 0
+        print(f"  {fname}: {len(mi)} munis, mean coverage {mean_cov:.0f}%")
+
+    out = {
+        "meta": {
+            "method": LR_METHOD_NOTE,
+            "scale": {"-1": "izquierda", "-0.5": "centro-izquierda", "0": "centro",
+                      "0.5": "centro-derecha", "1": "derecha"},
+            "encoding": ("s = round(100 * sum(votos_p*score_p)/sum(votos_p scored)) "
+                         "per municipio, in [-100,100]; 127 = no scored votes. "
+                         "cov = round(100 * scored votes / party-attributed votes). "
+                         "Blanco/nulos and special-constituency votes excluded as in "
+                         "elections.json."),
+            "parties_scored": [{"party": name, "score": sc, "basis": basis, "url": url}
+                               for name, sc, basis, url in PARTY_LR],
+            "constituent_rules": [{"pattern": pat, "score": sc}
+                                  for pat, sc in CONSTITUENT_PATTERNS],
+            "fn_note": ("1958-1974 Frente Nacional: presidencia 1962/1966 were "
+                        "alternation elections where one traditional party did not "
+                        "compete (rec.fn_consensus=true); congressional races "
+                        "remained contested between the two parties."),
+            "generated": datetime.now(timezone.utc).isoformat(),
+        },
+        "bodies": bodies,
+    }
+    p = OUT / "memoria.json"
+    p.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    top_unscored = sorted(unscored_total.items(), key=lambda kv: -kv[1])[:10]
+    print(f"memoria.json: {sum(len(v) for v in bodies.values())} elections, "
+          f"{p.stat().st_size / 1e6:.1f} MB")
+    print("  top unscored by total votes:",
+          [(p_, f"{v:,}") for p_, v in top_unscored])
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     muni_idx = build_munis()
+    print("shapes:")
+    build_shapes(muni_idx)
     print("violence:")
     build_violence(muni_idx)
     print("elections:")
     build_elections(muni_idx)
+    print("memoria:")
+    build_memoria(muni_idx)
 
 
 if __name__ == "__main__":

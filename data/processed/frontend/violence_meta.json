@@ -1140,5 +1140,5 @@
   "license_note": "geoportal cut license unstated; the 2024-09-30 socrata cut of the same system is CC BY-SA 4.0"
  },
  "integrity": "Events with unknown year (Anio_hecho=0), pre-1958 dates, out-of-range coordinates, or unknown municipality (whose source coordinates are department-centroid placeholders) are excluded and counted per modality in modalities[].excluded — never imputed. day=-1 means exact date unknown (year-level only). muni=65535 means the DANE code did not match the DIVIPOLA centroid table (e.g. non-municipalized areas).",
- "generated": "2026-06-05T23:51:36.002900+00:00"
+ "generated": "2026-06-06T04:18:18.113170+00:00"
 }

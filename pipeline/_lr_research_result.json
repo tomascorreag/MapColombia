@@ -1,0 +1,1169 @@
+{
+ "eras": [
+  {
+   "rows": [
+    {
+     "party": "PARTIDO LIBERAL COLOMBIANO",
+     "score": -0.5,
+     "basis": "English Wikipedia 'Colombian Liberal Party' infobox lists political position as 'Centre to centre-left' and ideologies Social liberalism + Social democracy; 'founded as a classical liberal party but later developed a more social-democratic tradition, joining the Socialist International in 1999.' Consistent with standard expert-survey placement of the PLC left-of-center.",
+     "confidence": "high",
+     "url": "https://en.wikipedia.org/wiki/Colombian_Liberal_Party",
+     "note": "Straddles centre / centre-left; over 1958-2022 it sat right-of the new left but left-of the Conservatives. -0.5 captures the social-democratic post-1990s identity; a 0 could be argued for the mid-century clientelist machine, but the social-liberal characterization dominates."
+    },
+    {
+     "party": "PARTIDO CONSERVADOR COLOMBIANO",
+     "score": 1,
+     "basis": "English Wikipedia 'Colombian Conservative Party': 'a conservative political party'; historically supported close cooperation with the Roman Catholic Church, intolerance of non-Catholic beliefs, maintenance of class privileges, and highly centralized government. Uncontested historiography places it as the traditional Colombian right.",
+     "confidence": "high",
+     "url": "https://en.wikipedia.org/wiki/Colombian_Conservative_Party"
+    },
+    {
+     "party": "MOVIMIENTO DE SALVACION NACIONAL - MSN",
+     "score": 1,
+     "basis": "Spanish/English Wikipedia 'Movimiento de Salvacion Nacional' / 'National Salvation Movement': conservative party created 1990 by Alvaro Gomez Hurtado (son of hardline conservative pres. Laureano Gomez) as a conservative dissidence, 'conservative ideology and right-wing position', targeting urban right-wing opinion. El Espectador 2022 quotes its list-head: 'Aca no hay extrema derecha, solo derecha.'",
+     "confidence": "high",
+     "url": "https://en.wikipedia.org/wiki/National_Salvation_Movement"
+    },
+    {
+     "party": "ALIANZA NACIONAL POPULAR - ANAPO",
+     "score": 0,
+     "basis": "Cesar Ayala Diago, 'La explosion del populismo en Colombia: Anapo' (Univ. Nacional, 2011) frames ANAPO as the defining populist movement of the National Front era. Wikipedia/Encyclopedia.com: nationalist + populist catch-all uniting dissidents from BOTH traditional parties plus moderate socialists; self-defined as 'nationalist, revolutionary and popular' pursuing a Colombian-style 'socialism', yet led by ex-military ruler Rojas Pinilla. A documented movement that genuinely resists the left-right axis.",
+     "confidence": "medium",
+     "url": "http://www.scielo.org.co/scielo.php?script=sci_arttext&pid=S0120-24562011000200012",
+     "note": "Conflict: some sources call it 'left-wing nationalist' (its later self-description and the M-19 lineage of dissident anapistas pull toward -0.5/-1), while its conservative absorptions and personalist Rojas leadership pull right. Per the brief's allowance for documented-but-unplaceable populism, scored 0; a defensible alternative is -0.5 if weighting the late left-populist drift."
+    },
+    {
+     "party": "MOVIMIENTO NUEVO LIBERALISMO",
+     "score": -0.5,
+     "basis": "Spanish Wikipedia 'Nuevo Liberalismo' infobox: historical political position (1979-1989, the Galan era covering this dataset's electoral mass) = 'Centroizquierda' (centre-left); ideology liberalismo social/cultural/clasico. Founded 1979 by Luis Carlos Galan as a reformist, anti-clientelist, anti-narco dissidence of the Liberal Party.",
+     "confidence": "high",
+     "url": "https://es.wikipedia.org/wiki/Nuevo_Liberalismo",
+     "note": "Conflict: the same infobox lists the 2021 refounding as 'Centro'. Dataset row spans 1982-2022, but the substantive votes are the 1982-1989 Galan period -> -0.5 (centre-left) is the better-evidenced placement for the relevant window."
+    },
+    {
+     "party": "UNION NACIONAL DE OPOSICION - UNO",
+     "score": -1,
+     "basis": "Spanish Wikipedia 'Union Nacional de Oposicion (Colombia)': leftist electoral coalition (1972-1982) formed by the Partido Comunista Colombiano, the Maoist MOIR, and the Marxist (Bayona/Echeverri) faction of ANAPO, to group organized left forces during the National Front. Presidential candidate Hernando Echeverri 1974.",
+     "confidence": "high",
+     "url": "https://es.wikipedia.org/wiki/Uni%C3%B3n_Nacional_de_Oposici%C3%B3n_(Colombia)"
+    },
+    {
+     "party": "UNION PATRIOTICA - UP",
+     "score": -1,
+     "basis": "English/Spanish Wikipedia 'Patriotic Union (Colombia)' and Britannica: leftist party founded 1985 by the FARC and the Partido Comunista Colombiano during the Betancur peace talks; 1980s ideology 'openly communist and Marxist'; platform of agrarian reform, nationalization of natural resources, economic model separate from global capitalism. Subsequently exterminated (5,733+ militants murdered).",
+     "confidence": "high",
+     "url": "https://en.wikipedia.org/wiki/Patriotic_Union_(Colombia)"
+    },
+    {
+     "party": "PARTIDO ALIANZA DEMOCRATICA M-19 AD-M19",
+     "score": -1,
+     "basis": "Spanish Wikipedia 'Alianza Democratica M-19' / Congreso Visible (Uniandes): party formed 1990 from the demobilized M-19 guerrilla together with other demobilized insurgencies and 'a dozen left-wing groups'; M-19 ideology nationalist/Bolivarian, anti-oligarchic, anti-imperialist. Won ~28% of the 1991 Constituent Assembly as the principal alternative-left force; presidential candidate Antonio Navarro Wolff.",
+     "confidence": "high",
+     "url": "https://congresovisible.uniandes.edu.co/partidos/perfil/alianza-democratica-m-19/23/",
+     "note": "M-19 was explicitly non-Marxist-Leninist (unlike FARC/ELN/EPL), but the AD-M19 vehicle aggregated demobilized guerrillas + a dozen left groups and is uniformly classed as the alternative left -> -1."
+    },
+    {
+     "party": "MOVIMIENTO NACIONAL",
+     "score": 0.5,
+     "basis": "CEDE party-code table (data/raw/cede/electoral/Partidos_Electorales.dta) keys this string to code 19780001 (a 1978 vehicle, distinct from 1992's 'Movimiento Nacional Conservador' code 19920005). Spanish Wikipedia 'Elecciones presidenciales de Colombia de 1978' (confirmed via WebFetch): 'Movimiento Nacional' was the coalition behind Conservative Belisario Betancur, composed of the Conservative Party, the ANAPO majority, dissident anti-Turbay liberals, and the Christian Democracy party. Betancur was a Conservative of the party's progressive wing.",
+     "confidence": "medium",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1978",
+     "note": "Conservative-LED but heterogeneous (folded in ANAPO + Christian Democrats) and headed by Betancur, 'el conservador mas liberal' (El Espectador), known for the most progressive thinking of any 20th-c. president. Lead-candidate rule -> right core, but the broad coalition + reformist Betancur pull it to centre-right (+0.5) rather than hard right (+1). Peak 46.6% share matches Betancur's strong 1978 run."
+    },
+    {
+     "party": "FRENTE DEMOCRATICO",
+     "score": -1,
+     "basis": "Spanish Wikipedia 'Elecciones presidenciales de Colombia de 1982': Frente Democratico was the left-wing coalition (Gerardo Molina's Firmes + the Union Nacional de Oposicion) that nominated intellectual/ex-rector Gerardo Molina for president (~1.2%). Molina was a self-described democratic socialist (CeDInCI Diccionario Biografico de las Izquierdas Latinoamericanas entry). CEDE code 19800001 'FRENTE DEMOCRATICO'.",
+     "confidence": "high",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1982"
+    },
+    {
+     "party": "FRENTE POR LA UNIDAD DEL PUEBLO - FUP",
+     "score": -1,
+     "basis": "Spanish Wikipedia 'Elecciones presidenciales/legislativas de Colombia de 1978' and Redalyc 'Historia de las izquierdas colombianas 1958-2010': FUP was the 1975-1978 left coalition led by the Maoist MOIR (split from UNO with the MAC), 'where the Maoist forces entering the electoral arena converged'; presidential candidate Jaime Piedrahita Cardona 1978. Revolutionary left.",
+     "confidence": "high",
+     "url": "https://www.redalyc.org/journal/3381/338144734005/html/"
+    }
+   ],
+   "unscorable": [
+    {
+     "party": "MOVIMIENTO NUEVA COLOMBIA",
+     "reason": "CEDE table keys this to code 19940017, a minor 1994-era movement (peak 1.9%). Targeted Spanish/English searches returned no academic, encyclopedic, or solid press characterization of its ideology. The only signal (a search-engine summary) calls it a 'departmental faction' associated with the Liberal Party, but this is a single uncited weak source and conflicts with the CEDE coalition records, which show 'Movimiento Nueva Colombia' allying at the local level with BOTH the Conservative Party (e.g. Itagui, Palmas del Socorro) and the Liberal Party (e.g. Cartagena, San Gil) and with Cambio Radical (Casanare governorship). A regional/personalist micro-vehicle with no documented axis placement -> honestly unscorable."
+    },
+    {
+     "party": "COALICIONES DE 1990",
+     "reason": "Not a party. CEDE party-code table assigns code 19909998 'COALICIONES DE 1990', an aggregation bucket sitting directly above 19909999 'OTROS PARTIDOS O MOVIMIENTOS DE 1990'. It pools heterogeneous, unnamed electoral coalitions of that year (the family 19809998, 19829998, 19889998, 19909998... is CEDE's catch-all coalition code per cycle). It has no single ideology and cannot be placed on a left-right axis without fabricating a composition. Unscorable by construction."
+    },
+    {
+     "party": "COALICIONES DE 1982",
+     "reason": "Not a party. CEDE code 19829998 'COALICIONES DE 1982' is the same per-cycle aggregation bucket as 'COALICIONES DE 1990' (codes 198x/199x 9998). The 46.8% presidencia 'peak share' reflects pooled coalition votes in a year where the two traditional parties and their satellite lists ran as coalitions, not a single ideological vehicle. No coherent left-right placement is possible. Unscorable by construction."
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "party": "MOVIMIENTO INDEPENDIENTE DE RENOVACION ABSOLUTA - MIRA",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Partido Político MIRA) classifies its ideology as 'democracia cristiana' (Christian democracy); EN Wikipedia and academic literature describe it as a confessional party of the IDMJI church opposed to abortion, euthanasia and same-sex marriage (social conservatism), while it self-describes as transcending left/right ('miraísmo'). Christian-democratic + social-conservative maps to center-right.",
+     "confidence": "medium",
+     "note": "MIRA explicitly rejects left-right placement and combines pro-poor/welfare economics with moral conservatism; placed +0.5 on the documented Christian-democratic/social-conservative reading, but it is genuinely cross-cutting.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Pol%C3%ADtico_MIRA"
+    },
+    {
+     "party": "MOVIMIENTO UNION CRISTIANA - UC",
+     "score": 1,
+     "basis": "El Tiempo and Razón Pública: evangelical confessional movement (allied with Consejo Evangélico and Partido Nacional Cristiano in the 1991 Constituent Assembly); Pentecostal parties characterized as militantly opposed to abortion decriminalization and same-sex couples, defending 'morality and the traditional family' — i.e. the Christian/social-conservative right.",
+     "confidence": "medium",
+     "note": "Pares chapter on protestant/evangelical parties characterizes this confessional cluster as right/conservative on moral issues.",
+     "url": "https://razonpublica.com/politica-cristianos-y-diversidad-religiosa-en-colombia/"
+    },
+    {
+     "party": "MOVIMIENTO COMPROMISO CIVICO CRISTIANO C4",
+     "score": 1,
+     "basis": "Search of Congreso Visible / secondary sources: C4 (Jimmy Chamorro, Cruzada Estudiantil y Profesional) ideological platform 'founded on principles and teachings from the Bible', 'conservative in character, promoting Christian values', part of a pro-life Christian coalition.",
+     "confidence": "medium",
+     "note": "Evangelical social-conservative party; same confessional-right cluster as UC and PNC.",
+     "url": "https://congresovisible.uniandes.edu.co/partidos/perfil/compromiso-civico-cristiano--c4/63/"
+    },
+    {
+     "party": "MOVIMIENTO FUERZA PROGRESISTA",
+     "score": 1,
+     "basis": "Wikipedia ES (Juan Gómez Martínez) and La Silla Vacía (Fabio Valencia Cossio): Fuerza Progresista was Juan Gómez Martínez's regional movement, an 'independent movement within conservatism' in Antioquia, part of/aligned with the Conservative Party.",
+     "confidence": "medium",
+     "note": "Conservative dissidence; 'progresista' in the name refers to its leader's faction, not left progressivism.",
+     "url": "https://es.wikipedia.org/wiki/Juan_G%C3%B3mez_Mart%C3%ADnez"
+    },
+    {
+     "party": "MOVIMIENTO NUEVA FUERZA DEMOCRATICA",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Nueva Fuerza Democrática) and CIDOB: center-right party founded by Andrés Pastrana as a dissidence from the Conservative Party; defense of private property/private initiative, anti-narcotics, military modernization; Pastrana governed 1998-2002.",
+     "confidence": "high",
+     "note": "Explicitly 'centroderecha' in Wikipedia ES.",
+     "url": "https://es.wikipedia.org/wiki/Nueva_Fuerza_Democr%C3%A1tica"
+    },
+    {
+     "party": "MOVIMIENTO POLITICO LAICOS POR COLOMBIA",
+     "score": 1,
+     "basis": "Fundación Carolina / press: Catholic lay confessional movement led by ex-senator Carlos Corsi Otálora (a traditionalist Catholic), pro-life religious electoral vehicle; later merged into Cambio Radical.",
+     "confidence": "medium",
+     "note": "Confessional Catholic traditionalist movement → moral/social right.",
+     "url": "https://www.fundacioncarolina.es/wp-content/uploads/2020/06/DT_FC_35.pdf"
+    },
+    {
+     "party": "MOVIMIENTO ALIANZA SOCIAL INDIGENA - ASI",
+     "score": -0.5,
+     "basis": "Wikipedia ES (Alianza Social Independiente) and El Tiempo: party 'considered to be center-left', born from indigenous struggle (inspired by Manuel Quintín Lame), multiethnic; provided the vehicle for progressive figures like Mockus and Fajardo.",
+     "confidence": "high",
+     "note": "Explicitly center-left in Wikipedia ES.",
+     "url": "https://es.wikipedia.org/wiki/Alianza_Social_Independiente"
+    },
+    {
+     "party": "MOVIMIENTO CONSERVATISMO INDEPENDIENTE",
+     "score": 1,
+     "basis": "Wikipedia ES (Partido Conservador) and El Tiempo/Congreso Visible: explicit Conservative Party dissidence ('Conservatismo Independiente de la familia Gerlein', Atlántico; leader Roberto Gerlein, 'Colombia es un país conservador').",
+     "confidence": "high",
+     "note": "Traditional conservatism (Gerlein machine in Barranquilla).",
+     "url": "https://congresovisible.uniandes.edu.co/partidos/perfil/movimiento-conservatismo-independiente/66/"
+    },
+    {
+     "party": "MOVIMIENTO NACIONAL CONSERVADOR",
+     "score": 1,
+     "basis": "Wikipedia ES (Partido Conservador) and scielo.org.mx (Duque, 'Partidos divididos'): created 1986 by congressman Gustavo Rodríguez as one of the internal/dissident movements of the Colombian Conservative Party.",
+     "confidence": "medium",
+     "note": "Conservative dissidence.",
+     "url": "https://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1405-14352006000200007"
+    },
+    {
+     "party": "MOVIMIENTO UNITARIO METAPOLITICO - MUM",
+     "score": 0,
+     "basis": "Wikipedia ES (Movimiento Unitario Metapolítico; Regina Betancourt de Liska / 'Regina 11'): self-defined 'metaphysical, philosophical, socioeconomic and political' movement, esoteric/personalist, explicitly 'metapolitical' ('goes beyond politics'), motto 'health, money, love and happiness'.",
+     "confidence": "medium",
+     "note": "Documented but genuinely unplaceable on the left-right axis — esoteric personalist movement.",
+     "url": "https://es.wikipedia.org/wiki/Movimiento_Unitario_Metapol%C3%ADtico"
+    },
+    {
+     "party": "PARTIDO NACIONAL CRISTIANO - PNC",
+     "score": 1,
+     "basis": "Wikipedia EN/las2orillas: founded 1989 by pastors César and Claudia Castellanos (Misión Carismática Internacional); evangelical confessional party whose political capital was the religious authority of its pastor-founders; same moral-conservative evangelical cluster as UC/C4.",
+     "confidence": "medium",
+     "note": "Pentecostal confessional party; characterized as right/conservative on moral issues.",
+     "url": "https://www.las2orillas.co/la-caida-de-los-poderosos-pastores-castellanos-creadores-de-la-mision-carismatica/"
+    },
+    {
+     "party": "MOVIMIENTO LIBERALISMO INDEPENDIENTE DE RESTITUCION - LIDER",
+     "score": -0.5,
+     "basis": "Name self-identifies as a 'liberalismo independiente' (independent liberal) vehicle; the Colombian Liberal Party is placed by Congreso Visible as 'centro que tiende a la izquierda' and is a Socialist International member.",
+     "confidence": "low",
+     "note": "No specific historiographic source on this 1991-94 micro-vehicle found; placement rests only on the self-declared liberal lineage in the name. Treat as weak.",
+     "url": "https://congresovisible.uniandes.edu.co/partidos/perfil/liberal-colombiano/2/"
+    },
+    {
+     "party": "MOVIMIENTO POLITICO ACTITUD RENOVADORA",
+     "score": 0,
+     "basis": "No citable ideological characterization found despite searching; name is a generic 'renovation' label with no documented programmatic content.",
+     "confidence": "low",
+     "note": "Borderline unscorable; left at neutral 0 only as a placeholder — better treated as unscorable (see note). No source establishes a left-right position.",
+     "url": ""
+    },
+    {
+     "party": "MOVIMIENTO OBRERO INDEPENDIENTE Y REVOLUCIONARIO - MOIR",
+     "score": -1,
+     "basis": "Wikipedia ES/EN: Maoist Colombian party founded 1970 (Francisco Mosquera), recognized by the Chinese Communist Party as a sister party; advocated New Democracy revolution toward socialism, agrarian revolution; later integrated into Polo Democrático and Dignidad.",
+     "confidence": "high",
+     "note": "Revolutionary/Maoist left.",
+     "url": "https://es.wikipedia.org/wiki/Movimiento_Obrero_Independiente_y_Revolucionario"
+    },
+    {
+     "party": "COALICIONES DE 1998",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Elecciones presidenciales 1998) and PDBA Georgetown: the 1998 winning coalition was Andrés Pastrana's 'Gran Alianza por el Cambio' — Conservative Party plus liberal dissidents and independents, led by the Conservative/center-right Pastrana.",
+     "confidence": "medium",
+     "note": "Aggregate coalition label (51.9% share); scored from the documented ideology of lead candidate Pastrana (Conservative/center-right). It was a broad big-tent, so this is the lead-candidate placement only.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1998"
+    },
+    {
+     "party": "MOVIMIENTO APERTURA LIBERAL",
+     "score": -0.5,
+     "basis": "Wikipedia ES (Apertura Liberal): liberal-oriented movement, 'independiente del liberalismo oficial', founded 1993 by Miguel Ángel Flórez in Norte de Santander; Liberal lineage placed center-left by Congreso Visible.",
+     "confidence": "low",
+     "note": "Personalist/clientelist regional vehicle (later DMG-linked); placement rests on the self-declared liberal lineage rather than a programmatic source.",
+     "url": "https://es.wikipedia.org/wiki/Apertura_Liberal"
+    },
+    {
+     "party": "MOVIMIENTO CONVERGENCIA CIUDADANA",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Partido Convergencia Ciudadana) and Semana: founded by Luis Alberto Gil (ex-M19); 'en principio era de izquierda' but joined Álvaro Uribe's government coalition and was a core parapolitics party (became PIN/Opción Ciudadana).",
+     "confidence": "medium",
+     "note": "Conflict: leftist origins vs. uribista governing alignment. Net documented trajectory is a clientelist machine integrated into the (right) uribista coalition; scored center-right on its operative alignment.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Convergencia_Ciudadana"
+    },
+    {
+     "party": "MOVIMIENTO FUERZA COLOMBIA",
+     "score": 1,
+     "basis": "Wikipedia EN (Harold Bedoya Pizarro): founded 1997-98 by Gen. Harold Bedoya (ex-armed-forces commander); hardline security candidacy — anti-FARC, refusal to negotiate, anti-drug priority.",
+     "confidence": "high",
+     "note": "Security-hardline right.",
+     "url": "https://en.wikipedia.org/wiki/Harold_Bedoya_Pizarro"
+    },
+    {
+     "party": "MOVIMIENTO OXIGENO LIBERAL",
+     "score": -0.5,
+     "basis": "Wikipedia ES (Partido Verde Oxígeno): Ingrid Betancourt's movement, originally Oxígeno Liberal (1998), 'ecological, democratic and anti-corruption', renamed Partido Verde Oxígeno in 2000.",
+     "confidence": "medium",
+     "note": "Green/anti-corruption progressive-liberal; dissident-liberal lineage.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Verde_Ox%C3%ADgeno"
+    },
+    {
+     "party": "MOVIMIENTO CONVERGENCIA POPULAR CIVICA",
+     "score": 0,
+     "basis": "Searches (Kellogg working paper on party atomization; press) describe it as a parapolitics vehicle 'constituted practically only of parapolíticos' with candidate-endorsement sold as a business; no documented programmatic left-right ideology.",
+     "confidence": "low",
+     "note": "Personalist/regional parapolitics vehicle without a coherent ideology; included at neutral only because it is documented, but effectively unplaceable — see unscorable rationale.",
+     "url": "https://kellogg.nd.edu/sites/default/files/old_files/documents/292.pdf"
+    },
+    {
+     "party": "MOVIMIENTO ALTERNATIVO DE AVANZADA SOCIAL - ALAS",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Alternativa Liberal de Avanzada Social) and La Silla Vacía: ALAS, founded by Álvaro Araújo Castro as a Liberal dissidence, merged into 'Alas Equipo Colombia', defined as uribista, center-right.",
+     "confidence": "medium",
+     "note": "Center-right uribista (later parapolitics-tainted).",
+     "url": "https://es.wikipedia.org/wiki/Alternativa_Liberal_de_Avanzada_Social"
+    },
+    {
+     "party": "MOVIMIENTO CAMBIO RADICAL",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Partido Cambio Radical): considered center-right; founded by ex-galanista Liberal dissidents (1997-2000); economic liberalism + security hardline; supported Uribe in 2002.",
+     "confidence": "high",
+     "note": "Center-right.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Cambio_Radical"
+    },
+    {
+     "party": "MOVIMIENTO EQUIPO COLOMBIA",
+     "score": 1,
+     "basis": "El Tiempo / El Colombiano: Equipo Colombia was a Conservative-origin movement led by Luis Alfredo Ramos in Antioquia; pro-Uribe (Ramos as Senate president inaugurated Uribe in 2002); later fused into Alas Equipo Colombia (center-right uribista).",
+     "confidence": "medium",
+     "note": "Conservative/uribista right.",
+     "url": "https://en.wikipedia.org/wiki/Luis_Alfredo_Ramos"
+    },
+    {
+     "party": "MOVIMIENTO COLOMBIA SIEMPRE",
+     "score": 1,
+     "basis": "Wikipedia EN (Colombia Always) / Congreso Visible: described as a national-conservative party; senators incl. Germán Vargas Lleras and Nancy Patricia Gutiérrez; supported Uribe in 2002.",
+     "confidence": "medium",
+     "note": "National-conservative, pro-Uribe; Vargas Lleras' pre-Cambio-Radical vehicle.",
+     "url": "https://en.wikipedia.org/wiki/Colombia_Always"
+    },
+    {
+     "party": "MOVIMIENTO FRENTE SOCIAL Y POLITICO",
+     "score": -1,
+     "basis": "La Silla Vacía / El Tiempo / Wikipedia: FSP was a left front of union leaders, communists, ex-guerrillas and left intellectuals (Lucho Garzón, Carlos Gaviria, Fals Borda); Garzón its 2002 presidential candidate; became part of Polo Democrático.",
+     "confidence": "high",
+     "note": "Left (union/communist/ex-guerrilla bloc).",
+     "url": "https://www.eltiempo.com/archivo/documento/MAM-474070"
+    },
+    {
+     "party": "PARTIDO COMUNISTA COLOMBIANO",
+     "score": -1,
+     "basis": "Wikipedia ES (Partido Comunista Colombiano): Marxist-Leninist party founded 1930, anti-capitalist/anti-imperialist, ran via Unión Patriótica; merged into Pacto Histórico in 2025.",
+     "confidence": "high",
+     "note": "Communist left.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Comunista_Colombiano"
+    },
+    {
+     "party": "MOVIMIENTO ALTERNATIVA DEMOCRATICA",
+     "score": -1,
+     "basis": "Wikipedia ES (Alternativa Democrática, Colombia) and scielo.cl: 'Alternativa Democrática' was a left coalition (Carlos Gaviria) grouping FSP, MOIR, Unidad Democrática, Movimiento Ciudadano and AICO, which merged into Polo Democrático Alternativo.",
+     "confidence": "medium",
+     "note": "Conflict on dating: the best-documented Alternativa Democrática is the 2002-05 left coalition; the 1994 micro-list of the same name is less documented. Scored left on the consistent left lineage of the name/coalition.",
+     "url": "https://es.wikipedia.org/wiki/Alternativa_Democr%C3%A1tica_(Colombia)"
+    },
+    {
+     "party": "MOVIMIENTO DE PARTICIPACION POPULAR",
+     "score": 0,
+     "basis": "No citable left-right characterization found despite targeted searching; generic 'popular participation' civic label.",
+     "confidence": "low",
+     "note": "Effectively unplaceable; included at neutral as documented-but-unplaceable, but see unscorable reasoning — no source establishes ideology.",
+     "url": ""
+    },
+    {
+     "party": "MOVIMIENTO CONVERGENCIA CIUDADANA-error",
+     "score": 0,
+     "basis": "PLACEHOLDER - not a real list entry",
+     "confidence": "low",
+     "note": "ignore",
+     "url": ""
+    },
+    {
+     "party": "MOVIMIENTO CIUDADANO",
+     "score": -0.5,
+     "basis": "Wikipedia ES (Alternativa Democrática) / scielo.cl: Movimiento Ciudadano is listed as one of the left movements grouped within Carlos Gaviria's Alternativa Democrática coalition (alongside FSP, MOIR, Unidad Democrática, AICO).",
+     "confidence": "medium",
+     "note": "Documented as a constituent of the left Alternativa Democrática bloc.",
+     "url": "https://es.wikipedia.org/wiki/Alternativa_Democr%C3%A1tica_(Colombia)"
+    },
+    {
+     "party": "PARTIDO UNIDAD DEMOCRATICA",
+     "score": -1,
+     "basis": "Wikipedia ES (Alternativa Democrática) / scielo.cl: Unidad Democrática was one of the left movements grouped within Carlos Gaviria's Alternativa Democrática (with FSP, MOIR, Movimiento Ciudadano, AICO), feeding into the Polo Democrático.",
+     "confidence": "medium",
+     "note": "Left bloc constituent.",
+     "url": "https://es.wikipedia.org/wiki/Alternativa_Democr%C3%A1tica_(Colombia)"
+    },
+    {
+     "party": "PARTIDO SOCIALDEMOCRATA COLOMBIANO - PSOC",
+     "score": -0.5,
+     "basis": "Huber & Stephens 'Latin America and Caribbean Political Dataset 1945-2012' codebook classifies the Partido Social Demócrata of Colombia under 'Secular C. Left' (secular center-left); social-democratic family. PSDC was a constituent of the left Frente Social y Político.",
+     "confidence": "medium",
+     "note": "Social democracy → center-left.",
+     "url": "https://huberandstephens.web.unc.edu/wp-content/uploads/sites/12348/2016/06/Codebook-_LAPolitical_Jan_2016.doc"
+    },
+    {
+     "party": "MOVIMIENTO AUTORIDADES INDIGENAS DE COLOMBIA - AICO",
+     "score": -0.5,
+     "basis": "Wikipedia EN (Indigenous Authorities of Colombia) and party site: described as a 'progressive indigenist political party'; principles of territoriality, autonomy, interculturality, defense of ethnic minorities; a constituent of the left Alternativa Democrática.",
+     "confidence": "high",
+     "note": "Progressive indigenist → center-left.",
+     "url": "https://en.wikipedia.org/wiki/Indigenous_Authorities_of_Colombia"
+    },
+    {
+     "party": "MOVIMIENTO VIA ALTERNA",
+     "score": -1,
+     "basis": "Congreso Visible / La Silla Vacía / Wikipedia (Gustavo Petro): Vía Alterna was the post-AD M-19 left movement of Gustavo Petro and Antonio Navarro (Bogotá, 1998-2002); Petro topped its 2002 Bogotá list; the bloc fed into the Polo Democrático.",
+     "confidence": "high",
+     "note": "Left (ex-M-19 / Petro-Navarro).",
+     "url": "https://congresovisible.uniandes.edu.co/congresistas/perfil/gustavo-francisco-petro-urrego/811/"
+    },
+    {
+     "party": "PARTIDO COMUNISTA COLOMBIANO-dup",
+     "score": 0,
+     "basis": "PLACEHOLDER - ignore",
+     "confidence": "low",
+     "note": "ignore",
+     "url": ""
+    },
+    {
+     "party": "MOVIMIENTO SI COLOMBIA",
+     "score": 0,
+     "basis": "Wikipedia ES (Elecciones presidenciales 2002) / Semana: Noemí Sanín's independent movement, self-positioned as centrist ('center-oriented'); Sanín left the Conservative Party in 1998 to run as an independent.",
+     "confidence": "medium",
+     "note": "Self-identified center; ex-Conservative leader running as independent centrist.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_2002"
+    },
+    {
+     "party": "MOVIMIENTO RENOVADOR DE ACCION SOCIAL - MORAL",
+     "score": 0.5,
+     "basis": "Congreso Visible / PDBA Georgetown: MORAL's 2002 Senate seat was won by Mario Uribe Escobar (cousin and close ally of Álvaro Uribe, founder of the uribista Colombia Democrática); the movement later merged into Cambio Radical.",
+     "confidence": "medium",
+     "note": "Mario Uribe's uribista vehicle → center-right; later convicted in parapolitics.",
+     "url": "https://congresovisible.uniandes.edu.co/partidos/perfil/moral--movimiento-renovador-de-accion-social/43/"
+    },
+    {
+     "party": "MOVIMIENTO UNICO DE RENOVACION CONSERVADORA - MURCO",
+     "score": 1,
+     "basis": "El Tiempo archive: MURCO was a conservative renovation movement (associated with Jorge Sedano González, Santander); name self-identifies as conservative ('Renovación Conservadora').",
+     "confidence": "low",
+     "note": "Thin sourcing; placement on the explicit conservative self-label plus Conservative-dissidence context.",
+     "url": "https://www.eltiempo.com/archivo/documento/MAM-28568"
+    },
+    {
+     "party": "ORGANIZACION NACIONAL INDIGENA DE COLOMBIA - ONIC",
+     "score": -0.5,
+     "basis": "Dejusticia / redalyc / ONIC: the national indigenous organization; ran for the Senate special indigenous district in 1991; agenda of indigenous rights, self-determination, pluriethnic recognition — progressive indigenist, same family as ASI/AICO.",
+     "confidence": "medium",
+     "note": "Progressive indigenist → center-left.",
+     "url": "https://www.dejusticia.org/column/onic-40-anos-de-resistencia-autodeterminacion-y-derechos-de-la-naturaleza/"
+    },
+    {
+     "party": "NUEVA FUERZA DEMOCRATICA EQUIPO UNIONISTA",
+     "score": 0.5,
+     "basis": "Wikipedia ES (Nueva Fuerza Democrática): NFD is Andrés Pastrana's center-right Conservative dissidence; the 1994 'Equipo Unionista' Senate label was an NFD/Conservative-unionist list within that lineage.",
+     "confidence": "medium",
+     "note": "NFD-lineage center-right (Conservative unionism).",
+     "url": "https://es.wikipedia.org/wiki/Nueva_Fuerza_Democr%C3%A1tica"
+    },
+    {
+     "party": "PARTIDO SOCIALISTA DEMOCRATICO - PSD",
+     "score": -0.5,
+     "basis": "Party name self-identifies as 'Socialista Democrático' (democratic socialist); the historical Partido Socialista Democrático of Colombia (1939-49) was the renamed Communist Party. The 2002 micro-vehicle's only documented signal is its socialist-democratic self-label.",
+     "confidence": "low",
+     "note": "No historiographic source on the specific 2002 vehicle; placement rests only on the self-declared democratic-socialist name. Weak.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Socialista_de_los_Trabajadores_(Colombia)"
+    }
+   ],
+   "unscorable": [
+    {
+     "party": "MOVIMIENTO NACIONAL PROGRESISTA",
+     "reason": "Searches did not return a citable left-right characterization for this specific 1991-2002 movement. It is distinct from Petro's 2011 'Movimiento Progresistas'; the 1991-era 'Progresista' label in Antioquia attached to Juan Gómez Martínez's conservative faction, but 'Nacional Progresista' as a separate national vehicle has no documented programmatic ideology found."
+    },
+    {
+     "party": "MOVIMIENTO CIVICO INDEPENDIENTE",
+     "reason": "Generic 'movimiento cívico independiente' label; no citable historiographic or dataset placement found for this specific 1991-2002 vehicle."
+    },
+    {
+     "party": "MOVIMIENTO HUMBERTISTA",
+     "reason": "Could not identify which 'Humberto' the personalist movement followed, nor any citable ideological characterization. Searches conflated it (wrongly) with Colombia Humana; no reliable source found."
+    },
+    {
+     "party": "MOVIMIENTO POLITICO ACTITUD RENOVADORA",
+     "reason": "No citable left-right characterization found; generic 'renewal' label with no documented programmatic content. (Listed in rows at 0 only as documented-existence placeholder; honestly unplaceable.)"
+    },
+    {
+     "party": "MOVIMIENTO POPULAR UNIDO - MPU",
+     "reason": "Wikipedia ES describes it as the Abadía-family regional clientelist vehicle from Valle del Cauca (Carlos Herney/Juan Carlos Abadía), later convicted in parapolitics; it joined Uribe's coalition opportunistically. No documented programmatic left-right ideology — personalist regional machine."
+    },
+    {
+     "party": "MOVIMIENTO DEJEN JUGAR AL MORENO",
+     "reason": "Carlos Moreno de Caro's personalist stunt-vehicle; characterized as 'populist' and pro-vulnerable but with no coherent left-right program — a one-man personalist movement known for theatrical Senate antics. Not placeable on the axis with a citable ideology."
+    },
+    {
+     "party": "MOVIMIENTO POPULAR COLOMBIANO",
+     "reason": "One-off 1998 micro-list (0.5% peak); no citable ideological characterization found."
+    },
+    {
+     "party": "MOVIMIENTO COLOMBIA MI PAIS",
+     "reason": "One-off 1998 micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO DE PARTICIPACION POPULAR",
+     "reason": "No citable ideological characterization found for this 1998-2002 movement; generic civic label. (Placeholder 0 in rows; honestly unplaceable.)"
+    },
+    {
+     "party": "VAMOS COLOMBIA",
+     "reason": "One-off 1998 micro-vehicle; no citable left-right characterization found."
+    },
+    {
+     "party": "MOVIMIENTO PARTICIPACION CIUDADANA -GS-",
+     "reason": "One-off 1998 personalist micro-vehicle (the '-GS-' suffix denotes a personal initials list); no citable ideology found."
+    },
+    {
+     "party": "MOVIMIENTO DEFENSA CIUDADANA",
+     "reason": "No citable ideological characterization found; not to be confused with the later 'Fuerza Ciudadana'."
+    },
+    {
+     "party": "MOVIMIENTO RECONSTRUCCION DEMOCRATICA NACIONAL",
+     "reason": "Appears only in Congreso Visible's party registry without a documented left-right placement; one-off 1998-2002 micro-vehicle."
+    },
+    {
+     "party": "MOVIMIENTO INTEGRACION POPULAR - MIPOL",
+     "reason": "Vicente Blel Saad's Caribbean (Bolívar) regional vehicle, later parapolitics-linked; described only as an 'independent movement' with no documented programmatic ideology — personalist regional machine."
+    },
+    {
+     "party": "MOVIMIENTO UNIONISTA",
+     "reason": "One-off 2002 micro-vehicle; the generic 'unionismo' label historically attached to Antioquia conservatism but no citable source ties this specific 2002 list to a documented ideology."
+    },
+    {
+     "party": "MOVIMIENTO PROGRESIMO DEMOCRATICO",
+     "reason": "One-off 2002 micro-vehicle (name garbled 'Progresimo'); no citable left-right characterization found."
+    },
+    {
+     "party": "MOVIMIENTO HUELLA CIUDADANA",
+     "reason": "One-off 2002 micro-vehicle; no citable ideological placement found."
+    },
+    {
+     "party": "MOVIMIENTO POLITICO COMUNAL Y COMUNITARIO DE COLOMBIA",
+     "reason": "Communal-action (Juntas de Acción Comunal) corporatist vehicle; no citable left-right placement found and JAC movements are cross-partisan."
+    },
+    {
+     "party": "MOVIMIENTO AUTONOMIA CIUDADANA",
+     "reason": "One-off 2002 micro-vehicle; no citable ideological characterization found."
+    },
+    {
+     "party": "MOVIMIENTO SOMOS COLOMBIA",
+     "reason": "One-off 2002 micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO POLITICO POR LA SEGURIDAD SOCIAL",
+     "reason": "Single-issue (social security/pensioners) micro-vehicle; no citable left-right placement found and the issue is not axis-defining on its own."
+    },
+    {
+     "party": "MOVIMIENTO DE INTEGRACION REGIONAL - IR",
+     "reason": "Regional integration micro-vehicle (1998-2006, Chamber only); no citable programmatic ideology found."
+    },
+    {
+     "party": "MOVIMIENTO INDEPENDIENTE FRENTE DE ESPERANZA",
+     "reason": "Appears in the 1998 Senate seat distribution and Congreso Visible registry but with no documented left-right ideology."
+    },
+    {
+     "party": "MOVIMIENTO RENOVACION DEMOCRATICA",
+     "reason": "One-off 1998-2002 micro-vehicle; no citable ideological characterization found (distinct from the 2002 'Reconstrucción Democrática Nacional')."
+    },
+    {
+     "party": "MOVIMIENTO ARENA",
+     "reason": "One-off 1998-2002 micro-vehicle; searches returned only the Salvadoran ARENA party. No citable placement for the Colombian movement."
+    },
+    {
+     "party": "MOVIMIENTO CONCERTACION CIVICA NACIONAL",
+     "reason": "One-off 1994-2002 civic micro-vehicle; no citable left-right characterization found."
+    },
+    {
+     "party": "MOVIMIENTO VOLUNTAD POPULAR",
+     "reason": "1994-2002 micro-vehicle; searches conflated it with Samper's 'Poder Popular' and the Venezuelan 'Voluntad Popular'. No citable ideology found for this specific Colombian list."
+    },
+    {
+     "party": "MOVIMIENTO DE UNIDAD NORTEVALLECAUCANA",
+     "reason": "Single-region (north Valle del Cauca) one-off 1991 movement; no citable left-right placement found — regional movimiento cívico."
+    },
+    {
+     "party": "MOVIMIENTO UNIDOS POR COLOMBIA",
+     "reason": "One-off 1991 micro-vehicle; 'Unidad por Colombia' was also a 1991 Conservative-unionist label (Lloreda) but this specific list cannot be reliably matched to a documented ideology."
+    },
+    {
+     "party": "CONVERGENCIA POPULAR CALDENSE",
+     "reason": "Single-department (Caldas) one-off 1994 regional movement; no citable ideological characterization found."
+    },
+    {
+     "party": "UNION CIVICA",
+     "reason": "One-off 1994 civic micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "CAMBIO DEMOCRACIA MALCON",
+     "reason": "One-off 1994 personalist micro-vehicle ('Malcón' a personal label); no citable ideology found."
+    },
+    {
+     "party": "MOVIMIENTO POR LA EDUCACION, TRABAJO Y CAMBIO SOCIAL",
+     "reason": "Single-issue (education/labor) micro-vehicle (1994 Senate); no citable left-right placement found."
+    },
+    {
+     "party": "CONVERGENCIA DEMOCRATICA",
+     "reason": "One-off 1994 micro-vehicle; name is generic and shared by multiple unrelated groups across Latin America. No citable placement for this specific list."
+    },
+    {
+     "party": "MOVIMIENTO DE RENOVACION DEMOCRATICA",
+     "reason": "One-off 1994 micro-vehicle; no citable ideological characterization found."
+    },
+    {
+     "party": "NUEVO PROYECTO",
+     "reason": "One-off 1994 micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO CIVICO SERIEDAD COLOMBIA",
+     "reason": "One-off 1998 personalist civic micro-vehicle; no citable ideology found."
+    },
+    {
+     "party": "CORRIENTE DE RENOVACION",
+     "reason": "One-off 1998 micro-vehicle; no citable left-right characterization found."
+    },
+    {
+     "party": "MOVIMIENTO GANAS",
+     "reason": "One-off 1998 micro-vehicle; no citable ideological placement found."
+    },
+    {
+     "party": "MOVIMIENTO 98",
+     "reason": "One-off 1998 micro-vehicle; no citable left-right characterization found."
+    },
+    {
+     "party": "EDUCACION, TRABAJO Y CAMBIO SOCIAL",
+     "reason": "Single-issue (education/labor) 1998 micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO LIBERALISMO INDEPENDIENTE DE RESTAURACION Y LIDERAZGO",
+     "reason": "1998 micro-vehicle in the liberal-dissidence family but no citable programmatic placement found for this specific list."
+    },
+    {
+     "party": "MOVIMIENTO EL COLECTIVO - RENOVACION P",
+     "reason": "One-off 1998 micro-vehicle (name truncated in source); no citable ideology found."
+    },
+    {
+     "party": "MOVIMIENTO OPCION SOLIDARIDAD",
+     "reason": "One-off 1998 micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO POLITICO MUJERES 2000",
+     "reason": "Single-issue (women's representation) 1998 micro-vehicle; no citable left-right placement found and the issue is not axis-defining."
+    },
+    {
+     "party": "MOVIMIENTO DE PARTICIPACION COMUNITARIA - MPC",
+     "reason": "One-off 2002 community-participation micro-vehicle; no citable ideology found."
+    },
+    {
+     "party": "FRENTE INDEPENDIENTE CIVICO POPULAR - FICIP",
+     "reason": "One-off 2002 civic-popular micro-vehicle; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO CIVICO SERIEDAD POR COLOMBIA",
+     "reason": "One-off 2002 personalist civic micro-vehicle; no citable ideology found."
+    },
+    {
+     "party": "MOVIMIENTO UNETE COLOMBIA",
+     "reason": "One-off 2002 micro-vehicle; no citable left-right characterization found."
+    },
+    {
+     "party": "PARTIDO POPULAR COLOMBIANO",
+     "reason": "One-off 2002 micro-vehicle (0.2% peak); the generic 'Popular' name does not, on its own, fix an axis position and no citable placement was found."
+    },
+    {
+     "party": "MOVIMIENTO POLITICO GRU ORG LIDE POP - GOLPE",
+     "reason": "One-off 2002 personalist micro-vehicle (garbled acronym list); no citable ideology found."
+    },
+    {
+     "party": "FUERZA INDEPENDIENTE",
+     "reason": "2002 Senate micro-vehicle (2.4% peak); generic 'independent' label with no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO CIVICO",
+     "reason": "2002 Senate micro-vehicle; generic civic label, no citable ideological placement found."
+    },
+    {
+     "party": "MOVIMIENTO POLITICO CIUDADANOS POR BOYACA",
+     "reason": "Single-department (Boyacá) 2002 regional movement; no citable left-right placement found."
+    },
+    {
+     "party": "MOVIMIENTO DE INTEGRACION POPULAR - MIPOL",
+     "reason": "Duplicate-named 2002 Senate micro-vehicle (Vicente Blel Saad's Caribbean regional machine); described only as an independent regional movement with no documented programmatic ideology."
+    },
+    {
+     "party": "MOVIMIENTO CONVERGENCIA POPULAR CIVICA",
+     "reason": "DUPLICATE NOTE: scored in rows at 0 as documented-but-unplaceable parapolitics vehicle; if a strict binary is needed, treat as unscorable (no programmatic ideology)."
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "party": "PARTIDO SOCIAL DE UNIDAD NACIONAL - PARTIDO DE LA U",
+     "score": 0.5,
+     "basis": "English Wikipedia 'Partido de la U' infobox: ideology 'Social liberalism, Third Way, Liberalism (Colombian), Catch-all party' (historically Uribism); political position 'Centre-right' (footnote notes centre-left/centre-right depending on source). Founded by Uribe allies, later Santos' governing party.",
+     "confidence": "high",
+     "note": "Self-describes as third-way/liberal; some sources (e.g. ColombiaOne 2026) call it 'center'. Centre-right is the better-evidenced placement per Wikipedia and its Uribista security origins.",
+     "url": "https://en.wikipedia.org/wiki/Partido_de_la_U"
+    },
+    {
+     "party": "PARTIDO CAMBIO RADICAL COLOMBIANO",
+     "score": 0.5,
+     "basis": "English Wikipedia 'Cambio Radical' infobox: ideology 'Conservative liberalism'; political position 'Centre to centre-right'. ColombiaReports and Bogota Post describe it as pro-business, pro-growth centre-right under Vargas Lleras.",
+     "confidence": "high",
+     "note": "Vargas Lleras is characterized as pragmatic rather than ideological but consistently placed centre-right.",
+     "url": "https://en.wikipedia.org/wiki/Cambio_Radical"
+    },
+    {
+     "party": "POLO DEMOCRATICO ALTERNATIVO",
+     "score": -1,
+     "basis": "English Wikipedia 'Alternative Democratic Pole' infobox: ideology 'Social democracy, Democratic socialism, Progressivism, Protectionism, Camilism'; political position 'Left-wing'. Founding alliance of left parties (PDI + AD).",
+     "confidence": "high",
+     "note": "",
+     "url": "https://en.wikipedia.org/wiki/Alternative_Democratic_Pole"
+    },
+    {
+     "party": "PARTIDO ALIANZA VERDE",
+     "score": -0.5,
+     "basis": "English Wikipedia 'Green Alliance (Colombia)' infobox: ideology 'Green politics, Progressivism'; political position 'Centre-left'. ColombiaOne 2026 also places it 'centre-left progressive'.",
+     "confidence": "high",
+     "note": "",
+     "url": "https://en.wikipedia.org/wiki/Green_Alliance_(Colombia)"
+    },
+    {
+     "party": "PARTIDO CENTRO DEMOCRATICO - MANO FIRME CORAZON GRANDE",
+     "score": 1,
+     "basis": "English Wikipedia 'Democratic Centre (Colombia)' infobox: ideology 'Conservatism, Economic liberalism, Right-wing populism'; political position 'Right-wing to far-right'. Uribe's party; ColombiaOne 2026 'ideological right and far-right', hard security + free-market.",
+     "confidence": "high",
+     "note": "",
+     "url": "https://en.wikipedia.org/wiki/Democratic_Centre_(Colombia)"
+    },
+    {
+     "party": "PARTIDO OPCION CIUDADANA",
+     "score": 1,
+     "basis": "ColombiaReports: 'Citizens' Choice (Opcion Ciudadana) is a right wing party' that renamed from PIN/Convergencia Ciudadana in 2013 to distance from the parapolitica scandal. Heavily linked to paramilitary-tied politicians.",
+     "confidence": "medium",
+     "note": "Same lineage as PIN (next entry); right-wing per ColombiaReports profile.",
+     "url": "https://colombiareports.com/amp/citizens-option/"
+    },
+    {
+     "party": "PACTO HISTORICO: COALICION DE COLOMBIA HUMANA - UNION PATRIOTICA - POLO DEMOCRATICO ALTERNATIVO - PARTIDO DEL TRABAJO - UNIDAD DEMOCRATICA - OTROS",
+     "score": -1,
+     "basis": "English Wikipedia 'Historic Pact for Colombia': 'left-wing political and electoral coalition' of communists, socialists, social democrats; Petro's vehicle, won 2022 presidency. Britannica/Jacobin/Congress.gov all describe it as the Colombian left.",
+     "confidence": "high",
+     "note": "Lead candidate Gustavo Petro, first leftist president; constituents UP (left), Polo (left), Colombia Humana (left).",
+     "url": "https://en.wikipedia.org/wiki/Historic_Pact_for_Colombia"
+    },
+    {
+     "party": "G.S.C LIGA DE GOBERNANTES ANTICORRUPCION",
+     "score": 1,
+     "basis": "English Wikipedia 'League of Anti-Corruption Governors' infobox: ideology 'Populism, Liberalism, Neoliberalism, Catch-all'; political position 'Far-right' (some sources centre-right/right). Rodolfo Hernandez characterized by NYT as right-wing, others far-right; right-populist 'state like a private business' rhetoric.",
+     "confidence": "medium",
+     "note": "Hernandez claimed no left/right; Reuters said centre-right, NYT right-wing, others far-right. Chose right (+1) per dominant right-populist characterization; conflict noted.",
+     "url": "https://en.wikipedia.org/wiki/League_of_Anti-Corruption_Governors"
+    },
+    {
+     "party": "MOVIMIENTO ALAS EQUIPO COLOMBIA",
+     "score": 0.5,
+     "basis": "Spanish-language sources (Las2Orillas / Wikipedia ALAS) describe Alas Equipo Colombia as a 'uribista' centre-right party (fusion of ALAS and Equipo Colombia), defender of Uribe's security policy; later sank in parapolitica scandal.",
+     "confidence": "medium",
+     "note": "Center-right uribista; head of caucus Alvaro Araujo convicted for paramilitary ties.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Somos_Regi%C3%B3n_Colombia"
+    },
+    {
+     "party": "PARTIDO COLOMBIA DEMOCRATICA",
+     "score": 1,
+     "basis": "Spanish Wikipedia 'Partido Colombia Democratica' and Uribismo entry: uribista party led by Mario Uribe (Uribe's cousin); ideology situated in 'nacionalismo conservador y la derecha' (nationalist conservatism and the right). Decimated by parapolitica scandal 2006.",
+     "confidence": "medium",
+     "note": "Core uribista right vehicle.",
+     "url": "https://es.wikipedia.org/wiki/Partido_Colombia_Democr%C3%A1tica"
+    },
+    {
+     "party": "PARTIDO DE INTEGRACION NACIONAL - PIN",
+     "score": 1,
+     "basis": "ColombiaReports: PIN (National Integration Party, 2009 rename of Convergencia Ciudadana, later Opcion Ciudadana) is a right-wing party widely linked to the parapolitica scandal; many of its 2010 candidates had familial ties to imprisoned parapolitics-convicted politicians.",
+     "confidence": "medium",
+     "note": "Same lineage scored as Opcion Ciudadana (+1).",
+     "url": "https://colombiareports.com/amp/citizens-option/"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO DE LA U - CAMBIO RADICAL Y PARTIDO LIBERAL. UNIDAD NACIONAL",
+     "score": 0.5,
+     "basis": "Coalition = Santos 2014 reelection 'Unidad Nacional' (La U + Cambio Radical + Liberal). Spanish Wikipedia 'Unidad Nacional (Colombia)' describes it as a coalition of 'center-right official political parties'. Lead = Juan Manuel Santos.",
+     "confidence": "high",
+     "note": "Scored from constituents: La U (+0.5), Cambio Radical (+0.5); Liberal is center-left but coalition's center of gravity and Santos government label is centre-right.",
+     "url": "https://es.wikipedia.org/wiki/Unidad_Nacional_(Colombia)"
+    },
+    {
+     "party": "COALICION LISTA DE LA DECENCIA. PARTIDO ALIANZA SOCIAL INDEPENDIENTE - UNION PATRIOTICA Y MOVIMIENTO MAIS",
+     "score": -1,
+     "basis": "Spanish Wikipedia 'Lista de la Decencia': founded 2017 as 'el primer grupo politico de izquierda' (first leftist group) after UP's return, led by Petro, Aida Avella, to 'reforzar la colectividad de izquierda'. Members UP, ASI, MAIS, Colombia Humana.",
+     "confidence": "high",
+     "note": "Explicit left coalition; UP is the historic left. ASI alone is center-left but bloc is left.",
+     "url": "https://es.wikipedia.org/wiki/Lista_de_la_Decencia"
+    },
+    {
+     "party": "PARTIDO COLOMBIA JUSTA LIBRES",
+     "score": 1,
+     "basis": "Spanish sources (Pares, El Universal, Congreso Visible): evangelical Christian party founded 2017, 'conservadurismo cristiano', 'principios democrata cristianos de derecha', characterized as 'derecha radical', anti-abortion, anti same-sex marriage.",
+     "confidence": "high",
+     "note": "Christian-conservative right.",
+     "url": "https://en.wikipedia.org/wiki/Colombia_Justa_Libres"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO POLO DEMOCRATICO - PARTIDO ALIANZA VERDE Y MOVIMIENTO COMPROMISO CIUDADANO - COALICION COLOMBIA",
+     "score": -0.5,
+     "basis": "El Tiempo/Semana/El Colombiano: 'Coalicion Colombia' 2018 = Fajardo (Compromiso Ciudadano) + Claudia Lopez (Alianza Verde) + Robledo (Polo), described as 'center-left political positioning', anti-corruption + defense of peace accords. Lead candidate Sergio Fajardo, centrist/progressive center.",
+     "confidence": "high",
+     "note": "Constituents: Polo (left), Verde (center-left), Compromiso (center). Coalition characterized center-left; Fajardo himself centrist.",
+     "url": "https://www.eltiempo.com/elecciones-colombia-2018/presidenciales/presidenciales-225644"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. POLO DEMOCRATICO ALTERNATIVO Y UNION PATRIOTICA - COALICION PETRO PRESIDENTE",
+     "score": -1,
+     "basis": "This is Petro's 2018 first presidential run (Colombia Humana/Decentes + Polo + UP). Described as 'explicitly a left-wing alliance'; Petro reached runoff with historic 41.8% for the left. UP and Polo are left parties; lead = Gustavo Petro.",
+     "confidence": "high",
+     "note": "",
+     "url": "https://es.wikipedia.org/wiki/Lista_de_la_Decencia"
+    },
+    {
+     "party": "CENTRO ESPERANZA: COALICION DE PARTIDO DIGNIDAD - NUEVO LIBERALISMO - COLOMBIA RENACIENTE - ALIANZA SOCIAL INDEPENDIENTE - OTROS",
+     "score": -0.5,
+     "basis": "El Espectador/Semana/El Colombiano: 'Coalicion Centro Esperanza' 2022 described as 'center-left political group' bringing together center and center-left sectors; candidate Sergio Fajardo. Constituents Dignidad (center-left), Nuevo Liberalismo (center-left), ASI (center-left), Colombia Renaciente.",
+     "confidence": "high",
+     "note": "Center-to-center-left; Fajardo centrist but coalition labeled center-left.",
+     "url": "https://www.elcolombiano.com/colombia/coalicion-de-la-esperanza-propuestas-y-temas-de-interes-para-colombia-AB15361450"
+    },
+    {
+     "party": "FUERZA CIUDADANA LA FUERZA DEL CAMBIO",
+     "score": -0.5,
+     "basis": "Spanish Wikipedia 'Fuerza Ciudadana (Colombia)' + La Silla Vacia ('la izquierda de Caicedo en Magdalena'): centrist-left progressive/ecological movement of Carlos Caicedo aiming to build a 'federal socialdemocratic state'; peace, gender equity, anti-racism.",
+     "confidence": "medium",
+     "note": "La Silla Vacia frames Caicedo as the regional left; party self-describes social-democratic / centrist-left. Could arguably be -1; -0.5 chosen as social-democratic.",
+     "url": "https://es.wikipedia.org/wiki/Fuerza_Ciudadana_(Colombia)"
+    },
+    {
+     "party": "PARTIDO VERDE OXIGENO",
+     "score": -0.5,
+     "basis": "English Wikipedia 'Partido Verde Oxigeno' infobox lists FORMER position (Betancourt era, relevant to 2006) as 'Center to center-left', former ideology 'Environmentalism, Pacifism'. Founded 1998 by Ingrid Betancourt as anticorruption/ecological liberal party.",
+     "confidence": "medium",
+     "note": "Party shifted to 'center-right to right-wing / green conservatism' only in later (post-2021) revival. The 2006 dataset entry corresponds to the historical center/center-left Betancourt party.",
+     "url": "https://en.wikipedia.org/wiki/Partido_Verde_Oxigeno"
+    },
+    {
+     "party": "PARTIDO DE ACCION SOCIAL - PAS",
+     "score": 0,
+     "basis": "English Wikipedia 'Social Action Party (Colombia)': minor 2006 party, one Chamber seat (0.60%); leaders later 'moved into an NGO advocating preservation of water resources'. No left-right ideological characterization stated in any source found.",
+     "confidence": "low",
+     "note": "Environmental/water-focused leaders post-politics suggest non-axis single-issue; no citable left-right placement, scored 0 (genuinely unplaceable-but-documented). Could be argued unscorable.",
+     "url": "https://en.wikipedia.org/wiki/Social_Action_Party_(Colombia)"
+    },
+    {
+     "party": "VISIONARIOS CON ANTANAS MOCKUS",
+     "score": 0,
+     "basis": "Mockus' movement (Visionarios). Mockus is the canonical Colombian centrist; Wikipedia/Sergio Fajardo associations and Mockus' own deliberative-democracy/pedagogy program place him at the center, not on the economic left-right axis. Later folded into Alianza Verde (center-left).",
+     "confidence": "medium",
+     "note": "Mockus widely characterized as centrist/independent; party platform is civic-pedagogical, not class/economic.",
+     "url": "https://congresovisible.uniandes.edu.co/partidos/perfil/visionarios-con-antanas-mockus/108/"
+    },
+    {
+     "party": "MOVIMIENTO COLOMBIA VIVA",
+     "score": 1,
+     "basis": "Spanish Wikipedia 'Movimiento Colombia Viva' infobox: ideology 'Uribismo, Liberalism, Populism'; political position 'Derecha' (Right). Joined uribista coalition 2006; leaders (Dieb Maloof et al.) convicted/jailed in parapolitica.",
+     "confidence": "medium",
+     "note": "Right-wing uribista populist.",
+     "url": "https://es.wikipedia.org/wiki/Movimiento_Colombia_Viva"
+    },
+    {
+     "party": "COMPROMISO CIUDADANO POR COLOMBIA",
+     "score": 0,
+     "basis": "English Wikipedia 'Sergio Fajardo' and Compromiso Ciudadano coverage: Fajardo's movement; he 'brands himself as a pragmatic politician with no particular ideology', labeled centrist; 'Colombian progressive center', critical of both neoliberalism and leftist statism.",
+     "confidence": "medium",
+     "note": "Center / progressive-center; could lean -0.5. Scored 0 as documented centrist.",
+     "url": "https://en.wikipedia.org/wiki/Sergio_Fajardo"
+    },
+    {
+     "party": "MOVIMIENTO POLITICO CIEN POR CIENTO POR COLOMBIA",
+     "score": 0,
+     "basis": "Spanish Wikipedia 'Movimiento Politico Cien por Ciento por Colombia': an ethnic-minority party that retained legal status via minority-protection norms (one seat). No left-right ideological characterization found.",
+     "confidence": "low",
+     "note": "Ethnic-minority single-constituency vehicle; no axis placement in sources. Scored 0 as documented-but-unplaceable; defensible as unscorable.",
+     "url": "https://es.wikipedia.org/wiki/Movimiento_Pol%C3%ADtico_Cien_por_Ciento_por_Colombia"
+    },
+    {
+     "party": "PARTIDO SOMOS",
+     "score": 0.5,
+     "basis": "Spanish Wikipedia 'Partido Somos Region Colombia': party that recovered the legal status of the defunct 'Alas Equipo Colombia', described as a 'center-right Colombian political party'; focused on regional decentralization.",
+     "confidence": "medium",
+     "note": "Continuation of centre-right uribista-lineage Alas Equipo Colombia. 2018 presidential candidate Viviane Morales (conservative).",
+     "url": "https://es.wikipedia.org/wiki/Partido_Somos_Regi%C3%B3n_Colombia"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO CAMBIO RADICAL Y PARTIDO DE LA U - #MEJOR VARGAS LLERAS",
+     "score": 0.5,
+     "basis": "German Vargas Lleras 2018 presidential run (#MejorVargasLleras), backed by Cambio Radical and Partido de la U; El Colombiano/Semana describe him as a centre-right candidate with backing from conservative sectors.",
+     "confidence": "high",
+     "note": "Constituents both centre-right (CR +0.5, La U +0.5); candidate Vargas Lleras centre-right.",
+     "url": "https://www.elcolombiano.com/colombia/partido-de-la-u-se-la-juega-con-vargas-lleras-AG8495929"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO LIBERAL Y PARTIDO ALIANZA SOCIAL INDEPENDIENTE",
+     "score": -0.5,
+     "basis": "Humberto de la Calle 2018 run for Partido Liberal + ASI. Colombian Liberal Party characterized as center-left (ColombiaOne 2026: 'center-left, individual rights, social progress, mixed economy'); ASI is center-left (Wikipedia). Candidate de la Calle = chief FARC-peace negotiator, pro-peace-accord.",
+     "confidence": "high",
+     "note": "Both constituents center-left; lead candidate de la Calle peace-accords defender.",
+     "url": "https://en.wikipedia.org/wiki/Humberto_De_la_Calle"
+    },
+    {
+     "party": "PARTIDO COLOMBIA RENACIENTE",
+     "score": 0,
+     "basis": "Party website/El Tiempo/Pares: Afro-descendant ethnic party (special Afro circunscription), Ubuntu philosophy 'We Are One With All', self-described 'broad center-front movement... based on social policies and respects private property'. Founded by ex-Santos ministers.",
+     "confidence": "low",
+     "note": "Self-describes 'centro' front; ethnic-representation vehicle, weak axis placement. Scored 0 (center) per self-description; borderline unscorable.",
+     "url": "https://www.partidocolombiarenaciente.co/web/quienes-somos/"
+    },
+    {
+     "party": "ALTERNATIVOS - COALICION ALIANZA VERDE Y POLO DEMOCRATICO ALTERNATIVO",
+     "score": -0.5,
+     "basis": "2022 Camara coalition of Alianza Verde (center-left, Wikipedia) and Polo Democratico (left, Wikipedia); part of the 'alternative bloc' aligned with the incoming Petro government per Infobae/Alianza Verde communique.",
+     "confidence": "high",
+     "note": "Constituents: Verde center-left (-0.5), Polo left (-1); coalition midpoint center-left. Scored -0.5.",
+     "url": "https://www.infobae.com/america/colombia/2022/09/06/alianza-verde-sera-partido-de-gobierno-ratifico-el-movimiento-ante-el-consejo-nacional-electoral/"
+    },
+    {
+     "party": "EQUIPO POR COLOMBIA: COALICION PARTIDO CONSERVADOR COLOMBIANO - PARTIDO MIRA - CREEMOS COLOMBIA - PARTIDO DE LA UNION POR LA GENTE - VALOS PALANTE CON ECHEVERRY - OTROS",
+     "score": 1,
+     "basis": "English Wikipedia 'Team for Colombia': 'centre-right and right-wing political coalition', the conservative-liberal bloc; candidate Federico Gutierrez (Creemos Colombia). Lead constituent Partido Conservador is traditional right (security, anti-abortion, Catholic tradition).",
+     "confidence": "high",
+     "note": "Wikipedia leads with 'centre-right and right-wing'; the consolidated right bloc vs Petro. Conservative (right) + Creemos (right) dominate; MIRA (Christian/center) and La U (center-right) included. Scored +1; centre-right component noted.",
+     "url": "https://en.wikipedia.org/wiki/Team_for_Colombia"
+    }
+   ],
+   "unscorable": [
+    {
+     "party": "POR EL PAIS QUE SO??AMOS",
+     "reason": "Small 2006 electoral party (created 2002, peak 1.9%) with an urban-social/welfare platform (Congreso Visible) but NO citable left-right axis characterization in any academic dataset, encyclopedia, or press source found. Juan Lozano (often associated by name) was actually affiliated with Partido de la U in 2006, not documented as this party's leader, so coalition-by-lead-candidate inference is unsupported. Honestly unplaceable on the evidence."
+    }
+   ]
+  },
+  {
+   "rows": [
+    {
+     "party": "PARTIDO SOCIAL DE UNIDAD NACIONAL - PARTIDO DE LA U",
+     "score": 0.5,
+     "basis": "English Wikipedia 'Union Party for the People' infobox: political position 'Centre-right'; ideology 'Social liberalism, Third Way, Liberalism, Catch-all', historical 'Uribism'. ColombiaOne (2026) and academic coverage note experts classify La U as center-right alongside Cambio Radical and the Liberal Party.",
+     "confidence": "high",
+     "note": "Article notes some fluidity (also positioned center-left at times); founded 2005 as the pro-Uribe vehicle, later catch-all governing party. Center-right is the dominant placement.",
+     "url": "https://en.wikipedia.org/wiki/Partido_de_la_U"
+    },
+    {
+     "party": "PARTIDO CAMBIO RADICAL COLOMBIANO",
+     "score": 0.5,
+     "basis": "English Wikipedia 'Radical Change' infobox: ideology 'Conservative liberalism'; political position 'Centre to centre-right'. Originated as a right-wing dissident split from the Liberal Party, backed Uribe's Democratic Security agenda.",
+     "confidence": "high",
+     "note": "Some press (ColombiaOne) calls it 'centrist'; the conservative-liberal/centre-right placement is better evidenced and historiographically consistent (Vargas Lleras vehicle).",
+     "url": "https://en.wikipedia.org/wiki/Radical_Change"
+    },
+    {
+     "party": "POLO DEMOCRATICO ALTERNATIVO",
+     "score": -1,
+     "basis": "English Wikipedia 'Alternative Democratic Pole' infobox: political position 'Left-wing'; ideology 'Social democracy, Democratic socialism, Progressivism, Protectionism, Camilism'. Founded 2005 from PDI+AD (incl. Communist Party, ANAPO, UP survivors, MOIR) opposing Uribe's neoliberal/securitization program.",
+     "confidence": "high",
+     "note": "Self-doctrine repudiates armed guerrilla politics; left but explicitly democratic/electoral left.",
+     "url": "https://en.wikipedia.org/wiki/Alternative_Democratic_Pole"
+    },
+    {
+     "party": "PARTIDO ALIANZA VERDE",
+     "score": -0.5,
+     "basis": "English Wikipedia 'Green Alliance (Colombia)' infobox: political position 'Centre-left'; ideology 'Green politics, Progressivism'. ColombiaOne (2026) places it in a 'centre-left progressive space' (sustainability, anti-corruption, social justice within a market framework). Founders Mockus/Penalosa/Garzon.",
+     "confidence": "high",
+     "note": "",
+     "url": "https://en.wikipedia.org/wiki/Green_Alliance_(Colombia)"
+    },
+    {
+     "party": "PARTIDO CENTRO DEMOCRATICO - MANO FIRME CORAZON GRANDE",
+     "score": 1,
+     "basis": "English Wikipedia 'Democratic Centre (Colombia)' infobox: political position 'Right-wing to far-right'; ideology 'Conservatism, Economic liberalism, Right-wing populism'. Founded 2013 by Alvaro Uribe; Uribismo = hard security, free-market, anti-guerrilla, traditional family. Academic: Aviles/Rosas 'The Colombian Right: ideology and mobilization of Uribismo' (CJLACS 2019).",
+     "confidence": "high",
+     "note": "Sources range right to far-right; +1 captures the right end of this project's 5-point scale.",
+     "url": "https://en.wikipedia.org/wiki/Democratic_Centre_(Colombia)"
+    },
+    {
+     "party": "MOVIMIENTO ALIANZA SOCIAL INDIGENA - ASI",
+     "score": -0.5,
+     "basis": "English Wikipedia 'Independent Social Alliance (ASI)' infobox: political position 'Centre-left'; ideology 'Indigenismo, Progressivism, Reformism'. Founded 1991 from indigenous orgs and amnestied Quintin Lame fighters; characterized as progressive indigenist, endorsing center/center-left candidates.",
+     "confidence": "high",
+     "note": "Renamed Indigena->Independiente in 2011; later became an aval-granting vehicle but ideological self-placement remained center-left/progressive.",
+     "url": "https://en.wikipedia.org/wiki/Independent_Social_Alliance"
+    },
+    {
+     "party": "MOVIMIENTO UNITARIO METAPOLITICO - MUM",
+     "score": 0.5,
+     "basis": "Spanish Wikipedia 'Movimiento Unitario Metapolitico' infobox: posicion 'Centroderecha'; ideologia 'Populismo, Politica espiritual (New Age), Conservadurismo social'. Personalist vehicle of esotericist Regina Betancourt ('Regina 11'), senator 1991-95.",
+     "confidence": "medium",
+     "note": "Esoteric/personalist 'metaphysical-political' movement; self-describes as 'beyond politics'. Single encyclopedic placement (centroderecha) plus documented social conservatism; placement is shaky given the movement's spiritualist personalism.",
+     "url": "https://es.wikipedia.org/wiki/Movimiento_Unitario_Metapol%C3%ADtico"
+    },
+    {
+     "party": "COALICIONES DE 1998",
+     "score": 0.5,
+     "basis": "The dominant 1998 coalition phenomenon (~52% peak) is Andres Pastrana's 'Gran Alianza por el Cambio': Conservative Party + Nueva Fuerza Democratica + dissident Liberals (Valdivieso adherents), which won the presidency (50.4% second round). es.Wikipedia 'Elecciones presidenciales de Colombia de 1998'. Conservative-led, hence right-of-center, but cross-partisan with Liberal dissidents.",
+     "confidence": "medium",
+     "note": "Generic CEDE aggregation label spanning camara/senado/presidencia; scored from the lead winning coalition (Pastrana, Conservative). Core is right but the cross-partisan 'change' alliance pulls toward center-right; if the label aggregates other 1998 coalitions too, placement is approximate.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1998"
+    },
+    {
+     "party": "PACTO HISTORICO: COALICION DE COLOMBIA HUMANA - UNION PATRIOTICA - POLO DEMOCRATICO ALTERNATIVO - PARTIDO DEL TRABAJO - UNIDAD DEMOCRATICA - OTROS",
+     "score": -1,
+     "basis": "English Wikipedia 'Historic Pact for Colombia' infobox: political position 'Left-wing' (factions centre-left to far-left); ideology 'Democratic socialism, Progressivism, Left-wing populism, Anti-neoliberalism'. Britannica and Jacobin: left coalition; members include Colombia Humana (Petro), UP, Communist Party, Comunes, Labour Party. Won presidency 2022 (Petro).",
+     "confidence": "high",
+     "note": "",
+     "url": "https://en.wikipedia.org/wiki/Historic_Pact_for_Colombia"
+    },
+    {
+     "party": "MOVIMIENTO FUERZA COLOMBIA",
+     "score": 1,
+     "basis": "English Wikipedia 'Harold Bedoya Pizarro': retired Armed Forces commander who founded Movimiento Fuerza Colombia for his 1998 presidential run; campaign centered on hardline anti-FARC/anti-drug security, refusing negotiation with guerrillas. Security-hardline militarist right.",
+     "confidence": "medium",
+     "note": "Placement from candidate profile (no academic dataset for this micro-vehicle); consistent secondary characterization as a hardline-security general's personalist movement.",
+     "url": "https://en.wikipedia.org/wiki/Harold_Bedoya_Pizarro"
+    },
+    {
+     "party": "MOVIMIENTO SI COLOMBIA",
+     "score": 0,
+     "basis": "Noemi Sanin's own movement; 2002 run characterized as 'center-aligned', anti-conflict 'revolution of opportunities', denouncing Uribe's paramilitary ties; ran as independent third-force ('terceria'). en.Wikipedia 'Noemi Sanin'.",
+     "confidence": "medium",
+     "note": "Sanin has Conservative roots but Si Colombia was explicitly a centrist independent vehicle (5.9% in 2002). Center placement reflects the movement's documented self-positioning, not her party origin.",
+     "url": "https://en.wikipedia.org/wiki/Noem%C3%AD_San%C3%ADn"
+    },
+    {
+     "party": "G.S.C LIGA DE GOBERNANTES ANTICORRUPCION",
+     "score": 1,
+     "basis": "English Wikipedia 'League of Anti-Corruption Governors' infobox: political position 'Far-right'; ideology 'Populism, Liberalism, Neoliberalism, Catch-all'. Rodolfo Hernandez's personalist anti-corruption vehicle (2022 presidential runoff). es.Wikipedia/CNN classify it right-wing.",
+     "confidence": "medium",
+     "note": "Sources conflict: Wikipedia 'far-right', others 'right-wing' or 'center-right'. Hernandez held socially-liberal positions (pro same-sex marriage, cannabis, euthanasia) yet anti-establishment economic-right populism; preponderance places it on the right, so +1, but the social-liberal streak makes far-right contestable.",
+     "url": "https://en.wikipedia.org/wiki/League_of_Anti-Corruption_Governors"
+    },
+    {
+     "party": "COALICION PRESIDENCIA 1994. ANDRES PRESIDENTE",
+     "score": 1,
+     "basis": "Andres Pastrana's 1994 presidential coalition: nominated by the Colombian Conservative Party, uniting Nueva Fuerza Democratica + the Conservative Party (en.Wikipedia 'Andres Pastrana Arango'). Lead candidate and party are traditional conservative right.",
+     "confidence": "high",
+     "note": "Scored from lead candidate/party (Pastrana, Conservative). Lost 1994 runoff to Samper by ~2%.",
+     "url": "https://en.wikipedia.org/wiki/Andr%C3%A9s_Pastrana_Arango"
+    },
+    {
+     "party": "ASOCIACION PRIMERO COLOMBIA",
+     "score": 1,
+     "basis": "es.Wikipedia 'Primero Colombia': citizen movement that carried Alvaro Uribe to the presidency in 2002 and reelection in 2006 on the 'Democratic Security' platform. Uribismo = security-hardline neoliberal right (see CJLACS 2019 'The Colombian Right').",
+     "confidence": "high",
+     "note": "Scored from lead candidate Uribe, whose ideology is the canonical Colombian right.",
+     "url": "https://es.wikipedia.org/wiki/Primero_Colombia"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO DE LA U - CAMBIO RADICAL Y PARTIDO LIBERAL. UNIDAD NACIONAL",
+     "score": 0.5,
+     "basis": "Juan Manuel Santos' 2014 reelection 'Unidad Nacional' coalition: U + Cambio Radical + Liberal (es.Wikipedia 'Elecciones presidenciales de Colombia de 2014'). Two constituents are center-right (U, Cambio Radical) and one center-left (Liberal); Santos governed from the center-right establishment.",
+     "confidence": "high",
+     "note": "Constituent-weighted center-right (2 center-right + 1 center-left lead); Santos himself is establishment center-right.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_2014"
+    },
+    {
+     "party": "PARTIDO COLOMBIA JUSTA LIBRES",
+     "score": 1,
+     "basis": "English Wikipedia 'Colombia Justa Libres': 'right-wing Colombian political party' grouping evangelical denominations; ideology conservatism with right-wing Christian-democratic principles (anti-abortion, anti same-sex union, anti-communism). Founded 2017.",
+     "confidence": "high",
+     "note": "",
+     "url": "https://en.wikipedia.org/wiki/Colombia_Justa_Libres"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO POLO DEMOCRATICO - PARTIDO ALIANZA VERDE Y MOVIMIENTO COMPROMISO CIUDADANO - COALICION COLOMBIA",
+     "score": -0.5,
+     "basis": "2018 'Coalicion Colombia': Sergio Fajardo (Compromiso Ciudadano) backed by Alianza Verde (centre-left) + Polo Democratico (left); es.Wikipedia 'Elecciones presidenciales de Colombia de 2018'. Anti-corruption, education, environment platform positioned between santismo and uribismo.",
+     "confidence": "high",
+     "note": "Often labeled 'center'; constituent parties (Verde centre-left + Polo left) and the platform place it center-left overall, hence -0.5 rather than 0. Fajardo personally is more centrist.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_2018"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. POLO DEMOCRATICO ALTERNATIVO Y UNION PATRIOTICA - COALICION PETRO PRESIDENTE",
+     "score": -1,
+     "basis": "2018 Gustavo Petro presidential coalition built on Colombia Humana with Union Patriotica, ASI, MAIS (Lista de la Decencia), winning the center-left 'Inclusion Social para la Paz' consulta. Petro and UP are left/left-populist (es.Wikipedia 'Lista de la Decencia'; precursor to Pacto Historico).",
+     "confidence": "high",
+     "note": "Label names Polo + UP; the actual 2018 Petro vehicle was Decentes/Colombia Humana + UP, all left. Lead candidate Petro = left.",
+     "url": "https://es.wikipedia.org/wiki/Lista_de_la_Decencia"
+    },
+    {
+     "party": "CENTRO ESPERANZA: COALICION DE PARTIDO DIGNIDAD - NUEVO LIBERALISMO - COLOMBIA RENACIENTE - ALIANZA SOCIAL INDEPENDIENTE - OTROS",
+     "score": 0,
+     "basis": "es.Wikipedia 'Coalicion Centro Esperanza': 2022 coalition of center and center-left parties/movements (Compromiso Ciudadano/Fajardo, Dignidad/Robledo, Nuevo Liberalismo/Galan, En Marcha, ASI); self-defined as 'la cara visible del centro' (Pares). Fajardo won the consulta.",
+     "confidence": "high",
+     "note": "Explicitly the political-center coalition; constituents lean center to center-left. Scored 0 (center) as the documented self-identity; a -0.5 center-left reading is defensible given ASI/Dignidad/Nuevo Liberalismo.",
+     "url": "https://es.wikipedia.org/wiki/Coalici%C3%B3n_Centro_Esperanza"
+    },
+    {
+     "party": "COALICION PRESIDENCIA 1994. COMPROMISO COLOMBIA",
+     "score": -1,
+     "basis": "1994 'Compromiso Colombia' presidential coalition: candidacy of Antonio Navarro Wolff (M-19 / AD-M19), grouping indigenous and leftist movements, with indigenous leader Jesus Pinacue as VP (es.Wikipedia 'Elecciones presidenciales de Colombia de 1994'). Demobilized-guerrilla democratic left.",
+     "confidence": "high",
+     "note": "Scored from lead candidate Navarro Wolff (former M-19 commander); 3.8% in 1994 first round. Despite the centrist-sounding name, this is the left coalition.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1994"
+    },
+    {
+     "party": "MOVIMIENTO OPCION VIDA",
+     "score": 0,
+     "basis": "1998 'Opcion Vida' was Noemi Sanin's third-force ('terceria') coalition (with Antanas Mockus, Carlos Lleras de la Fuente), winning 26.9% as an independent outside the bipartisan system (es.Wikipedia 'Elecciones presidenciales de Colombia de 1998'). Centrist anti-establishment third force.",
+     "confidence": "medium",
+     "note": "Consistent with Sanin's later centrist 'Si Colombia' (2002). Center placement reflects its documented independent third-force identity rather than her Conservative origins.",
+     "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1998"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO FRENTE SOCIAL Y POLITICO Y VIA ALTERNA",
+     "score": -1,
+     "basis": "2002 presidential coalition of Luis Eduardo 'Lucho' Garzon: Frente Social y Politico (created by the CUT trade-union confederation, bringing together left parties/social movements) + Via Alterna (Gustavo Petro's group). Direct precursor to PDI and then Polo Democratico Alternativo (es.Wikipedia 'Luis Eduardo Garzon'; Nueva Sociedad). Left.",
+     "confidence": "high",
+     "note": "Garzon placed 3rd (~6%); union-based broad left. Both constituents are unambiguously left.",
+     "url": "https://es.wikipedia.org/wiki/Luis_Eduardo_Garzon"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO CAMBIO RADICAL Y PARTIDO DE LA U - #MEJOR VARGAS LLERAS",
+     "score": 0.5,
+     "basis": "2018 'Mejor Vargas Lleras' presidential bid of German Vargas Lleras, backed by Cambio Radical + Partido de la U; described as candidate of the center-right Cambio Radical (France24; en.Wikipedia 'German Vargas Lleras'). Both constituent parties are center-right.",
+     "confidence": "high",
+     "note": "Scored from lead candidate Vargas Lleras and the two center-right constituent parties.",
+     "url": "https://en.wikipedia.org/wiki/Germ%C3%A1n_Vargas_Lleras"
+    },
+    {
+     "party": "COALICION PRESIDENCIA. PARTIDO LIBERAL Y PARTIDO ALIANZA SOCIAL INDEPENDIENTE",
+     "score": -0.5,
+     "basis": "2018 presidential candidacy of Humberto de la Calle (Liberal Party) with ASI support (Clara Lopez as running mate); ran on peace-accord implementation (Semana/France24; es coverage). Liberal Party is center-left (ColombiaOne 2026) and ASI center-left.",
+     "confidence": "high",
+     "note": "De la Calle declined to join Petro's left coalition; both constituents (Liberal, ASI) are center-left, so -0.5.",
+     "url": "https://en.wikipedia.org/wiki/Humberto_De_la_Calle"
+    },
+    {
+     "party": "EQUIPO POR COLOMBIA: COALICION PARTIDO CONSERVADOR COLOMBIANO - PARTIDO MIRA - CREEMOS COLOMBIA - PARTIDO DE LA UNION POR LA GENTE - VALOS PALANTE CON ECHEVERRY - OTROS",
+     "score": 0.5,
+     "basis": "2022 'Equipo por Colombia' described by El Tiempo/El Espectador as a center-right alliance representing a sector of the right; won by Federico 'Fico' Gutierrez (Creemos). Constituents: Conservative Party (right), Creemos, MIRA (Christian center-right), Partido de la U (center-right); later backed by the Liberal Party.",
+     "confidence": "high",
+     "note": "CNN labeled Fico 'la derecha'; coalition framing is center-right. Mixed center-right-to-right composition; scored +0.5 as the dominant 'center-right alliance' characterization, with the Conservative core and Fico's security-right discourse pushing toward +1.",
+     "url": "https://es.wikipedia.org/wiki/Equipo_por_Colombia"
+    }
+   ],
+   "unscorable": [
+    {
+     "party": "MOVIMIENTO CONCERTACION CIVICA NACIONAL",
+     "reason": "A minor 1994-2002 civic micro-movement that won a single congressional seat in the 1994 legislative elections (es.Wikipedia 'Elecciones legislativas de Colombia de 1994'). After genuine searching (CNE/Registraduria, Congreso Visible, banrepcultural party encyclopedia, press), no source provides any left-right ideological characterization, founder ideology, or programmatic content. 'Movimiento civico' labels in this period are typically personalist/regional and non-placeable on the axis. Honest unscorable rather than a guess."
+    }
+   ]
+  }
+ ],
+ "dates": {
+  "dates": [
+   {
+    "election": "1958 Colombian presidential election",
+    "date": "1958-05-04",
+    "basis": "Held Sunday 4 May 1958; Alberto Lleras Camargo (Liberal, National Front consensus candidate) elected with 2,482,948 votes (~79.8% of valid votes). Spanish Wikipedia states verbatim: 'El domingo 4 de mayo de 1958 se realizaron elecciones presidenciales en Colombia.' This refutes the CEDE dataset's '16 de marzo de 1958', which is the congressional/legislative election date, not the presidential vote. Vote total cross-corroborated by Georgetown PDBA academic database ('Alberto Lleras Camargo Liberal 2,482,948').",
+    "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1958"
+   },
+   {
+    "election": "1962 Colombian presidential election",
+    "date": "1962-05-06",
+    "basis": "Held Sunday 6 May 1962 ('Domingo 6 de mayo de 1962'); Guillermo Leon Valencia (Conservative, official National Front candidate) elected. Corroborated by Spanish Wikipedia (Elecciones presidenciales de 1962 and Gobierno de Guillermo Leon Valencia).",
+    "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1962"
+   },
+   {
+    "election": "1970 Colombian presidential election",
+    "date": "1970-04-19",
+    "basis": "Held Sunday 19 April 1970; Misael Pastrana Borrero (Partido Conservador Colombiano, National Front official candidate) proclaimed winner. Spanish Wikipedia states verbatim: 'Las elecciones presidenciales de Colombia de 1970 se realizaron el domingo 19 de abril de 1970, en las que se proclamo ganador al candidato oficialista Misael Pastrana Borrero, del Partido Conservador Colombiano.' Pastrana 1,625,025 (41.2%) vs Gustavo Rojas Pinilla / ANAPO 1,561,468 (39.6%) in a disputed result later confirmed by the Electoral Court on 15 June 1970; the contested outcome gave rise to the M-19 guerrilla. Confirms the believed date of 19 April 1970.",
+    "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1970"
+   },
+   {
+    "election": "1978 Colombian presidential election",
+    "date": "1978-06-04",
+    "basis": "Held Sunday 4 June 1978; Julio Cesar Turbay Ayala (Liberal) elected with 2,503,681 votes (~49.3%) over Belisario Betancur (Conservative, ~2,356,620/2,366,620). Spanish Wikipedia states verbatim: 'El domingo 4 de junio de 1978 se realizaron en Colombia las votaciones para elegir presidente de la Republica, resultando elegido el candidato Julio Cesar Turbay.' This refutes the CEDE dataset's '26 de febrero de 1978', which is the congressional/legislative election date, not the presidential vote. Vote total cross-corroborated by Georgetown PDBA ('Julio Cesar Turbay Ayala Liberal 2,503,681').",
+    "url": "https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1978"
+   }
+  ],
+  "anomaly1962": "National results of the 1962 Colombian presidential election (held Sunday 6 May 1962), the second term of the Frente Nacional. Documented candidate vote totals:\n\n- Guillermo Leon Valencia Munoz - 1,633,873 votes (~62.3% of valid votes). WINNER. Ran as the OFFICIAL National Front candidate under the CONSERVATIVE party banner (it was the Conservatives' turn under the Liberal-Conservative parity pact), but with bipartisan Liberal Party support.\n- Alfonso Lopez Michelsen - 624,863 votes. Ran as a DISSIDENT Liberal, candidate of the Movimiento Revolucionario Liberal (MRL), in opposition to the Frente Nacional.\n- Jorge Leyva Urdaneta - 308,814 votes. DISSIDENT Conservative (anti-Frente Nacional Conservative faction).\n- Gustavo Rojas Pinilla - 54,557 votes. National Popular Alliance (ANAPO); these votes were largely treated as invalid/annulled because Rojas Pinilla had been politically disqualified ('muerte politica') by Congress in 1959.\n\nReported totals: sum of the four named candidates = 2,622,601 votes; total voters reported as ~2,634,840 (~48.8% participation), the difference being blank/null/other ballots.\n\nSources: Spanish Wikipedia 'Elecciones presidenciales de Colombia de 1962' (https://es.wikipedia.org/wiki/Elecciones_presidenciales_de_Colombia_de_1962) and 'Gobierno de Guillermo Leon Valencia' (https://es.wikipedia.org/wiki/Gobierno_de_Guillermo_Leon_Valencia), with Valencia and Lopez Michelsen totals independently cross-corroborated by the Georgetown PDBA academic database (https://pdba.georgetown.edu/Elecdata/Col/pres1826_1990.html: 'Guillermo Leon Valencia Conservador 1,633,873' and 'Alfonso Lopez Michelsen Liberal 624,863').\n\nEXPLAINING THE CEDE DISCREPANCY: The CEDE municipal dataset's principal constituency for 1962 contains ONLY Partido Conservador votes (~1.94M total). This is consistent with — but not identical to — the historical record. The winner Valencia was constitutionally/formally the CONSERVATIVE party's official Frente Nacional candidate, so under the Frente Nacional ballot logic the 'principal constituency' (official party slate) for 1962 was the Conservative line. What is MISSING from a pure-Conservative-principal-constituency view is the dissident-Liberal MRL vote (Lopez Michelsen, 624,863) and arguably the dissident-Conservative Leyva vote (308,814) and the annulled ANAPO/Rojas vote (54,557). The CEDE figure of ~1.94M does NOT match the documented 1,633,873 for Valencia, so the two numbers are not reconcilable by simple identity: CEDE's ~1.94M is larger than Valencia's documented national total and may aggregate the official Conservative slate together with the dissident-Conservative (Leyva) line and/or additional Conservative-classified ballots, OR reflect a different denominator (e.g., total Conservative-listed votes across factions = 1,633,873 + 308,814 = 1,942,687, which is approximately 1.94M and is the most likely explanation). The honest documentation for the project: CEDE appears to record only Conservative-party-coded ballots for the 1962 principal constituency, plausibly summing the official (Valencia) and dissident (Leyva) Conservative lines (~1.94M ~= 1,942,687), while the Liberal/MRL (Lopez Michelsen) and ANAPO votes are absent from that constituency; the authoritative national result is Valencia 1,633,873 (winner) / Lopez Michelsen 624,863 / Leyva 308,814 / Rojas Pinilla 54,557. This reconciliation (1,633,873 + 308,814 = 1,942,687) should be flagged as a strong hypothesis to verify against the raw CEDE rows, not asserted as confirmed."
+ },
+ "counts": [
+  {
+   "scored": 11,
+   "unscorable": 3
+  },
+  {
+   "scored": 41,
+   "unscorable": 56
+  },
+  {
+   "scored": 30,
+   "unscorable": 1
+  },
+  {
+   "scored": 25,
+   "unscorable": 1
+  }
+ ]
+}

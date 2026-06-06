@@ -138,8 +138,79 @@ These findings OVERRIDE the web-research conclusions where they conflict.
 - **Encoding gotchas**: the Socrata CSV export is corrupted at source (accents → U+FFFD,
   unrecoverable); the SODA JSON endpoint serves recoverable double-encoded UTF-8. The
   script fetches JSON and repairs mojibake per field.
-- Used as the anchor for municipio-level election points. The DANE MGN polygon download
-  (for choropleths) remains pending.
+- Used as the anchor for municipio-level election points.
+
+### Municipality polygons — DANE MGN (added 2026-06-05)
+
+- **Dataset**: Marco Geoestadístico Nacional, nivel municipio (`MGN_MPIO_POLITICO`),
+  vintage **MGN2023**, direct zip from the DANE Geoportal
+  (`geoportal.dane.gov.co/descargas/mgn_2023/MGN2023_MPIO_POLITICO.zip`, 68 MB shapefile,
+  EPSG:4686). Open download with DANE attribution. Fetched by `pipeline/download_mgn.py`
+  (sha256 manifest); 2022 and 2024 vintages verified available at the same URL pattern.
+- **Join**: `mpio_cdpmp` = 5-digit DANE code. Coverage vs DIVIPOLA centroids: MGN has
+  **La Guadalupe (94885)** with no centroid row; DIVIPOLA has **Belén de Bajirá (27086)**
+  and **Mapiripaná (94663)** with no MGN2023 polygon. All recorded in
+  `munis_shapes.json.meta`, rendered as no-data / centroid-only.
+- **Simplification**: `shapely.coverage_simplify` (topology-preserving, tolerance 0.004°),
+  5.9M → 111k vertices, 2.1 MB GeoJSON. Params in the artifact meta.
+
+### CEDE `fecha_eleccion` errors (discovered 2026-06-05)
+
+The per-file election date column is wrong on several files — it carries the date of the
+*other* election of the same year. All values verified against the historical record;
+corrections live in `DATE_OVERRIDES` (build_frontend_data.py), each with a citation:
+
+| File | CEDE value | Correct | Note |
+|---|---|---|---|
+| 1958 presidencia | 16 mar 1958 | **1958-05-04** | CEDE carries the congressional date |
+| 1978 presidencia | 26 feb 1978 | **1978-06-04** | idem |
+| 1990 cámara | 27 may 1990 | **1990-03-11** | CEDE carries the presidential date (senado file is correct) |
+| 2010 cámara+senado | 30 may 2010 | **2010-03-14** | presidential first-round date |
+| 2014 cámara+senado | 25 may 2014 | **2014-03-09** | idem |
+| 2022 senado | 25 may 2022 | **2022-03-13** | value matches no 2022 election (cámara file is correct) |
+| 1991 cámara+senado | 27 oct 1991 | *confirmed correct* | special post-Constitution election; outside the usual Feb–Apr window |
+
+### 1962 presidencia anomaly (documented 2026-06-05)
+
+- CEDE's principal constituency for 1962 contains only Conservador-banner votes (1.94M ≈
+  Valencia 1.63M + dissident Leyva 0.31M). The anti-FN candidacies (~683k votes, incl.
+  López Michelsen's MRL 625k and Rojas Pinilla's 55k) are recorded **in the source itself
+  as `VOTOS NULOS`** (codigo_partido null, nombres="VOTOS NULOS") — consistent with the
+  Frente Nacional alternation rules that voided non-Conservative candidacies that year.
+  The pipeline's partyless-row exclusion handles them; nothing is patched.
+
+### Memoria view: party left–right scores (added 2026-06-05)
+
+- **Table**: `pipeline/party_lr.py` — 86 parties/coalitions on a 5-point scale
+  (−1…+1), one citation per row; departmental coalitions without a direct row get
+  the **continuous mean of their citably-scored members** (members without a score
+  are omitted from the mean — disclosed in the method note).
+- **National coverage of party-attributed votes** (computed 2026-06-05, exact
+  pipeline logic): median **99.5%**; below 85% in exactly three elections —
+  cámara 1991 **71.6%** (CEDE's own `PARTIDO DESCONOCIDO PARA EL AÑO 1991` bucket
+  = 24% of votes), senado 2002 **80.3%**, cámara 2002 **83.8%** (party-system
+  fragmentation into unscorable micro-vehicles). Per-municipio coverage ships in
+  `memoria.json`; municipios under 50% are dimmed in the UI.
+- **Provenance**: drafted by a multi-source cited research pass (5 parallel researchers,
+  2026-06-05; raw output `pipeline/_lr_research_result.json`), consolidated by
+  `pipeline/_gen_party_lr.py` with three documented adjudications (MUM, Centro
+  Esperanza, Equipo por Colombia) plus one deliberate override of a researcher
+  verdict: `COALICIONES DE 1982` was researched as an unscorable aggregation bucket,
+  but the code appears **only** in the 1982 presidencia file (verified) where it is
+  Betancur's coalition candidacy → scored +0.5 with that basis on the row.
+  **Pending scholarly review by the project owner before public citation.**
+- Unscorable parties (regional/personalist vehicles, CEDE aggregation buckets like
+  `PARTIDO DESCONOCIDO PARA EL AÑO 1991`, 1.4M votes) are excluded from numerator and
+  denominator — never guessed. Department-level `COALICION CAMARA/SENADO.` lists get
+  the mean of matched constituent parties (documented derivation rule).
+
+### SIEVCAC modality classification caveat (discovered 2026-06-05)
+
+- **Bojayá (2002-05-02, 81 victims) is not in the Masacres modality** — SIEVCAC codes
+  it under Acciones Bélicas (combat action, launched explosive). The memoria view's
+  massacre layer follows the source's own taxonomy; iconic events classified as combat
+  actions will not appear as wounds. Mapiripán (1997-07-15, 35) and El Salado
+  (2000-02-16, 60) are in MA and verified against the record.
 
 ### CEDE .tab encoding (discovered 2026-06-05)
 

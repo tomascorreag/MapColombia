@@ -64,12 +64,20 @@ export interface ViolenceData {
   cat: Uint8Array; // index into respCategories
   grp: Uint8Array; // index into respGroups
   radius: Float32Array; // sqrt(victims), precomputed for getRadius
+  // Memoria view (massacres = modalities[0] slice): day as f32 for the GPU
+  // filter (-1 = exact date unknown, never shown as a wound), and the scar
+  // appearance day — the exact day when known, otherwise Dec 31 of the known
+  // year (the scar then asserts only "this had happened by the end of that
+  // year"; a display rule, the binary day stays -1).
+  maDayF32: Float32Array;
+  maScarDayF32: Float32Array;
 }
 
 export interface Election {
   year: number;
   round: number; // 0 = single round, 1/2 = vuelta
   label: string; // Spanish pipeline label — display uses electionLabel() (i18n)
+  date: string | null; // ISO election date (source fecha_eleccion + cited overrides)
   circunscripcion: string; // principal constituency used for the winner calc
   m: number[]; // muni index
   p: number[]; // winner party index
@@ -89,6 +97,24 @@ export interface Election {
 }
 
 export type Body = 'presidencia' | 'senado' | 'camara';
+
+export interface ShapeFeature {
+  type: 'Feature';
+  properties: { i: number | null; c: number }; // i = index into Munis; c = DANE code
+  geometry: { type: 'Polygon' | 'MultiPolygon'; coordinates: unknown };
+}
+
+export interface MuniShapes {
+  type: 'FeatureCollection';
+  meta: {
+    source: string;
+    vintage: string;
+    license_note: string;
+    unmatched_codes: number[];
+    centroids_without_polygon: number[];
+  };
+  features: ShapeFeature[];
+}
 
 export interface ElectionsData {
   meta: { source: { name: string; doi: string; license: string }; method: string };
@@ -124,6 +150,7 @@ export async function loadViolence(base = 'data'): Promise<ViolenceData> {
 
   const year = view(bin, meta.buffers.year) as Uint16Array;
   const victims = view(bin, meta.buffers.victims) as Uint16Array;
+  const day = view(bin, meta.buffers.day) as Int32Array;
   const radius = new Float32Array(meta.n);
   const yearF32 = new Float32Array(meta.n);
   for (let i = 0; i < meta.n; i++) {
@@ -131,10 +158,24 @@ export async function loadViolence(base = 'data'): Promise<ViolenceData> {
     yearF32[i] = year[i];
   }
 
+  // Memoria wound/scar filter values for the massacre slice (modalities[0]).
+  const ma = meta.modalities[0];
+  if (ma.code !== 'MA') throw new Error('modalities[0] is not MA');
+  const maDayF32 = new Float32Array(ma.n);
+  const maScarDayF32 = new Float32Array(ma.n);
+  for (let i = 0; i < ma.n; i++) {
+    const gi = ma.start + i;
+    maDayF32[i] = day[gi]; // -1 = unknown exact date -> never a wound
+    maScarDayF32[i] =
+      day[gi] >= 0
+        ? day[gi]
+        : (Date.UTC(year[gi], 11, 31) - Date.UTC(1958, 0, 1)) / 86_400_000;
+  }
+
   return {
     meta,
     pos: view(bin, meta.buffers.pos) as Float32Array,
-    day: view(bin, meta.buffers.day) as Int32Array,
+    day,
     id: view(bin, meta.buffers.id) as Uint32Array,
     year,
     yearF32,
@@ -143,6 +184,8 @@ export async function loadViolence(base = 'data'): Promise<ViolenceData> {
     cat: view(bin, meta.buffers.cat) as Uint8Array,
     grp: view(bin, meta.buffers.grp) as Uint8Array,
     radius,
+    maDayF32,
+    maScarDayF32,
   };
 }
 

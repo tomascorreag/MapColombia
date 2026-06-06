@@ -73,6 +73,44 @@ const dict: Record<string, { es: string; en: string }> = {
   sources: { es: 'Fuentes', en: 'Sources' },
   round_1: { es: '1ª vuelta', en: 'first round' },
   round_2: { es: '2ª vuelta', en: 'runoff' },
+
+  // memoria view
+  tab_memoria: { es: 'Memoria', en: 'Memory' },
+  memoria_field: {
+    es: 'Campo político (resultados recientes ponderados)',
+    en: 'Political field (weighted recent results)',
+  },
+  lr_left: { es: 'izquierda', en: 'left' },
+  lr_right: { es: 'derecha', en: 'right' },
+  no_data: { es: 'sin datos', en: 'no data' },
+  low_coverage: {
+    es: 'atenuado: menos del 50 % del voto tiene partido clasificado',
+    en: 'dimmed: under 50% of the vote has a classified party',
+  },
+  wounds_title: { es: 'Masacres', en: 'Massacres' },
+  wound_fresh: { es: 'masacre reciente', en: 'recent massacre' },
+  wound_healing: { es: 'se desvanece en ~3 años', en: 'fades over ~3 years' },
+  wound_scar: { es: 'cicatriz permanente', en: 'permanent scar' },
+  victims_area: { es: 'área ∝ víctimas', en: 'area ∝ victims' },
+  memoria_method_title: { es: 'Método', en: 'Method' },
+  memoria_method: {
+    es: 'El color de cada municipio pondera sus elecciones pasadas: cada una entra gradualmente durante un año y decae con vida media de ~8 años, según la posición izquierda–derecha ponderada por votos (escala de 5 puntos con cita por partido; las coaliciones derivadas toman el promedio de sus miembros clasificados). Partidos sin clasificación citable quedan fuera y se publica la cobertura. Las masacres aparecen en su fecha exacta.',
+    en: 'Each municipality’s colour weights its past elections: each enters gradually over one year and decays with a ~8-year half-life, using the vote-weighted left–right position (5-point scale with one citation per party; derived coalitions take the mean of their classified members). Parties without a citable classification are excluded and coverage is published. Massacres appear on their exact date.',
+  },
+  fn_banner: {
+    es: 'Frente Nacional: elección de consenso — un partido tradicional no compitió; el campo político refleja el pacto, no la preferencia local.',
+    en: 'National Front: consensus election — one traditional party did not run; the field reflects the pact, not local preference.',
+  },
+  speed: { es: 'Velocidad', en: 'Speed' },
+  political_score: { es: 'Posición ponderada', en: 'Weighted position' },
+  coverage: { es: 'Cobertura', en: 'Coverage' },
+  based_on: { es: 'Ponderado de', en: 'Weighted from' },
+  no_data_yet: { es: 'Sin elecciones aún', en: 'No elections yet' },
+  massacre: { es: 'Masacre', en: 'Massacre' },
+  date_known_year: {
+    es: 'casos con año conocido pero fecha exacta desconocida aparecen solo como cicatriz al cierre de su año, nunca como herida',
+    en: 'cases with a known year but unknown exact date appear only as a scar once their year closes, never as a wound',
+  },
 };
 
 /** localized election label (the pipeline `label` field is Spanish-only) */

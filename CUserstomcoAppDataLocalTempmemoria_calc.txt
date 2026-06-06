@@ -1,0 +1,4 @@
+age_cross_days 39863 years 109.1
+MAX_DAY 25201
+w0_at_MAX_DAY 0.002959700004055342
+below_1e-4 False

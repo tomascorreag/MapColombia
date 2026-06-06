@@ -23,7 +23,7 @@ function allOn(): Record<string, boolean> {
 }
 
 class AppState {
-  tab = $state<'violence' | 'elections'>('violence');
+  tab = $state<'violence' | 'elections' | 'memoria'>('violence');
   year = $state(2000);
   allYears = $state(false);
   playing = $state(false);
@@ -32,6 +32,12 @@ class AppState {
   /** selected election index per body (set to latest once data loads) */
   electionIdx = $state<Record<Body, number>>({ presidencia: 0, senado: 0, camara: 0 });
   hover = $state<Hover | null>(null);
+
+  // memoria view: continuous time (days since 1958-01-01), playback speed in
+  // sim-days per real second, and the body driving the political field
+  mday = $state((Date.UTC(1990, 0, 1) - Date.UTC(1958, 0, 1)) / 86_400_000);
+  mspeed = $state(180);
+  mbody = $state<Body>('camara');
 
   setAll(on: boolean) {
     for (const c of MODALITY_CODES) this.enabled[c] = on;

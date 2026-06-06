@@ -1,17 +1,25 @@
 <script lang="ts">
-  import type { ViolenceData, ElectionsData, Munis } from './lib/data';
+  import type { ViolenceData, ElectionsData, Munis, MuniShapes } from './lib/data';
   import { loadViolence, loadJson } from './lib/data';
+  import type { MemoriaData } from './lib/memoria';
   import { app } from './lib/state.svelte';
   import { t, ui } from './lib/i18n.svelte';
   import MapView from './lib/MapView.svelte';
   import TimeBar from './lib/TimeBar.svelte';
   import LegendViolence from './lib/LegendViolence.svelte';
   import LegendElections from './lib/LegendElections.svelte';
+  import LegendMemoria from './lib/LegendMemoria.svelte';
   import Tooltip from './lib/Tooltip.svelte';
 
-  let violence = $state<ViolenceData | null>(null);
-  let elections = $state<ElectionsData | null>(null);
-  let munis = $state<Munis | null>(null);
+  // $state.raw: loaded artifacts are immutable — deep reactive proxies over
+  // megabytes of parsed JSON would register one signal per array element, and
+  // every animation-frame state write would re-validate all of them (measured:
+  // ~300 ms/frame in Svelte's is_dirty during memoria playback).
+  let violence = $state.raw<ViolenceData | null>(null);
+  let elections = $state.raw<ElectionsData | null>(null);
+  let munis = $state.raw<Munis | null>(null);
+  let memoria = $state.raw<MemoriaData | null>(null);
+  let shapes = $state.raw<MuniShapes | null>(null);
   let error = $state<string | null>(null);
 
   $effect(() => {
@@ -19,8 +27,10 @@
       loadViolence(),
       loadJson<ElectionsData>('data/elections.json'),
       loadJson<Munis>('data/munis.json'),
+      loadJson<MemoriaData>('data/memoria.json'),
+      loadJson<MuniShapes>('data/munis_shapes.json'),
     ])
-      .then(([v, e, m]) => {
+      .then(([v, e, m, mem, sh]) => {
         // default each body to its most recent election
         for (const b of ['presidencia', 'senado', 'camara'] as const) {
           app.electionIdx[b] = e.bodies[b].length - 1;
@@ -28,11 +38,19 @@
         violence = v;
         elections = e;
         munis = m;
+        memoria = mem;
+        shapes = sh;
       })
       .catch((err: Error) => {
         error = err.message;
       });
   });
+
+  function switchTab(tab: 'violence' | 'elections' | 'memoria') {
+    app.tab = tab;
+    app.playing = false;
+    app.hover = null;
+  }
 </script>
 
 {#if error}
@@ -40,7 +58,7 @@
     <span class="eyebrow">{t('load_error')}</span>
     <p class="mono dim">{error}</p>
   </div>
-{:else if !violence || !elections || !munis}
+{:else if !violence || !elections || !munis || !memoria || !shapes}
   <div class="splash">
     <span class="eyebrow">{t('eyebrow')}</span>
     <h1>{t('title')}</h1>
@@ -48,7 +66,7 @@
   </div>
 {:else}
   <main>
-    <MapView {violence} {elections} {munis} />
+    <MapView {violence} {elections} {munis} {memoria} {shapes} />
 
     <!-- header + legend share one flex rail so the panel always flows below
          the header, whatever height the current language wraps to -->
@@ -73,24 +91,23 @@
         <button
           aria-pressed={app.tab === 'violence'}
           class:active={app.tab === 'violence'}
-          onclick={() => {
-            app.tab = 'violence';
-            app.playing = false;
-            app.hover = null;
-          }}
+          onclick={() => switchTab('violence')}
         >
           {t('tab_violence')}
         </button>
         <button
           aria-pressed={app.tab === 'elections'}
           class:active={app.tab === 'elections'}
-          onclick={() => {
-            app.tab = 'elections';
-            app.playing = false;
-            app.hover = null;
-          }}
+          onclick={() => switchTab('elections')}
         >
           {t('tab_elections')}
+        </button>
+        <button
+          aria-pressed={app.tab === 'memoria'}
+          class:active={app.tab === 'memoria'}
+          onclick={() => switchTab('memoria')}
+        >
+          {t('tab_memoria')}
         </button>
       </div>
       </header>
@@ -98,14 +115,16 @@
       <aside class="ficha rise panel" style="animation-delay: 0.15s">
         {#if app.tab === 'violence'}
           <LegendViolence {violence} />
-        {:else}
+        {:else if app.tab === 'elections'}
           <LegendElections {elections} />
+        {:else}
+          <LegendMemoria {memoria} {violence} />
         {/if}
       </aside>
     </div>
 
     <div class="ficha rise timebar-wrap" style="animation-delay: 0.25s">
-      <TimeBar {violence} {elections} />
+      <TimeBar {violence} {elections} {memoria} />
     </div>
 
     <Tooltip />
