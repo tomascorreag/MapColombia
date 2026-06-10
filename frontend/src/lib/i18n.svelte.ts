@@ -69,6 +69,7 @@ const dict: Record<string, { es: string; en: string }> = {
   votes: { es: 'votos', en: 'votes' },
   of_votes: { es: 'de', en: 'of' },
   unknown: { es: 'Sin información', en: 'No information' },
+  n_more: { es: 'más', en: 'more' },
 
   sources: { es: 'Fuentes', en: 'Sources' },
   round_1: { es: '1ª vuelta', en: 'first round' },
@@ -82,7 +83,7 @@ const dict: Record<string, { es: string; en: string }> = {
   },
   lr_left: { es: 'izquierda', en: 'left' },
   lr_right: { es: 'derecha', en: 'right' },
-  no_data: { es: 'sin datos', en: 'no data' },
+  no_data: { es: 'transparente: centro o sin datos', en: 'transparent: centre or no data' },
   low_coverage: {
     es: 'atenuado: menos del 50 % del voto tiene partido clasificado',
     en: 'dimmed: under 50% of the vote has a classified party',
@@ -91,8 +92,16 @@ const dict: Record<string, { es: string; en: string }> = {
   wound_fresh: { es: 'masacre reciente', en: 'recent massacre' },
   wound_healing: { es: 'se desvanece en ~3 años', en: 'fades over ~3 years' },
   wound_scar: { es: 'cicatriz permanente', en: 'permanent scar' },
+  wound_tendrils: {
+    es: 'sangre que se extiende desde cada masacre y cicatriza',
+    en: 'blood spreading from each massacre, scarring permanently',
+  },
   victims_area: { es: 'área ∝ víctimas', en: 'area ∝ victims' },
   memoria_method_title: { es: 'Método', en: 'Method' },
+  memoria_method_massacres: {
+    es: 'Cada masacre aparece en su fecha exacta como una herida cuya área es proporcional a las víctimas; la herida se desvanece en ~3 años y deja una cicatriz permanente. Fuente: CNMH/SIEVCAC, con cita por registro.',
+    en: 'Each massacre appears on its exact date as a wound whose area is proportional to its victims; the wound fades over ~3 years into a permanent scar. Source: CNMH/SIEVCAC, with a citation per record.',
+  },
   memoria_method: {
     es: 'El color de cada municipio pondera sus elecciones pasadas: cada una entra gradualmente durante un año y decae con vida media de ~8 años, según la posición izquierda–derecha ponderada por votos (escala de 5 puntos con cita por partido; las coaliciones derivadas toman el promedio de sus miembros clasificados). Partidos sin clasificación citable quedan fuera y se publica la cobertura. Las masacres aparecen en su fecha exacta.',
     en: 'Each municipality’s colour weights its past elections: each enters gradually over one year and decays with a ~8-year half-life, using the vote-weighted left–right position (5-point scale with one citation per party; derived coalitions take the mean of their classified members). Parties without a citable classification are excluded and coverage is published. Massacres appear on their exact date.',

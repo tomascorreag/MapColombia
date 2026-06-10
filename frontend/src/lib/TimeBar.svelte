@@ -1,20 +1,14 @@
 <script lang="ts">
   import type { ViolenceData, ElectionsData } from './data';
   import { formatInt } from './data';
-  import {
-    type MemoriaData,
-    MAX_DAY,
-    dayOfISO,
-    formatMonthYear,
-  } from './memoria';
+  import { MAX_DAY, formatMonthYear, yearProgress } from './memoria';
   import { app } from './state.svelte';
   import { t, ui, electionLabel } from './i18n.svelte';
 
   let {
     violence,
     elections,
-    memoria,
-  }: { violence: ViolenceData; elections: ElectionsData; memoria: MemoriaData } = $props();
+  }: { violence: ViolenceData; elections: ElectionsData } = $props();
 
   const yearMin = $derived(violence.meta.yearMin);
   const yearMax = $derived(violence.meta.yearMax);
@@ -49,15 +43,6 @@
     return out;
   });
   const maHistMax = $derived(Math.max(1, ...maHist));
-  const memoriaTicks = $derived(
-    memoria.bodies[app.mbody]
-      .filter((e) => e.date)
-      .map((e) => ({
-        day: dayOfISO(e.date as string),
-        label: electionLabel(e),
-        fn: !!e.fn_consensus,
-      }))
-  );
 
   // playback: advance one year (violence) or one election (elections) per tick
   $effect(() => {
@@ -194,7 +179,11 @@
       >
         {app.playing ? '❚❚' : '▶'}
       </button>
-      <span class="year mono mdate">{formatMonthYear(app.mday, ui.lang)}</span>
+      <span class="year mono">{yearProgress(app.mday).year}</span>
+      <!-- how much of the year has passed — wordless, no month name -->
+      <span class="yeardial" aria-hidden="true">
+        <span class="yearfill" style:width="{yearProgress(app.mday).frac * 100}%"></span>
+      </span>
       <span class="speeds mono" role="group" aria-label={t('speed')}>
         {#each SPEEDS as s (s.v)}
           <button
@@ -233,21 +222,6 @@
         aria-label={t('date')}
         aria-valuetext={formatMonthYear(app.mday, ui.lang)}
       />
-      <div class="mticks">
-        {#each memoriaTicks as tk (tk.day)}
-          <button
-            class="mtick"
-            class:fn={tk.fn}
-            style:left="{(tk.day / MAX_DAY) * 100}%"
-            title={tk.label}
-            aria-label={`${t(app.mbody)} ${tk.label}`}
-            onclick={() => {
-              app.mday = tk.day;
-              app.playing = false;
-            }}
-          ></button>
-        {/each}
-      </div>
       <div class="axis mono dim" aria-hidden="true">
         <span>{yearMin}</span><span>1975</span><span>1990</span><span>2005</span><span
           >{yearMax}</span
@@ -425,11 +399,19 @@
   }
 
   /* ---------- memoria mode ---------- */
-  .mdate {
-    font-size: 19px;
-    /* widest case "septiembre de 2026" — keep the readout from jittering
-       between months during playback */
-    min-width: 19ch;
+  .yeardial {
+    align-self: center;
+    width: 64px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--hairline);
+    overflow: hidden;
+  }
+
+  .yearfill {
+    display: block;
+    height: 100%;
+    background: var(--gold);
   }
 
   .speeds {
@@ -458,36 +440,6 @@
 
   .hist rect.ma {
     fill: rgba(255, 47, 64, 0.42);
-  }
-
-  .mticks {
-    position: relative;
-    height: 8px;
-    margin: 1px 6px 0;
-  }
-
-  .mtick {
-    position: absolute;
-    transform: translateX(-50%) rotate(45deg);
-    width: 6px;
-    height: 6px;
-    background: var(--gold);
-    opacity: 0.75;
-  }
-
-  .mtick:hover {
-    opacity: 1;
-  }
-
-  .mtick:focus-visible {
-    opacity: 1;
-    outline: 1px solid var(--paper);
-    outline-offset: 2px;
-  }
-
-  .mtick.fn {
-    background: transparent;
-    border: 1px solid var(--gold);
   }
 
   .ticks {

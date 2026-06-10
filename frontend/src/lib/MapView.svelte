@@ -3,44 +3,35 @@
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
   import { MapboxOverlay } from '@deck.gl/mapbox';
-  import { GeoJsonLayer, ScatterplotLayer } from '@deck.gl/layers';
-  import { DataFilterExtension } from '@deck.gl/extensions';
+  import { GeoJsonLayer, LineLayer, ScatterplotLayer } from '@deck.gl/layers';
+  import { DataFilterExtension, MaskExtension } from '@deck.gl/extensions';
   import type { PickingInfo, Layer } from '@deck.gl/core';
+  import { TendrilExtension } from './TendrilExtension';
+  import { buildTendrils } from './tendrils';
   import type {
     ViolenceData,
     ElectionsData,
     Munis,
     MuniShapes,
-    ShapeFeature,
     ModalityMeta,
     Election,
   } from './data';
   import { formatDay, formatInt } from './data';
   import { MODALITY_COLORS, hexToRgb } from './colors';
-  import {
-    type MemoriaData,
-    blendField,
-    fieldColors,
-    contributors,
-    scoreColor,
-    scoreLabel,
-    WOUND_FADE_DAYS,
-    COLOR_BUCKET_DAYS,
-  } from './memoria';
+  import { COLOR_BUCKET_DAYS } from './memoria';
   import { app } from './state.svelte';
-  import { t, ui, modalityName, electionLabel } from './i18n.svelte';
+  import { dbg } from './debug.svelte';
+  import { t, ui, modalityName } from './i18n.svelte';
 
   let {
     violence,
     elections,
     munis,
-    memoria,
     shapes,
   }: {
     violence: ViolenceData;
     elections: ElectionsData;
     munis: Munis;
-    memoria: MemoriaData;
     shapes: MuniShapes;
   } = $props();
 
@@ -54,6 +45,10 @@
 
   // One extension instance shared by all violence layers (deck dedupes shaders).
   const yearFilter = new DataFilterExtension({ filterSize: 1 });
+  // Hoisted like yearFilter: fresh extension instances per frame would
+  // register as shader changes and rebuild pipelines every animation tick.
+  const memoriaMask = new MaskExtension();
+  const tendrilExt = new TendrilExtension();
 
   // Hoisted: a fresh parameters object per frame would register as a pipeline
   // change in luma.gl every animation tick.
@@ -102,15 +97,51 @@
     },
   });
 
-  // Choropleth colours update on a coarse sim-time bucket (~15 sim-days), not
-  // per frame — recomputing 1.1k blends and re-uploading polygon colours at
-  // 60 fps would be wasted work while the wound uniforms animate smoothly.
-  const colorBucket = $derived(Math.floor(app.mday / COLOR_BUCKET_DAYS));
-  const fieldBlend = $derived.by(() =>
-    blendField(memoria.bodies[app.mbody], colorBucket * COLOR_BUCKET_DAYS, munis.codes.length)
+  // Static memoria geometry, built at load and rebuilt when the debug panel
+  // commits a geometry param (slider release only — see DebugPanel). Two
+  // decorrelated fields: a broad primary field and a finer detail field.
+  const tendrilData = $derived.by(() =>
+    buildTendrils(violence, maMeta, {
+      seed: 0x1958,
+      nCurves: dbg.nCurves,
+      stepKm: dbg.stepKm,
+      reachKm: dbg.reachKm,
+      noiseLen1: dbg.noiseLen1,
+      noiseLen2: dbg.noiseLen2,
+      noiseAmp1: dbg.noiseAmp1,
+      noiseAmp2: dbg.noiseAmp2,
+    })
   );
-  const fieldRGBA = $derived.by(() => fieldColors(fieldBlend, munis.codes.length));
-  const fieldEpoch = $derived(`${app.mbody}:${colorBucket}`);
+  const tendrilData2 = $derived.by(() =>
+    buildTendrils(violence, maMeta, {
+      seed: 0x77aa,
+      nCurves: dbg.t2Curves,
+      stepKm: dbg.t2StepKm,
+      reachKm: dbg.reachKm,
+      noiseLen1: dbg.t2NoiseLen1,
+      noiseLen2: dbg.t2NoiseLen2,
+      noiseAmp1: dbg.t2NoiseAmp1,
+      noiseAmp2: dbg.t2NoiseAmp2,
+    })
+  );
+  // Live shader knobs (one uniform-block update per frame, no attribute work)
+  const tendrilParams = $derived({
+    fadeDays: dbg.fadeDays,
+    reachKm: dbg.reachKm,
+    pulseSpeedKmPerDay: dbg.pulseSpeed,
+    pulseWidthKm: dbg.pulseWidth,
+    widthBoost: dbg.widthBoost,
+    widthFalloff: dbg.widthFalloff,
+    scarWidth: dbg.scarWidth,
+    scarAlpha: dbg.scarAlpha,
+    freshAlpha: dbg.freshAlpha,
+    pulseStrength: dbg.pulseStrength,
+  });
+
+  // Coarse sim-time bucket (~15 sim-days) used to throttle the hover-
+  // suppression effect during playback — per-frame effect runs would be
+  // wasted work while the wound uniforms animate smoothly.
+  const colorBucket = $derived(Math.floor(app.mday / COLOR_BUCKET_DAYS));
 
   function muniLabel(idx: number): string {
     if (idx === 0xffff) return t('unknown');
@@ -142,6 +173,50 @@
         { label: t('responsible'), value: resp },
         { label: t('record'), value: `N.º ${violence.id[gi]}` },
       ],
+    };
+  }
+
+  // Memoria wound/scar hover: a few px on screen can cover many massacres at
+  // national zoom, so gather everything under the cursor (fixed pixel radius —
+  // the covered ground area shrinks as the user zooms in) and list them all.
+  function memoriaWoundHover(info: PickingInfo) {
+    if (!info.picked || info.index < 0 || !overlay) {
+      app.hover = null;
+      return;
+    }
+    const picks = overlay.pickMultipleObjects({
+      x: info.x,
+      y: info.y,
+      radius: 6,
+      layerIds: ['ma-scars', 'ma-wounds-core'],
+      depth: 12,
+    });
+    const seen = new Set<number>();
+    for (const p of picks) if (p.index >= 0) seen.add(p.index);
+    if (seen.size <= 1) {
+      violenceHover(info, maMeta); // single massacre: full detail card
+      return;
+    }
+    const idxs = [...seen]
+      .map((i) => maMeta.start + i)
+      .sort((a, b) => violence.year[a] - violence.year[b] || violence.day[a] - violence.day[b]);
+    const MAX_ROWS = 6;
+    const rows = idxs.slice(0, MAX_ROWS).map((gi) => ({
+      label: formatDay(violence.day[gi], ui.lang) ?? String(violence.year[gi]),
+      value: `${muniLabel(violence.muni[gi])} · ${formatInt(violence.victims[gi], ui.lang)} ${t('victims').toLowerCase()}`,
+    }));
+    if (idxs.length > MAX_ROWS) {
+      rows.push({
+        label: '…',
+        value: `+${formatInt(idxs.length - MAX_ROWS, ui.lang)} ${t('n_more')}`,
+      });
+    }
+    app.hover = {
+      x: info.x,
+      y: info.y,
+      accent: MODALITY_COLORS[maMeta.code],
+      title: `${formatInt(idxs.length, ui.lang)} ${modalityName(maMeta.code).toLowerCase()}`,
+      rows,
     };
   }
 
@@ -205,48 +280,6 @@
     };
   }
 
-  function fieldHover(info: PickingInfo) {
-    const f = info.object as ShapeFeature | undefined;
-    if (!info.picked || !f || f.properties.i == null) {
-      app.hover = null;
-      return;
-    }
-    const mi = f.properties.i;
-    const s = fieldBlend.score[mi];
-    const rows = [];
-    if (Number.isNaN(s)) {
-      rows.push({ label: t('political_score'), value: t('no_data_yet') });
-    } else {
-      const sign = s > 0 ? '+' : '';
-      rows.push({
-        label: t('political_score'),
-        value: `${sign}${s.toFixed(2)} · ${scoreLabel(s, ui.lang)}`,
-      });
-      rows.push({
-        label: t('coverage'),
-        // floor, not round: a muni dimmed by the <50% rule must never display "50 %"
-        value: `${Math.floor(fieldBlend.cov[mi] * 100)} %`,
-      });
-      // same bucketed time the displayed field uses — exact-time weights would
-      // disagree with the colours under the cursor
-      const contrib = contributors(
-        memoria.bodies[app.mbody],
-        colorBucket * COLOR_BUCKET_DAYS,
-        mi
-      );
-      if (contrib.length) {
-        rows.push({
-          label: t('based_on'),
-          value: contrib
-            .map((c) => `${electionLabel(c)} (${Math.round(c.weight * 100)} %)`)
-            .join(', '),
-        });
-      }
-    }
-    const accent = Number.isNaN(s) ? '#6e6a5e' : `rgb(${scoreColor(s).join(',')})`;
-    app.hover = { x: info.x, y: info.y, accent, title: muniLabel(mi), rows };
-  }
-
   function buildLayers(): Layer[] {
     const layers: Layer[] = [];
     const isViolence = app.tab === 'violence';
@@ -275,56 +308,82 @@
       );
     }
 
-    // ---- memoria: political field + wounds/scars ----
+    // ---- memoria: wounds/scars ----
     const tDay = app.mday;
     layers.push(
+      // country silhouette (union of muni polygons) rendered to the mask FBO,
+      // not the screen; clips the tendrils to land
       new GeoJsonLayer({
-        id: 'lr-field',
+        id: 'memoria-mask',
         visible: isMemoria,
         data: shapes as unknown as GeoJSON.FeatureCollection,
-        getFillColor: (f) => {
-          const i = (f as unknown as ShapeFeature).properties.i;
-          if (i == null) return [26, 29, 36, 90];
-          const o = i * 4;
-          return [fieldRGBA[o], fieldRGBA[o + 1], fieldRGBA[o + 2], fieldRGBA[o + 3]];
-        },
-        updateTriggers: { getFillColor: fieldEpoch },
-        stroked: true,
-        getLineColor: [11, 13, 17, 160],
-        lineWidthMinPixels: 0.5,
-        pickable: isMemoria,
-        onHover: fieldHover,
+        operation: 'mask',
+        stroked: false,
       }),
       // permanent scars: every massacre that has already happened stays marked
       new ScatterplotLayer({
         id: 'ma-scars',
         visible: isMemoria,
         data: scarData,
-        getFillColor: [96, 16, 22, 165],
+        getFillColor: [96, 16, 22, dbg.scarDotAlpha],
         radiusUnits: 'meters',
-        radiusScale: 950,
+        radiusScale: dbg.scarScale,
         radiusMinPixels: 1.6,
         radiusMaxPixels: 14,
         stroked: false,
         pickable: isMemoria,
-        onHover: (info: PickingInfo) => violenceHover(info, maMeta),
+        onHover: memoriaWoundHover,
         extensions: [yearFilter],
         filterRange: [-0.5, tDay] as [number, number],
+      }),
+      // blood tendrils: static flow-field curves, invisible before their
+      // massacre; the shader makes them flare bright and thick at the wound
+      // (tapering to 0 with distance) with an outward pulse, then settle into
+      // a permanent dark scar state — all from the time uniform
+      new LineLayer({
+        id: 'ma-tendrils',
+        visible: isMemoria,
+        data: tendrilData,
+        getColor: [255, 58, 28, 255],
+        getWidth: dbg.baseWidth, // base; the shader scales it up at the wound centre
+        widthUnits: 'pixels',
+        updateTriggers: { getWidth: dbg.baseWidth },
+        parameters: ADDITIVE_BLEND,
+        extensions: [tendrilExt, memoriaMask],
+        maskId: 'memoria-mask',
+        tendrilTime: tDay,
+        tendrilParams,
+      }),
+      // second, finer tendril field (own seed/noise): breaks the visual
+      // regularity of a single flow field; same shader and time uniforms
+      new LineLayer({
+        id: 'ma-tendrils-2',
+        visible: isMemoria && dbg.t2Curves > 0,
+        data: tendrilData2,
+        getColor: [255, 58, 28, 255],
+        getWidth: dbg.t2BaseWidth,
+        widthUnits: 'pixels',
+        updateTriggers: { getWidth: dbg.t2BaseWidth },
+        parameters: ADDITIVE_BLEND,
+        extensions: [tendrilExt, memoriaMask],
+        maskId: 'memoria-mask',
+        tendrilTime: tDay,
+        tendrilParams,
       }),
       // wound glow: additive blending makes overlapping massacres burn hotter
       new ScatterplotLayer({
         id: 'ma-wounds-glow',
         visible: isMemoria,
         data: woundData,
-        getFillColor: [255, 58, 28, 80],
+        getFillColor: [255, 58, 28, dbg.glowAlpha],
         radiusUnits: 'meters',
-        radiusScale: 3400,
+        radiusScale: dbg.glowScale,
         radiusMinPixels: 5,
-        radiusMaxPixels: 64,
+        radiusMaxPixels: dbg.glowMaxPx,
         stroked: false,
         parameters: ADDITIVE_BLEND,
         extensions: [yearFilter],
-        filterRange: [Math.max(-0.5, tDay - WOUND_FADE_DAYS), tDay] as [number, number],
+        filterRange: [Math.max(-0.5, tDay - dbg.fadeDays), tDay] as [number, number],
         filterSoftRange: [tDay - 30, tDay] as [number, number],
       }),
       // wound core: appears at full size on the exact date, then contracts and
@@ -333,16 +392,16 @@
         id: 'ma-wounds-core',
         visible: isMemoria,
         data: woundData,
-        getFillColor: [255, 47, 64, 230],
+        getFillColor: [255, 47, 64, dbg.coreAlpha],
         radiusUnits: 'meters',
-        radiusScale: 1500,
+        radiusScale: dbg.coreScale,
         radiusMinPixels: 2.2,
-        radiusMaxPixels: 30,
+        radiusMaxPixels: dbg.coreMaxPx,
         stroked: false,
         pickable: isMemoria,
-        onHover: (info: PickingInfo) => violenceHover(info, maMeta),
+        onHover: memoriaWoundHover,
         extensions: [yearFilter],
-        filterRange: [Math.max(-0.5, tDay - WOUND_FADE_DAYS), tDay] as [number, number],
+        filterRange: [Math.max(-0.5, tDay - dbg.fadeDays), tDay] as [number, number],
         filterSoftRange: [tDay - 30, tDay] as [number, number],
       })
     );

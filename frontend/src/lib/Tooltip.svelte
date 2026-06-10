@@ -37,7 +37,9 @@
   >
     <div class="title">{app.hover.title}</div>
     <dl>
-      {#each app.hover.rows as row (row.label)}
+      <!-- index key: rows are rebuilt wholesale per hover and labels can repeat
+           (several massacres sharing a date in the multi-massacre card) -->
+      {#each app.hover.rows as row, i (i)}
         <dt class="mono">{row.label}</dt>
         <dd>{row.value}</dd>
       {/each}

@@ -1,17 +1,9 @@
 <script lang="ts">
-  import type { Body, ViolenceData } from './data';
+  import type { ViolenceData } from './data';
   import { formatInt } from './data';
-  import { type MemoriaData, rampCSS, dayOfISO } from './memoria';
-  import { app } from './state.svelte';
   import { t, ui } from './i18n.svelte';
 
-  let { memoria, violence }: { memoria: MemoriaData; violence: ViolenceData } = $props();
-
-  const BODIES: Body[] = ['camara', 'senado', 'presidencia'];
-  const ramp = rampCSS();
-
-  // FN-era banner: only the presidential field is an artifact of the pact
-  const fnVisible = $derived(app.mbody === 'presidencia' && app.mday < dayOfISO('1975-01-01'));
+  let { violence }: { violence: ViolenceData } = $props();
 
   const maMeta = $derived(violence.meta.modalities[0]);
   // massacres with year known but exact date unknown (scar-only display rule)
@@ -28,36 +20,6 @@
 </script>
 
 <div class="legend">
-  <div class="bodies">
-    {#each BODIES as b (b)}
-      <button
-        class="body mono"
-        class:active={app.mbody === b}
-        aria-pressed={app.mbody === b}
-        onclick={() => (app.mbody = b)}
-      >
-        {t(b)}
-      </button>
-    {/each}
-  </div>
-
-  {#if fnVisible}
-    <p class="fn mono">{t('fn_banner')}</p>
-  {/if}
-
-  <span class="eyebrow">{t('memoria_field')}</span>
-  <div class="ramp" style:background={ramp}></div>
-  <div class="ramp-labels mono dim">
-    <span>{t('lr_left')}</span>
-    <span>{t('lr_right')}</span>
-  </div>
-  <div class="nodata mono dim">
-    <span class="swatch"></span>
-    {t('no_data')} · {t('low_coverage')}
-  </div>
-
-  <hr class="rule" />
-
   <span class="eyebrow">{t('wounds_title')}</span>
   <ul class="wounds">
     <li>
@@ -72,6 +34,10 @@
       <span class="w scar"></span>
       <span class="wl">{t('wound_scar')}</span>
     </li>
+    <li>
+      <span class="w tendril"></span>
+      <span class="wl">{t('wound_tendrils')}</span>
+    </li>
   </ul>
   <p class="note mono">
     {t('victims_area')} · {formatInt(maMeta.n, ui.lang)}
@@ -84,7 +50,7 @@
 
   <details class="method">
     <summary class="mono">{t('memoria_method_title')}</summary>
-    <p class="note mono">{t('memoria_method')}</p>
+    <p class="note mono">{t('memoria_method_massacres')}</p>
     <p class="note mono">
       {formatInt(scarOnly, ui.lang)}
       {t('date_known_year')}.
@@ -96,80 +62,6 @@
 <style>
   .legend {
     padding: 12px 16px 14px;
-  }
-
-  .bodies {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  .body {
-    flex: 1;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--paper-dim);
-    border: 1px solid var(--hairline);
-    border-radius: 2px;
-    padding: 6px 0;
-    transition:
-      color 0.15s,
-      border-color 0.15s;
-  }
-
-  .body:hover {
-    color: var(--paper);
-  }
-
-  .body.active {
-    color: var(--gold);
-    border-color: var(--gold);
-  }
-
-  .fn {
-    margin: 0 0 12px;
-    padding: 7px 9px;
-    font-size: 10px;
-    line-height: 1.55;
-    color: var(--gold);
-    border: 1px solid var(--hairline);
-    border-left: 3px solid var(--gold);
-    border-radius: 2px;
-  }
-
-  .ramp {
-    height: 10px;
-    border-radius: 2px;
-    margin-top: 8px;
-    border: 1px solid var(--hairline-soft);
-  }
-
-  .ramp-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  .nodata {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 9.5px;
-    line-height: 1.5;
-    margin-top: 8px;
-  }
-
-  .swatch {
-    width: 12px;
-    height: 12px;
-    flex: none;
-    border-radius: 2px;
-    background: rgba(26, 29, 36, 0.6);
-    border: 1px solid var(--hairline);
   }
 
   .wounds {
@@ -209,6 +101,13 @@
     width: 8px;
     height: 8px;
     background: rgba(96, 16, 22, 0.85);
+  }
+
+  .w.tendril {
+    width: 13px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255, 58, 28, 0.9), rgba(255, 58, 28, 0));
   }
 
   .wl {

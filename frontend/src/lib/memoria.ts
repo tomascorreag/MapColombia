@@ -16,7 +16,7 @@ export const MAX_DAY = (Date.UTC(2026, 11, 31) - EPOCH_MS) / DAY_MS;
 export const RAMP_DAYS = 365;
 export const HALF_LIFE_DAYS = 3000;
 export const MIN_COVERAGE = 0.5; // below this a municipio renders as low-confidence
-export const WOUND_FADE_DAYS = 1095; // a wound takes ~3 years to close into a scar
+export const WOUND_FADE_DAYS = 1050; // a wound takes ~3 years to close into a scar
 export const COLOR_BUCKET_DAYS = 15; // choropleth colour update granularity (sim time)
 
 export interface MemoriaElection {
@@ -58,6 +58,15 @@ export function formatMonthYear(day: number, lang: 'es' | 'en'): string {
   });
   // "agosto de 1997" -> "Agosto de 1997" (CSS capitalize would also hit "de")
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** year + fraction of that year elapsed at `day` (timeline readout) */
+export function yearProgress(day: number): { year: number; frac: number } {
+  const d = new Date(EPOCH_MS + day * DAY_MS);
+  const year = d.getUTCFullYear();
+  const start = Date.UTC(year, 0, 1);
+  const end = Date.UTC(year + 1, 0, 1);
+  return { year, frac: (d.getTime() - start) / (end - start) };
 }
 
 export interface BlendResult {
@@ -136,18 +145,17 @@ export function contributors(
 }
 
 // ---------------------------------------------------------------- colour ramp
-// Diverging violet (izquierda) <- stone (centro) -> amber (derecha), PuOr-family
-// hues tuned to the archive palette. Crimson stays reserved for wounds.
+// Diverging yellow (izquierda) <-> blue (derecha); the centre is TRANSPARENT —
+// a centre vote reads as absence of tilt, not a third colour. Alpha scales
+// with |score| (see fieldMeshValues / the FieldMeshLayer fragment shader).
+// Crimson stays reserved for wounds.
 
 const STOPS: [number, [number, number, number]][] = [
-  [-1.0, [94, 53, 177]], // deep violet
-  [-0.5, [126, 87, 194]],
-  [0.0, [110, 106, 94]], // muted stone
-  [0.5, [192, 138, 64]],
-  [1.0, [216, 142, 32]], // burnt amber
+  [-1.0, [233, 196, 69]], // yellow (left)
+  [-0.12, [233, 196, 69]],
+  [0.12, [64, 118, 214]],
+  [1.0, [64, 118, 214]], // blue (right)
 ];
-
-export const NO_DATA_RGBA: [number, number, number, number] = [26, 29, 36, 90];
 
 export function scoreColor(s: number): [number, number, number] {
   if (s <= STOPS[0][0]) return STOPS[0][1];
@@ -166,33 +174,37 @@ export function scoreColor(s: number): [number, number, number] {
   return STOPS[STOPS.length - 1][1];
 }
 
-/** RGBA per muni for the choropleth; low-confidence munis are dimmed. */
-export function fieldColors(blend: BlendResult, nMunis: number): Uint8Array {
-  const out = new Uint8Array(nMunis * 4);
+/**
+ * Per-vertex [score, alphaFactor] pairs for the field mesh. The score is the
+ * value the GPU interpolates; alphaFactor is 0 for no-data munis (the field
+ * fades out around them) and dimmed below MIN_COVERAGE. The fragment shader
+ * turns |score| into opacity, so a centre vote renders transparent.
+ */
+export function fieldMeshValues(blend: BlendResult, nMunis: number): Float32Array {
+  const out = new Float32Array(nMunis * 2);
   for (let i = 0; i < nMunis; i++) {
     const s = blend.score[i];
-    const o = i * 4;
+    const o = i * 2;
     if (Number.isNaN(s)) {
-      out.set(NO_DATA_RGBA, o);
-      continue;
+      // score 0 + factor 0: neighbours interpolate towards transparency
+      out[o] = 0;
+      out[o + 1] = 0;
+    } else {
+      out[o] = s;
+      out[o + 1] = blend.cov[i] < MIN_COVERAGE ? 0.45 : 1;
     }
-    const [r, g, b] = scoreColor(s);
-    const lowCov = blend.cov[i] < MIN_COVERAGE;
-    out[o] = r;
-    out[o + 1] = g;
-    out[o + 2] = b;
-    out[o + 3] = lowCov ? 88 : 196;
   }
   return out;
 }
 
-/** css gradient string for the legend ramp */
+/** css gradient string for the legend ramp (alpha mirrors the shader) */
 export function rampCSS(): string {
   const steps: string[] = [];
   for (let i = 0; i <= 10; i++) {
     const s = -1 + (i / 10) * 2;
     const [r, g, b] = scoreColor(s);
-    steps.push(`rgb(${r},${g},${b}) ${i * 10}%`);
+    const a = Math.pow(Math.abs(s), 0.65) * 0.82;
+    steps.push(`rgba(${r},${g},${b},${a.toFixed(2)}) ${i * 10}%`);
   }
   return `linear-gradient(90deg, ${steps.join(', ')})`;
 }

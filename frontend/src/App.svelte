@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { ViolenceData, ElectionsData, Munis, MuniShapes } from './lib/data';
   import { loadViolence, loadJson } from './lib/data';
-  import type { MemoriaData } from './lib/memoria';
   import { app } from './lib/state.svelte';
   import { t, ui } from './lib/i18n.svelte';
   import MapView from './lib/MapView.svelte';
@@ -10,6 +9,8 @@
   import LegendElections from './lib/LegendElections.svelte';
   import LegendMemoria from './lib/LegendMemoria.svelte';
   import Tooltip from './lib/Tooltip.svelte';
+  import DebugPanel from './lib/DebugPanel.svelte';
+  import { dbgEnabled } from './lib/debug.svelte';
 
   // $state.raw: loaded artifacts are immutable — deep reactive proxies over
   // megabytes of parsed JSON would register one signal per array element, and
@@ -18,7 +19,6 @@
   let violence = $state.raw<ViolenceData | null>(null);
   let elections = $state.raw<ElectionsData | null>(null);
   let munis = $state.raw<Munis | null>(null);
-  let memoria = $state.raw<MemoriaData | null>(null);
   let shapes = $state.raw<MuniShapes | null>(null);
   let error = $state<string | null>(null);
 
@@ -27,10 +27,9 @@
       loadViolence(),
       loadJson<ElectionsData>('data/elections.json'),
       loadJson<Munis>('data/munis.json'),
-      loadJson<MemoriaData>('data/memoria.json'),
       loadJson<MuniShapes>('data/munis_shapes.json'),
     ])
-      .then(([v, e, m, mem, sh]) => {
+      .then(([v, e, m, sh]) => {
         // default each body to its most recent election
         for (const b of ['presidencia', 'senado', 'camara'] as const) {
           app.electionIdx[b] = e.bodies[b].length - 1;
@@ -38,7 +37,6 @@
         violence = v;
         elections = e;
         munis = m;
-        memoria = mem;
         shapes = sh;
       })
       .catch((err: Error) => {
@@ -58,7 +56,7 @@
     <span class="eyebrow">{t('load_error')}</span>
     <p class="mono dim">{error}</p>
   </div>
-{:else if !violence || !elections || !munis || !memoria || !shapes}
+{:else if !violence || !elections || !munis || !shapes}
   <div class="splash">
     <span class="eyebrow">{t('eyebrow')}</span>
     <h1>{t('title')}</h1>
@@ -66,7 +64,7 @@
   </div>
 {:else}
   <main>
-    <MapView {violence} {elections} {munis} {memoria} {shapes} />
+    <MapView {violence} {elections} {munis} {shapes} />
 
     <!-- header + legend share one flex rail so the panel always flows below
          the header, whatever height the current language wraps to -->
@@ -118,16 +116,20 @@
         {:else if app.tab === 'elections'}
           <LegendElections {elections} />
         {:else}
-          <LegendMemoria {memoria} {violence} />
+          <LegendMemoria {violence} />
         {/if}
       </aside>
     </div>
 
     <div class="ficha rise timebar-wrap" style="animation-delay: 0.25s">
-      <TimeBar {violence} {elections} {memoria} />
+      <TimeBar {violence} {elections} />
     </div>
 
     <Tooltip />
+
+    {#if dbgEnabled && app.tab === 'memoria'}
+      <DebugPanel />
+    {/if}
 
     <footer class="mono">
       <span class="dim">{t('sources')}:</span>
