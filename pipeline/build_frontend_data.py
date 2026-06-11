@@ -145,6 +145,108 @@ def days_since_epoch(y, m, d):
         return -1
 
 
+# Victim demographic detail (the click-panel "portrait"). Aggregated per case
+# from the geoportal victimas_* files; gi-aligned to violence.bin so the frontend
+# indexes it by the same global event index. Counts are factual tallies of the
+# individually-recorded victims — missing attributes stay uncounted, never imputed.
+_BLANK_VICT = {"", "-", "SIN INFORMACION", "SIN INFORMACIÓN", "NO DEFINIDO",
+               "SIN DEFINIR", "NO APLICA", "NO REGISTRA", "NO DISPONIBLE"}
+_AGE_BUCKET = {  # source Rango_Edad -> coarse bucket
+    "PRIMERA INFANCIA": "child", "INFANCIA": "child", "ADOLECENCIA": "adolescent",
+    "ADULTEZ": "adult", "VEJEZ": "elder",
+}
+_DETAIL_COLS = ["civ", "comb", "vn", "nMale", "nFemale", "nChild", "nAdolescent",
+                "nAdult", "nElder", "nFatal", "nNonFatal", "occTop", "occTopN"]
+
+
+def build_victim_details(ev, manifest):
+    """Per-event victim portrait aligned to ev row order (the global index gi).
+
+    Returns (layout, blob, occupations, summary). Every column is uint16; occTop
+    indexes `occupations` (0xFFFF = no occupation recorded for any victim).
+    """
+    vfiles = {d["modality"]: ROOT / d["file"] for d in manifest["datasets"]
+              if d.get("family") == "geoportal" and d.get("kind") == "victimas"}
+
+    sum_parts, occ_parts = [], []
+    for mod in MODALITY_ORDER:
+        d = pd.read_csv(vfiles[mod], low_memory=False,
+                        usecols=["IdCaso", "Sexo", "Rango_Edad", "Ocupación",
+                                 "Estado_Victima"])
+        idc = pd.to_numeric(d.IdCaso, errors="coerce")
+        d = d[idc.notna()].copy()
+        d["IdCaso"] = idc[idc.notna()].astype(np.int64)
+
+        sx = d.Sexo.fillna("").astype(str).str.upper().str.strip()
+        d["nMale"] = (sx == "HOMBRE").astype("int32")
+        d["nFemale"] = (sx == "MUJER").astype("int32")
+        ab = d.Rango_Edad.fillna("").astype(str).str.upper().str.strip().map(_AGE_BUCKET)
+        for b, col in [("child", "nChild"), ("adolescent", "nAdolescent"),
+                       ("adult", "nAdult"), ("elder", "nElder")]:
+            d[col] = (ab == b).astype("int32")
+        es = d.Estado_Victima.fillna("").astype(str).str.strip()
+        d["nFatal"] = (es == "Fatal").astype("int32")
+        d["nNonFatal"] = (es == "No Fatal").astype("int32")
+
+        count_cols = ["nMale", "nFemale", "nChild", "nAdolescent", "nAdult",
+                      "nElder", "nFatal", "nNonFatal"]
+        g = d.groupby("IdCaso")[count_cols].sum()
+        g["vn"] = d.groupby("IdCaso").size()
+        sum_parts.append(g)
+
+        occ = d.Ocupación.fillna("").astype(str).str.upper().str.strip()
+        keep = ~occ.isin(_BLANK_VICT) & ~occ.str.startswith("SIN ")
+        if keep.any():
+            oc = pd.DataFrame({"IdCaso": d.IdCaso[keep], "occ": occ[keep]})
+            occ_parts.append(oc.groupby(["IdCaso", "occ"]).size().rename("c").reset_index())
+
+    A = pd.concat(sum_parts)
+    # each case's victims live in exactly one modality file -> IdCaso disjoint
+    assert A.index.is_unique, "IdCaso collided across victimas files"
+
+    OC = pd.concat(occ_parts, ignore_index=True)
+    top = OC.loc[OC.groupby("IdCaso")["c"].idxmax()].set_index("IdCaso")  # occ, c
+
+    occ_table, occ_index = [], {}
+    for name in top.occ.unique():
+        occ_index[name] = len(occ_table)
+        occ_table.append(name)
+    assert len(occ_table) < 0xFFFF, "occupation cardinality exceeds uint16"
+
+    ids = pd.Series(ev.IdCaso.to_numpy(dtype=np.int64))
+    Aa = A.reindex(ids).fillna(0)
+    topa = top.reindex(ids)
+
+    def u16(series):
+        return np.clip(np.asarray(series), 0, 0xFFFF).astype(np.uint16)
+
+    cols = {
+        "civ": u16(pd.to_numeric(ev.Total_victimas_civiles, errors="coerce").fillna(0)),
+        "comb": u16(pd.to_numeric(ev.Total_combatientes, errors="coerce").fillna(0)),
+        "vn": u16(Aa.vn),
+    }
+    for c in ["nMale", "nFemale", "nChild", "nAdolescent", "nAdult", "nElder",
+              "nFatal", "nNonFatal"]:
+        cols[c] = u16(Aa[c])
+    occ_top = topa.occ.map(occ_index).to_numpy()
+    cols["occTop"] = np.where(np.isnan(occ_top), 0xFFFF, np.nan_to_num(occ_top)).astype(np.uint16)
+    cols["occTopN"] = u16(topa.c.fillna(0))
+
+    layout, blob, offset = {}, bytearray(), 0
+    for name in _DETAIL_COLS:
+        arr = cols[name]
+        b = arr.tobytes()
+        layout[name] = {"offset": offset, "length": len(arr),
+                        "dtype": str(arr.dtype), "bytes": len(b)}
+        blob.extend(b)
+        offset += len(b)
+
+    summary = {"events_with_victims": int((cols["vn"] > 0).sum()),
+               "total_victim_rows": int(A.vn.sum()),
+               "occupations": len(occ_table)}
+    return layout, bytes(blob), occ_table, summary
+
+
 def build_violence(muni_idx):
     cnmh_manifest = json.loads((RAW / "cnmh" / "manifest.json").read_text(encoding="utf-8"))
     geoportal = {d["modality"]: d for d in cnmh_manifest["datasets"]
@@ -159,7 +261,8 @@ def build_violence(muni_idx):
         df = pd.read_csv(ROOT / entry["file"], low_memory=False, usecols=[
             "IdCaso", "Anio_hecho", "mes_hecho", "dia_hecho", "Nombre_Tipo",
             "Total_Victimas_Caso", "Geo_municipio", "Presunto_Responsable",
-            "Descripcion_Presunto_Responsabl", "Latitud", "Longitud"])
+            "Descripcion_Presunto_Responsabl", "Latitud", "Longitud",
+            "Total_victimas_civiles", "Total_combatientes"])
         total = len(df)
         name_es = df.Nombre_Tipo.mode().iat[0]
 
@@ -264,6 +367,15 @@ def build_violence(muni_idx):
         offset += len(b)
 
     (OUT / "violence.bin").write_bytes(blob)
+
+    # gi-aligned victim-detail binary (lazy-loaded by the click panel)
+    det_layout, det_blob, occupations, det_summary = build_victim_details(ev, cnmh_manifest)
+    (OUT / "violence_details.bin").write_bytes(det_blob)
+    print(f"violence_details.bin: {len(det_blob) / 1e6:.1f} MB; "
+          f"{det_summary['events_with_victims']}/{n} events with victim rows, "
+          f"{det_summary['total_victim_rows']} victim rows, "
+          f"{det_summary['occupations']} occupations")
+
     meta = {
         "n": n,
         "epoch": EPOCH.isoformat(),
@@ -273,14 +385,34 @@ def build_violence(muni_idx):
         "modalities": modalities,
         "respCategories": cat_table,
         "respGroups": grp_table,
+        "details": {
+            "file": "violence_details.bin",
+            "buffers": det_layout,
+            "occupations": occupations,
+            "note": ("Per-event victim portrait, gi-aligned to the main buffers "
+                     "(same row index). civ/comb are the case-level civilian and "
+                     "combatant totals (casos). vn = victims individually recorded "
+                     "in victimas_*; nMale/nFemale, the age buckets (child = primera "
+                     "infancia + infancia, adolescent, adult, elder) and nFatal/"
+                     "nNonFatal are tallies over those rows — attributes left blank "
+                     "in the source stay uncounted, never imputed, so the buckets "
+                     "need not sum to vn. occTop indexes details.occupations (the "
+                     "most-frequent recorded occupation among the case's victims; "
+                     "65535 = none recorded), occTopN its count."),
+        },
         "unmatchedMuni": unmatched_muni,
         "source": {
             "name": "CNMH — SIEVCAC, Observatorio de Memoria y Conflicto",
             "corte": "2026-03-31",
             "publisher": "Centro Nacional de Memoria Histórica",
             "via": "datos.gov.co / CNMH ArcGIS Geoportal",
-            "license_note": ("geoportal cut license unstated; the 2024-09-30 "
-                             "socrata cut of the same system is CC BY-SA 4.0"),
+            "license": "CC BY 4.0",
+            "license_url": "https://creativecommons.org/licenses/by/4.0/",
+            "license_note": ("CC BY 4.0 stated in the licenseInfo field of all 11 "
+                             "ArcGIS Online items of the geoportal cut (verified "
+                             "2026-06-10; snapshot in docs/evidence/"
+                             "cnmh-agol-license-2026-06-10.json). The 2024-09-30 "
+                             "socrata cut of the same system is CC BY-SA 4.0."),
         },
         "integrity": ("Events with unknown year (Anio_hecho=0), pre-1958 dates, "
                       "out-of-range coordinates, or unknown municipality (whose "

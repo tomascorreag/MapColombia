@@ -1,0 +1,127 @@
+{
+ "fetched": "2026-06-10",
+ "api": "https://www.arcgis.com/sharing/rest/content/items/<id>?f=json",
+ "items": {
+  "1bd1fd2f0764461abb745de886510618": {
+   "used_for": [
+    "Víctimas Atentado terrorista (AT)",
+    "Casos Atentado terrorista (AT)"
+   ],
+   "title": "Atentado Terrorista",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046399000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "6b3cf643339c433ca1832aceb8ae3348": {
+   "used_for": [
+    "Víctimas Ataque a población (AP)",
+    "Casos Ataque a población (AP)"
+   ],
+   "title": "Ataque Población",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046428000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "8fa14d75df8a4ace8c9ec760e9c492e6": {
+   "used_for": [
+    "Víctimas Desaparición forzada (DF)",
+    "Casos Desaparición forzada (DF)"
+   ],
+   "title": "Desaparición Forzada",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046198000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "9f6f4d83aa7b4bccb1d587ecf21d2832": {
+   "used_for": [
+    "Casos Daño a bienes civiles (DB)",
+    "Víctimas Daño a bienes civiles (DB)"
+   ],
+   "title": "Daño a Bien Civil",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046373000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": null
+  },
+  "903394915dd54392810709907b40997c": {
+   "used_for": [
+    "Casos Masacres (MA)",
+    "Víctimas Masacres (MA)"
+   ],
+   "title": "Masacres",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046111000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "0fa65a03ce0a43c6803aed059d355e9f": {
+   "used_for": [
+    "Casos Minas (MI)",
+    "Víctimas Minas (MI)"
+   ],
+   "title": "Minas Antipersonal",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046232000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "3324ecb626ab478e93d67eac64a28bd9": {
+   "used_for": [
+    "Víctimas Violencia sexual (VS)",
+    "Casos Violencia sexual (VS)"
+   ],
+   "title": "Violencia Sexual",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046337000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "72d687168f8c4b1cb4968cf1163ea7cd": {
+   "used_for": [
+    "Víctimas Asesinatos selectivos (AS)",
+    "Casos Asesinatos selectivos (AS)"
+   ],
+   "title": "Asesinato Selectivo",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046518000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "285a0cfe6aa34f65ab49c95aee298d0e": {
+   "used_for": [
+    "Casos Acciones bélicas (AB)",
+    "Víctimas Acciones bélicas (AB)"
+   ],
+   "title": "Acciones Bélicas",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046457000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "110865469b424c5693a8c2a15fe4ca6f": {
+   "used_for": [
+    "Víctimas Secuestro (SE)",
+    "Casos Secuestro (SE)"
+   ],
+   "title": "Secuestro",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046306000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  },
+  "c25abee8a628442ba20ffd9f5cdc153d": {
+   "used_for": [
+    "Casos Reclutamiento menores 18 años (RU)",
+    "Víctimas Reclutamiento menores de 18 años (RU)"
+   ],
+   "title": "Reclutamiento y utilización de menores 18 años",
+   "owner": "Observatorio_memoria",
+   "modified": 1777046273000,
+   "licenseInfo": "<p>CC BY 4.0</p>",
+   "accessInformation": "Observatorio de Memoria y Conflicto OMC - Centro Nacional de Memoria Histórica CNMH."
+  }
+ }
+}

@@ -4,32 +4,37 @@
 // MapView.svelte so the panel opens showing the current look.
 
 export const DBG_DEFAULTS = {
-  // tendril geometry, primary field (CPU rebuild on slider release)
-  nCurves: 4000,
-  stepKm: 3.4,
-  reachKm: 55,
-  noiseLen1: 30, // km wavelength, broad meander
-  noiseLen2: 3, // km wavelength, fine wiggle
+  // tendril geometry, primary field (CPU rebuild on slider release). nCurves /
+  // t2Curves are the GLOBAL curve pools for the ONE shared field, seeded ∝
+  // victims across all events (not split per modality). Each field is drawn
+  // twice (scar + fresh pass), so total cost ≈ 2·(nCurves+t2Curves) curves —
+  // push higher via the panel on a real GPU; the headless smoke test is the
+  // ceiling before software WebGL can't keep up during playback.
+  nCurves: 80000,
+  stepKm: 4.2,
+  reachKm: 80,
+  noiseLen1: 40, // km wavelength, broad meander
+  noiseLen2: 6, // km wavelength, fine wiggle
   noiseAmp1: 3.0, // turns contributed by the broad octave
   noiseAmp2: 0.4, // turns contributed by the fine octave
   // tendril geometry, secondary detail field (different seed; wispier)
-  t2Curves: 2500,
+  t2Curves: 62000,
   t2StepKm: 1.6,
-  t2NoiseLen1: 12,
+  t2NoiseLen1: 34,
   t2NoiseLen2: 2,
-  t2NoiseAmp1: 3.0,
-  t2NoiseAmp2: 0.6,
-  t2BaseWidth: 0.3,
+  t2NoiseAmp1: 2.0,
+  t2NoiseAmp2: 0.3,
+  t2BaseWidth: 0.5,
   // tendril shader (live uniforms, shared by both fields)
   baseWidth: 0.5,
   widthBoost: 7.5,
   widthFalloff: 2.7,
   scarWidth: 1.0,
-  scarAlpha: 0.25,
-  freshAlpha: 0.5,
-  pulseSpeed: 0.6, // km per sim-day
-  pulseWidth: 15, // km
-  pulseStrength: 0.95,
+  scarAlpha: 0.3,
+  freshAlpha: 0.96,
+  pulseSpeed: 0.4, // km per sim-day
+  pulseWidth: 24, // km
+  pulseStrength: 1.05,
   // wound / scar markers
   fadeDays: 1050,
   glowScale: 5000,
@@ -37,7 +42,7 @@ export const DBG_DEFAULTS = {
   glowAlpha: 40,
   coreScale: 1500,
   coreMaxPx: 30,
-  coreAlpha: 230,
+  coreAlpha: 210,
   scarScale: 900,
   scarDotAlpha: 125,
 };
@@ -63,7 +68,7 @@ export const DBG_GROUPS: { title: string; params: DbgParam[] }[] = [
   {
     title: 'tendril field (rebuilds on release)',
     params: [
-      { key: 'nCurves', label: 'curves', min: 200, max: 8000, step: 100, rebuild: true },
+      { key: 'nCurves', label: 'curves (pool)', min: 1000, max: 80000, step: 1000, rebuild: true },
       { key: 'stepKm', label: 'step km', min: 0.8, max: 8, step: 0.2, rebuild: true },
       { key: 'reachKm', label: 'reach km', min: 10, max: 150, step: 5, rebuild: true },
       { key: 'noiseLen1', label: 'noise λ broad km', min: 4, max: 100, step: 2, rebuild: true },
@@ -75,7 +80,7 @@ export const DBG_GROUPS: { title: string; params: DbgParam[] }[] = [
   {
     title: 'tendril field 2 (rebuilds on release)',
     params: [
-      { key: 't2Curves', label: 'curves', min: 0, max: 8000, step: 100, rebuild: true },
+      { key: 't2Curves', label: 'curves (pool)', min: 0, max: 80000, step: 1000, rebuild: true },
       { key: 't2StepKm', label: 'step km', min: 0.8, max: 8, step: 0.2, rebuild: true },
       { key: 't2NoiseLen1', label: 'noise λ broad km', min: 4, max: 100, step: 2, rebuild: true },
       { key: 't2NoiseLen2', label: 'noise λ fine km', min: 1, max: 30, step: 1, rebuild: true },

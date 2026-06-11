@@ -1,15 +1,22 @@
 <script lang="ts">
-  import type { ViolenceData, ElectionsData, Munis, MuniShapes } from './lib/data';
-  import { loadViolence, loadJson } from './lib/data';
+  import type {
+    ViolenceData,
+    ElectionsData,
+    Munis,
+    MuniShapes,
+    ViolenceDetails,
+  } from './lib/data';
+  import { loadViolence, loadViolenceDetails, loadJson } from './lib/data';
   import { app } from './lib/state.svelte';
-  import { t, ui } from './lib/i18n.svelte';
+  import { t, ui, toggleLang } from './lib/i18n.svelte';
   import MapView from './lib/MapView.svelte';
   import TimeBar from './lib/TimeBar.svelte';
-  import LegendViolence from './lib/LegendViolence.svelte';
-  import LegendElections from './lib/LegendElections.svelte';
   import LegendMemoria from './lib/LegendMemoria.svelte';
   import Tooltip from './lib/Tooltip.svelte';
+  import DetailPanel from './lib/DetailPanel.svelte';
   import DebugPanel from './lib/DebugPanel.svelte';
+  import Credits from './lib/Credits.svelte';
+  import Welcome from './lib/Welcome.svelte';
   import { dbgEnabled } from './lib/debug.svelte';
 
   // $state.raw: loaded artifacts are immutable — deep reactive proxies over
@@ -21,6 +28,43 @@
   let munis = $state.raw<Munis | null>(null);
   let shapes = $state.raw<MuniShapes | null>(null);
   let error = $state<string | null>(null);
+
+  // First-visit onboarding: the welcome modal shows once (localStorage latch)
+  // and stays reopenable via the "?" button. localStorage can throw in private
+  // modes — degraded mode is "welcome shows every visit", acceptable.
+  const WELCOME_KEY = 'mdv:welcome:v1';
+  const firstVisit = (() => {
+    try {
+      return localStorage.getItem(WELCOME_KEY) !== '1';
+    } catch {
+      return true;
+    }
+  })();
+  if (firstVisit) app.overlay = 'welcome';
+  function closeWelcome() {
+    try {
+      localStorage.setItem(WELCOME_KEY, '1');
+    } catch {
+      /* private mode — modal will show again next visit */
+    }
+    if (firstVisit) app.playHint = true;
+    app.overlay = null;
+    app.playing = true;
+  }
+
+  // Victim-detail buffers are large (~9 MB) and only needed once a panel opens —
+  // fetch them lazily the first time the user selects an event, never on initial
+  // load. $state.raw for the same reason as the other artifacts.
+  let details = $state.raw<ViolenceDetails | null>(null);
+  let detailsRequested = false;
+  $effect(() => {
+    if (app.selected.length > 0 && violence && !detailsRequested) {
+      detailsRequested = true;
+      loadViolenceDetails(violence.meta)
+        .then((d) => (details = d))
+        .catch(() => (detailsRequested = false)); // allow a retry on next open
+    }
+  });
 
   $effect(() => {
     Promise.all([
@@ -44,11 +88,6 @@
       });
   });
 
-  function switchTab(tab: 'violence' | 'elections' | 'memoria') {
-    app.tab = tab;
-    app.playing = false;
-    app.hover = null;
-  }
 </script>
 
 {#if error}
@@ -76,48 +115,28 @@
           <h1>{t('title')}</h1>
           <p class="sub">{t('subtitle')}</p>
         </div>
-        <button
-          class="lang mono"
-          onclick={() => (ui.lang = ui.lang === 'es' ? 'en' : 'es')}
-          aria-label="Cambiar idioma / switch language"
-        >
-          {ui.lang === 'es' ? 'EN' : 'ES'}
-        </button>
-      </div>
-
-      <div class="tabs">
-        <button
-          aria-pressed={app.tab === 'violence'}
-          class:active={app.tab === 'violence'}
-          onclick={() => switchTab('violence')}
-        >
-          {t('tab_violence')}
-        </button>
-        <button
-          aria-pressed={app.tab === 'elections'}
-          class:active={app.tab === 'elections'}
-          onclick={() => switchTab('elections')}
-        >
-          {t('tab_elections')}
-        </button>
-        <button
-          aria-pressed={app.tab === 'memoria'}
-          class:active={app.tab === 'memoria'}
-          onclick={() => switchTab('memoria')}
-        >
-          {t('tab_memoria')}
-        </button>
+        <div class="hbtns">
+          <button
+            class="lang mono"
+            onclick={() => (app.overlay = 'welcome')}
+            aria-label={t('about_btn')}
+            title={t('about_btn')}
+          >
+            ?
+          </button>
+          <button
+            class="lang mono"
+            onclick={toggleLang}
+            aria-label="Cambiar idioma / switch language"
+          >
+            {ui.lang === 'es' ? 'EN' : 'ES'}
+          </button>
+        </div>
       </div>
       </header>
 
       <aside class="ficha rise panel" style="animation-delay: 0.15s">
-        {#if app.tab === 'violence'}
-          <LegendViolence {violence} />
-        {:else if app.tab === 'elections'}
-          <LegendElections {elections} />
-        {:else}
-          <LegendMemoria {violence} />
-        {/if}
+        <LegendMemoria {violence} />
       </aside>
     </div>
 
@@ -126,6 +145,7 @@
     </div>
 
     <Tooltip />
+    <DetailPanel {violence} {munis} {details} />
 
     {#if dbgEnabled && app.tab === 'memoria'}
       <DebugPanel />
@@ -133,9 +153,19 @@
 
     <footer class="mono">
       <span class="dim">{t('sources')}:</span>
-      CNMH/SIEVCAC (corte 2026-03-31) · CEDE Resultados Electorales 1958–2022 (CC0) ·
-      DIVIPOLA MinSalud (CC BY-SA)
+      CNMH/SIEVCAC · CEDE · DANE · MinSalud ·
+      <button class="credits-btn" onclick={() => (app.overlay = 'credits')}>
+        {t('credits_btn')}
+      </button>
     </footer>
+
+    {#if app.overlay === 'credits'}
+      <Credits onclose={() => (app.overlay = null)} />
+    {/if}
+
+    {#if app.overlay === 'welcome'}
+      <Welcome onclose={closeWelcome} />
+    {/if}
   </main>
 {/if}
 
@@ -191,12 +221,12 @@
     flex-direction: column;
     gap: 10px;
     /* stay clear of the timebar at the bottom */
-    max-height: calc(100vh - 140px);
+    max-height: calc(100vh - 170px);
   }
 
   header {
     flex: none;
-    padding: 14px 16px 0;
+    padding: 14px 16px 4px;
   }
 
   .head-row {
@@ -204,6 +234,12 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .hbtns {
+    flex: none;
+    display: flex;
+    gap: 6px;
   }
 
   h1 {
@@ -235,36 +271,6 @@
   .lang:hover {
     color: var(--gold);
     border-color: var(--gold);
-  }
-
-  /* ---------- tabs ---------- */
-  .tabs {
-    display: flex;
-    gap: 22px;
-    border-top: 1px solid var(--hairline-soft);
-    margin: 0 -16px;
-    padding: 0 16px;
-  }
-
-  .tabs button {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--paper-faint);
-    padding: 11px 0 12px;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: color 0.15s;
-  }
-
-  .tabs button:hover {
-    color: var(--paper-dim);
-  }
-
-  .tabs button.active {
-    color: var(--paper);
-    border-bottom-color: var(--gold);
   }
 
   /* ---------- side panel (flows below the header in the rail) ---------- */
@@ -303,6 +309,17 @@
     color: var(--gold);
   }
 
+  .credits-btn {
+    font: inherit;
+    color: var(--paper-dim);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .credits-btn:hover {
+    color: var(--gold);
+  }
+
   /* ---------- small screens: stack, keep it usable ---------- */
   @media (max-width: 900px) {
     .rail {
@@ -319,7 +336,14 @@
       bottom: 8px;
     }
 
+    /* keep attribution reachable on small screens (license requirement);
+       drop only the "Fuentes:" label */
     footer {
+      right: 4px;
+      bottom: 0;
+    }
+
+    footer .dim {
       display: none;
     }
   }

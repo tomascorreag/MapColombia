@@ -1,25 +1,72 @@
 <script lang="ts">
   import type { ViolenceData } from './data';
   import { formatInt } from './data';
-  import { t, ui } from './i18n.svelte';
+  import { app } from './state.svelte';
+  import { t, ui, modalityName } from './i18n.svelte';
 
   let { violence }: { violence: ViolenceData } = $props();
 
-  const maMeta = $derived(violence.meta.modalities[0]);
-  // massacres with year known but exact date unknown (scar-only display rule)
+  // victims per modality (the wound metric — area and blood follow victims)
+  const victimsByCode = $derived.by(() => {
+    const out: Record<string, number> = {};
+    for (const m of violence.meta.modalities) {
+      let v = 0;
+      for (let i = m.start; i < m.end; i++) v += violence.victims[i];
+      out[m.code] = v;
+    }
+    return out;
+  });
+
+  // totals across the enabled modalities (shown under the wound key)
+  const enabledTotals = $derived.by(() => {
+    let events = 0;
+    let victims = 0;
+    for (const m of violence.meta.modalities) {
+      if (!app.enabled[m.code]) continue;
+      events += m.n;
+      victims += victimsByCode[m.code];
+    }
+    return { events, victims };
+  });
+
+  // events with year known but exact date unknown (scar-only display rule),
+  // across every modality
   const scarOnly = $derived.by(() => {
     let n = 0;
-    for (let i = 0; i < maMeta.n; i++) if (violence.day[maMeta.start + i] < 0) n++;
-    return n;
-  });
-  const totalVictims = $derived.by(() => {
-    let n = 0;
-    for (let i = 0; i < maMeta.n; i++) n += violence.victims[maMeta.start + i];
+    for (let i = 0; i < violence.meta.n; i++) if (violence.day[i] < 0) n++;
     return n;
   });
 </script>
 
 <div class="legend">
+  <div class="head">
+    <span class="eyebrow">{t('modalities')}</span>
+    <span class="bulk mono">
+      <button onclick={() => app.setAll(true)}>{t('all')}</button>
+      <span class="dim">/</span>
+      <button onclick={() => app.setAll(false)}>{t('none')}</button>
+    </span>
+  </div>
+
+  <ul class="mods">
+    {#each violence.meta.modalities as m (m.code)}
+      <li>
+        <button
+          class="row"
+          class:off={!app.enabled[m.code]}
+          onclick={() => (app.enabled[m.code] = !app.enabled[m.code])}
+          aria-pressed={app.enabled[m.code]}
+        >
+          <span class="dot"></span>
+          <span class="name">{modalityName(m.code)}</span>
+          <span class="n mono dim">{formatInt(victimsByCode[m.code], ui.lang)}</span>
+        </button>
+      </li>
+    {/each}
+  </ul>
+
+  <hr class="rule" />
+
   <span class="eyebrow">{t('wounds_title')}</span>
   <ul class="wounds">
     <li>
@@ -40,9 +87,9 @@
     </li>
   </ul>
   <p class="note mono">
-    {t('victims_area')} · {formatInt(maMeta.n, ui.lang)}
-    {ui.lang === 'es' ? 'masacres' : 'massacres'},
-    {formatInt(totalVictims, ui.lang)}
+    {t('victims_area')} · {formatInt(enabledTotals.events, ui.lang)}
+    {ui.lang === 'es' ? 'casos' : 'cases'},
+    {formatInt(enabledTotals.victims, ui.lang)}
     {ui.lang === 'es' ? 'víctimas' : 'victims'}
   </p>
 
@@ -62,6 +109,75 @@
 <style>
   .legend {
     padding: 12px 16px 14px;
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .bulk {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .bulk button {
+    color: var(--paper-dim);
+  }
+
+  .bulk button:hover {
+    color: var(--gold);
+  }
+
+  .mods {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 3px 2px;
+    font-size: 12.5px;
+    text-align: left;
+    transition: opacity 0.15s;
+  }
+
+  .row:hover .name {
+    color: var(--paper);
+  }
+
+  .row.off {
+    opacity: 0.32;
+  }
+
+  .row.off .dot {
+    background: var(--hairline) !important;
+  }
+
+  /* every event renders red on the map — the legend dots match, distinguished
+     by name, not colour */
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+    background: rgb(255, 47, 64);
+  }
+
+  .name {
+    color: var(--paper-dim);
+    flex: 1;
+  }
+
+  .n {
+    font-size: 11px;
   }
 
   .wounds {

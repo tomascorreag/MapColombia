@@ -23,7 +23,9 @@ function allOn(): Record<string, boolean> {
 }
 
 class AppState {
-  tab = $state<'violence' | 'elections' | 'memoria'>('violence');
+  // 'memoria' is the unified violence view (all event types, rendered as red
+  // wounds over continuous time); 'elections' is the political map.
+  tab = $state<'memoria' | 'elections'>('memoria');
   year = $state(2000);
   allYears = $state(false);
   playing = $state(false);
@@ -33,9 +35,22 @@ class AppState {
   electionIdx = $state<Record<Body, number>>({ presidencia: 0, senado: 0, camara: 0 });
   hover = $state<Hover | null>(null);
 
+  // Click-to-pin: `selected` holds the global indices of ALL events under the
+  // last click (oldest-first; a few px cover many records at national zoom);
+  // empty = panel closed. Small, low-frequency state — safe to be deeply
+  // reactive, unlike the $state.raw artifacts written every animation frame.
+  selected = $state<number[]>([]);
+
+  // Which full-screen modal is open — a single enum keeps modals mutually
+  // exclusive and lets the detail panel gate its Escape handler on it.
+  overlay = $state<'welcome' | 'credits' | null>(null);
+  // One-time "press play" microcopy hint, armed when the first-visit welcome
+  // modal closes and dropped forever on the first timeline interaction.
+  playHint = $state(false);
+
   // memoria view: continuous time (days since 1958-01-01), playback speed in
   // sim-days per real second, and the body driving the political field
-  mday = $state((Date.UTC(1990, 0, 1) - Date.UTC(1958, 0, 1)) / 86_400_000);
+  mday = $state((Date.UTC(1960, 0, 1) - Date.UTC(1958, 0, 1)) / 86_400_000);
   mspeed = $state(180);
   mbody = $state<Body>('camara');
 

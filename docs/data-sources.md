@@ -19,8 +19,13 @@
   (https://geoportal-de-datos-abiertos-cnmh-cnmh.hub.arcgis.com/); also on datos.gov.co. [high, 3-0]
 - **Access**: .xlsx downloads (Víctimas Masacres ~1.98 MB, Casos ~556 KB) behind **free
   registration** on the official portal; open mirrors may exist (datos.gov.co). [high, 3-0]
-- **⚠ License UNVERIFIED**: claim that CNMH data is CC BY 4.0 was **refuted 0-3**. Reuse
-  terms for public web display must be confirmed before publishing. [open question]
+- **License — RESOLVED 2026-06-10**: the 2026-03-31 geoportal cut states **CC BY 4.0** in the
+  `licenseInfo` field of all 11 ArcGIS Online items (verified per-item via the AGOL REST API;
+  snapshot in `docs/evidence/cnmh-agol-license-2026-06-10.json`). The 2024-09-30 socrata cut
+  on datos.gov.co is **CC BY-SA 4.0** — the two cuts carry *different* licenses. (The earlier
+  0-3 refutation below predates this per-item verification and concerned the blanket claim,
+  not the geoportal items.) Given CNMH licensing instability, re-check `licenseInfo` and
+  refresh the evidence snapshot whenever a new cut is downloaded.
 - **⚠ Controversies**: 2024 retroactive scope extension (1958→1944) and reported database
   alterations under the Gaitán-era directorship. Affects mainly pre-1958 records (outside our
   window), but: **pin a specific dated cut of the data and record the cutoff date**. [medium]
@@ -125,9 +130,13 @@ These findings OVERRIDE the web-research conclusions where they conflict.
    **The "~1993 feasible window" estimate above is obsolete — the joint window is 1958–present.**
    Apparent series gaps (no senado/presidencia 1964, 1968) match the real electoral calendar
    (mitaca midterms), not missing data.
-3. **License for CNMH** — partially resolved: the 2024-09-30 socrata cut is explicitly
-   CC BY-SA 4.0 → safe to publish with attribution + share-alike. The 2026 geoportal cut's
-   terms remain unstated; if it's displayed, confirm terms or fall back to the licensed cut.
+3. **License for CNMH — RESOLVED 2026-06-10**: the 2024-09-30 socrata cut is explicitly
+   CC BY-SA 4.0. The 2026-03-31 geoportal cut (the one the frontend ships) states
+   **CC BY 4.0** on every AGOL item (`licenseInfo`, verified 2026-06-10; evidence in
+   `docs/evidence/cnmh-agol-license-2026-06-10.json`) — attribution required, no
+   ShareAlike. datos.gov.co portal terms additionally request the citation
+   "Fuente: Portal de Datos Abiertos www.datos.gov.co" + last-update date for
+   datasets fetched there (applies to the DIVIPOLA centroids).
 
 ### Municipality centroids — MinSalud DIVIPOLA (added 2026-06-05)
 
@@ -245,7 +254,9 @@ corrections live in `DATE_OVERRIDES` (build_frontend_data.py), each with a citat
 
 ## Refuted claims (do not cite)
 
-- "CNMH conflict datasets are CC BY 4.0" — 0-3.
+- "CNMH conflict datasets are CC BY 4.0" — 0-3. *(Superseded 2026-06-10 for the geoportal
+  cut specifically: per-item `licenseInfo` = CC BY 4.0, see resolution note above. The
+  blanket claim remains wrong — the socrata cut is CC BY-SA 4.0.)*
 - "UCDP GED has village-level precise coordinates suitable for web mapping" — 0-3.
 - "SIEVCAC strictly requires registration (no open path)" — 1-2 split; registration is the
   documented official path but mirrors may exist.

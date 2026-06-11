@@ -1131,14 +1131,134 @@
   "PERUANO",
   "LOS TRAQUETOS"
  ],
+ "details": {
+  "file": "violence_details.bin",
+  "buffers": {
+   "civ": {
+    "offset": 0,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "comb": {
+    "offset": 683094,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "vn": {
+    "offset": 1366188,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nMale": {
+    "offset": 2049282,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nFemale": {
+    "offset": 2732376,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nChild": {
+    "offset": 3415470,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nAdolescent": {
+    "offset": 4098564,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nAdult": {
+    "offset": 4781658,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nElder": {
+    "offset": 5464752,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nFatal": {
+    "offset": 6147846,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "nNonFatal": {
+    "offset": 6830940,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "occTop": {
+    "offset": 7514034,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   },
+   "occTopN": {
+    "offset": 8197128,
+    "length": 341547,
+    "dtype": "uint16",
+    "bytes": 683094
+   }
+  },
+  "occupations": [
+   "FUERZA PÚBLICA",
+   "GUERRILLERO",
+   "PARAMILITAR",
+   "OTRA ¿CUÁL?",
+   "BANDOLERO",
+   "CONDUCTOR/MOTORISTA",
+   "DELINCUENTE",
+   "CAMPESINO",
+   "TRABAJADOR DE FINCA",
+   "EMPLEADO",
+   "SEGURIDAD PRIVADA",
+   "ESTUDIANTE",
+   "COMERCIANTE",
+   "FUNCIONARIO PÚBLICO",
+   "GANADERO/HACENDADO",
+   "ECONOMÍA INFORMAL",
+   "TRABAJO SIN ESPECIFICAR",
+   "OBRERO",
+   "PESCADOR",
+   "MINERO",
+   "RELIGIOSO",
+   "PROFESIONAL",
+   "ADMINISTRADOR DE FINCA",
+   "TRABAJADOR(A) SEXUAL",
+   "EMPRESARIO - INDUSTRIAL",
+   "AMA DE CASA",
+   "MIEMBRO DE GRUPO POSDESMOVILIZACIÓN",
+   "PENSIONADO",
+   "DESEMPLEADO",
+   "RASPACHÍN",
+   "PERSONAL DE SALUD",
+   "ERRADICADOR"
+  ],
+  "note": "Per-event victim portrait, gi-aligned to the main buffers (same row index). civ/comb are the case-level civilian and combatant totals (casos). vn = victims individually recorded in victimas_*; nMale/nFemale, the age buckets (child = primera infancia + infancia, adolescent, adult, elder) and nFatal/nNonFatal are tallies over those rows — attributes left blank in the source stay uncounted, never imputed, so the buckets need not sum to vn. occTop indexes details.occupations (the most-frequent recorded occupation among the case's victims; 65535 = none recorded), occTopN its count."
+ },
  "unmatchedMuni": 1,
  "source": {
   "name": "CNMH — SIEVCAC, Observatorio de Memoria y Conflicto",
   "corte": "2026-03-31",
   "publisher": "Centro Nacional de Memoria Histórica",
   "via": "datos.gov.co / CNMH ArcGIS Geoportal",
-  "license_note": "geoportal cut license unstated; the 2024-09-30 socrata cut of the same system is CC BY-SA 4.0"
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "license_note": "CC BY 4.0 stated in the licenseInfo field of all 11 ArcGIS Online items of the geoportal cut (verified 2026-06-10; snapshot in docs/evidence/cnmh-agol-license-2026-06-10.json). The 2024-09-30 socrata cut of the same system is CC BY-SA 4.0."
  },
  "integrity": "Events with unknown year (Anio_hecho=0), pre-1958 dates, out-of-range coordinates, or unknown municipality (whose source coordinates are department-centroid placeholders) are excluded and counted per modality in modalities[].excluded — never imputed. day=-1 means exact date unknown (year-level only). muni=65535 means the DANE code did not match the DIVIPOLA centroid table (e.g. non-municipalized areas).",
- "generated": "2026-06-06T04:18:18.113170+00:00"
+ "generated": "2026-06-10T23:24:12.678967+00:00"
 }

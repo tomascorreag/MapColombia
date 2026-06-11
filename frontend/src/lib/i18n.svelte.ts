@@ -3,14 +3,33 @@
 
 export type Lang = 'es' | 'en';
 
-export const ui = $state({ lang: 'es' as Lang });
+// ?lang=en|es in the URL overrides the ES default, so a shared link opens in
+// that language directly.
+function initialLang(): Lang {
+  const p = new URLSearchParams(location.search).get('lang');
+  return p === 'en' || p === 'es' ? p : 'es';
+}
+
+export const ui = $state({ lang: initialLang() });
+
+/** switch language and keep ?lang= in the address bar so the URL stays shareable */
+export function setLang(lang: Lang) {
+  ui.lang = lang;
+  const url = new URL(location.href);
+  url.searchParams.set('lang', lang);
+  history.replaceState(null, '', url);
+}
+
+export function toggleLang() {
+  setLang(ui.lang === 'es' ? 'en' : 'es');
+}
 
 const dict: Record<string, { es: string; en: string }> = {
-  title: { es: 'La violencia y el voto', en: 'Violence and the Vote' },
+  title: { es: 'Memoria de la violencia', en: 'A Memory of Violence' },
   eyebrow: { es: 'Archivo cartográfico · Colombia 1958–2026', en: 'Cartographic archive · Colombia 1958–2026' },
   subtitle: {
-    es: 'Conflicto armado y elecciones, municipio por municipio',
-    en: 'Armed conflict and elections, municipality by municipality',
+    es: 'El conflicto armado, municipio por municipio',
+    en: 'The armed conflict, municipality by municipality',
   },
   tab_violence: { es: 'Violencia', en: 'Violence' },
   tab_elections: { es: 'Elecciones', en: 'Elections' },
@@ -71,7 +90,88 @@ const dict: Record<string, { es: string; en: string }> = {
   unknown: { es: 'Sin información', en: 'No information' },
   n_more: { es: 'más', en: 'more' },
 
+  // detail panel
+  coordinates: { es: 'Coordenadas', en: 'Coordinates' },
+  view_geoportal: { es: 'Ver en el Geoportal del CNMH', en: 'View on the CNMH Geoportal' },
+  license: { es: 'Licencia', en: 'License' },
+  dataset: { es: 'Conjunto de datos', en: 'Dataset' },
+  cases_at_point: { es: 'casos en este punto', en: 'cases at this point' },
+  close: { es: 'Cerrar', en: 'Close' },
+
+  // victim portrait (detail panel)
+  victims_portrait: { es: 'Las víctimas', en: 'The victims' },
+  civilians: { es: 'civiles', en: 'civilians' },
+  combatants: { es: 'combatientes', en: 'combatants' },
+  recorded_individually: {
+    es: 'registradas individualmente',
+    en: 'recorded individually',
+  },
+  sex_label: { es: 'Sexo', en: 'Sex' },
+  // tally nouns come in singular (key + '_one') / plural (key) pairs so counts agree
+  civilians_one: { es: 'civil', en: 'civilian' },
+  combatants_one: { es: 'combatiente', en: 'combatant' },
+  men: { es: 'hombres', en: 'men' },
+  men_one: { es: 'hombre', en: 'man' },
+  women: { es: 'mujeres', en: 'women' },
+  women_one: { es: 'mujer', en: 'woman' },
+  unrecorded: { es: 'sin registrar', en: 'unrecorded' },
+  unrecorded_one: { es: 'sin registrar', en: 'unrecorded' },
+  age_where_known: { es: 'Edad (donde se conoce)', en: 'Age (where known)' },
+  age_children: { es: 'niños', en: 'children' },
+  age_children_one: { es: 'niño', en: 'child' },
+  age_adolescents: { es: 'adolescentes', en: 'adolescents' },
+  age_adolescents_one: { es: 'adolescente', en: 'adolescent' },
+  age_adults: { es: 'adultos', en: 'adults' },
+  age_adults_one: { es: 'adulto', en: 'adult' },
+  age_elderly: { es: 'personas mayores', en: 'older people' },
+  age_elderly_one: { es: 'persona mayor', en: 'older person' },
+  outcome_label: { es: 'Desenlace', en: 'Outcome' },
+  fatal: { es: 'mortales', en: 'fatal' },
+  fatal_one: { es: 'mortal', en: 'fatal' },
+  nonfatal: { es: 'no mortales', en: 'non-fatal' },
+  nonfatal_one: { es: 'no mortal', en: 'non-fatal' },
+  occupation_top: { es: 'Ocupación más frecuente', en: 'Most frequent occupation' },
+  recorded_individually_one: {
+    es: 'registrada individualmente',
+    en: 'recorded individually',
+  },
+  portrait_caption: {
+    es: 'Conteos de las víctimas registradas una por una en el archivo; los atributos en blanco no se cuentan ni se estiman.',
+    en: 'Tallies of victims recorded one by one in the archive; blank attributes are neither counted nor estimated.',
+  },
+
   sources: { es: 'Fuentes', en: 'Sources' },
+  credits_btn: { es: 'créditos y avisos', en: 'credits & notices' },
+
+  // welcome modal (first-visit onboarding; reopened via the "?" button)
+  welcome_eyebrow: { es: 'Cómo leer este archivo', en: 'How to read this archive' },
+  welcome_what: {
+    es: 'Este mapa presenta los eventos de violencia del conflicto armado colombiano documentados por el Centro Nacional de Memoria Histórica, 1958–2026. Cada evento aparece en su fecha como una herida que se extiende sobre el territorio; con los años se desvanece y deja una cicatriz permanente. Nada se estima: cada punto es un caso documentado, con su registro citado.',
+    en: "This map presents the violence of Colombia's armed conflict as documented by the National Center for Historical Memory, 1958–2026. Each event appears on its date as a wound spreading across the territory; over the years it fades, leaving a permanent scar. Nothing is estimated: every point is a documented case with its cited record.",
+  },
+  welcome_how_play: {
+    es: 'Pulse ▶ o arrastre la línea de tiempo para recorrer los años.',
+    en: 'Press ▶ or drag the timeline to move through the years.',
+  },
+  welcome_how_legend: {
+    es: 'Active o desactive las modalidades de violencia en el panel izquierdo.',
+    en: 'Toggle the forms of violence in the left panel.',
+  },
+  welcome_how_hover: {
+    es: 'Pase el cursor sobre un evento para un resumen; haga clic para abrir el registro completo.',
+    en: 'Hover over an event for a summary; click to open the full record.',
+  },
+  welcome_how_lang: {
+    es: 'Cambie de idioma con el botón ES/EN.',
+    en: 'Switch languages with the ES/EN button.',
+  },
+  welcome_dignity: {
+    es: 'Este archivo registra víctimas reales. Se publica con fines de memoria, investigación y educación.',
+    en: 'This archive records real victims. It is published for memory, research and education.',
+  },
+  welcome_enter: { es: 'Entrar al archivo', en: 'Enter the archive' },
+  about_btn: { es: 'Acerca de este mapa', en: 'About this map' },
+  hint_play: { es: 'Pulse ▶ para recorrer los años', en: 'Press ▶ to move through the years' },
   round_1: { es: '1ª vuelta', en: 'first round' },
   round_2: { es: '2ª vuelta', en: 'runoff' },
 
@@ -88,23 +188,23 @@ const dict: Record<string, { es: string; en: string }> = {
     es: 'atenuado: menos del 50 % del voto tiene partido clasificado',
     en: 'dimmed: under 50% of the vote has a classified party',
   },
-  wounds_title: { es: 'Masacres', en: 'Massacres' },
-  wound_fresh: { es: 'masacre reciente', en: 'recent massacre' },
+  wounds_title: { es: 'Heridas en el tiempo', en: 'Wounds over time' },
+  wound_fresh: { es: 'evento reciente', en: 'recent event' },
   wound_healing: { es: 'se desvanece en ~3 años', en: 'fades over ~3 years' },
   wound_scar: { es: 'cicatriz permanente', en: 'permanent scar' },
   wound_tendrils: {
-    es: 'sangre que se extiende desde cada masacre y cicatriza',
-    en: 'blood spreading from each massacre, scarring permanently',
+    es: 'sangre que se extiende desde cada evento y cicatriza',
+    en: 'blood spreading from each event, scarring permanently',
   },
   victims_area: { es: 'área ∝ víctimas', en: 'area ∝ victims' },
   memoria_method_title: { es: 'Método', en: 'Method' },
   memoria_method_massacres: {
-    es: 'Cada masacre aparece en su fecha exacta como una herida cuya área es proporcional a las víctimas; la herida se desvanece en ~3 años y deja una cicatriz permanente. Fuente: CNMH/SIEVCAC, con cita por registro.',
-    en: 'Each massacre appears on its exact date as a wound whose area is proportional to its victims; the wound fades over ~3 years into a permanent scar. Source: CNMH/SIEVCAC, with a citation per record.',
+    es: 'Cada evento aparece en su fecha exacta como una herida cuya área es proporcional a las víctimas; la herida se desvanece en ~3 años y deja una cicatriz permanente. La cantidad de sangre que se extiende sigue al número de víctimas. Fuente: CNMH/SIEVCAC, con cita por registro.',
+    en: 'Each event appears on its exact date as a wound whose area is proportional to its victims; the wound fades over ~3 years into a permanent scar. The amount of blood that spreads follows the number of victims. Source: CNMH/SIEVCAC, with a citation per record.',
   },
   memoria_method: {
-    es: 'El color de cada municipio pondera sus elecciones pasadas: cada una entra gradualmente durante un año y decae con vida media de ~8 años, según la posición izquierda–derecha ponderada por votos (escala de 5 puntos con cita por partido; las coaliciones derivadas toman el promedio de sus miembros clasificados). Partidos sin clasificación citable quedan fuera y se publica la cobertura. Las masacres aparecen en su fecha exacta.',
-    en: 'Each municipality’s colour weights its past elections: each enters gradually over one year and decays with a ~8-year half-life, using the vote-weighted left–right position (5-point scale with one citation per party; derived coalitions take the mean of their classified members). Parties without a citable classification are excluded and coverage is published. Massacres appear on their exact date.',
+    es: 'El color de cada municipio pondera sus elecciones pasadas: cada una entra gradualmente durante un año y decae con vida media de ~8 años, según la posición izquierda–derecha ponderada por votos (escala de 5 puntos con cita por partido; las coaliciones derivadas toman el promedio de sus miembros clasificados). La escala es una clasificación académica preliminar, pendiente de revisión. Partidos sin clasificación citable quedan fuera y se publica la cobertura. Las masacres aparecen en su fecha exacta.',
+    en: 'Each municipality’s colour weights its past elections: each enters gradually over one year and decays with a ~8-year half-life, using the vote-weighted left–right position (5-point scale with one citation per party; derived coalitions take the mean of their classified members). The scale is a preliminary scholarly classification, pending review. Parties without a citable classification are excluded and coverage is published. Massacres appear on their exact date.',
   },
   fn_banner: {
     es: 'Frente Nacional: elección de consenso — un partido tradicional no compitió; el campo político refleja el pacto, no la preferencia local.',

@@ -3,10 +3,10 @@ import { chromium } from 'playwright';
 
 const browser = await chromium.launch({ headless: false });
 const page = await browser.newPage({ viewport: { width: 1500, height: 900 } });
+// pre-set the welcome latch so the modal can't cover the canvas during sampling
+await page.addInitScript(() => localStorage.setItem('mdv:welcome:v1', '1'));
 await page.goto(process.env.SMOKE_URL ?? 'http://localhost:5199', { waitUntil: 'networkidle' });
 await page.waitForTimeout(4000);
-await page.getByRole('button', { name: /memoria|memory/i }).click();
-await page.waitForTimeout(1500);
 
 // idle FPS first
 const fps = () =>

@@ -18,14 +18,14 @@ import { REACH_KM } from './tendrils';
 
 const FULL_DAYS = 30; // matches the wound layers' filterSoftRange width
 const VICTIM_NORM = 5; // sqrt(victims) of a "typical" massacre
-const PULSE_SPEED_KM_PER_DAY = 0.6; // outward spread ~ REACH in ~90 sim-days
-const PULSE_WIDTH_KM = 15;
+const PULSE_SPEED_KM_PER_DAY = 0.4; // outward spread ~ REACH in ~140 sim-days
+const PULSE_WIDTH_KM = 24;
 const WIDTH_BOOST = 7.5; // width multiplier at the massacre centre (fresh)
 const WIDTH_FALLOFF = 2.7; // taper exponent, wound centre -> reach
 const SCAR_WIDTH = 1.0; // scar width as a fraction of the fresh width
-const SCAR_ALPHA = 0.25; // permanent scar opacity (additive, accumulates)
-const FRESH_ALPHA = 0.5; // fresh tendril base opacity (pulse adds on top)
-const PULSE_STRENGTH = 0.95; // extra opacity at the pulse crest
+const SCAR_ALPHA = 0.15; // permanent scar opacity (additive, accumulates)
+const FRESH_ALPHA = 0.96; // fresh tendril base opacity (pulse adds on top)
+const PULSE_STRENGTH = 1.05; // extra opacity at the pulse crest
 
 /** Visual knobs overridable per frame from the debug panel. */
 export interface TendrilShaderParams {
@@ -39,6 +39,10 @@ export interface TendrilShaderParams {
   scarAlpha?: number;
   freshAlpha?: number;
   pulseStrength?: number;
+  /** bit i set = modality i is shown (legend checkboxes); -1 = all */
+  enabledMask?: number;
+  /** 0 = fresh-flare pass (additive), 1 = permanent-scar pass (uniform alpha) */
+  scarMode?: number;
 }
 
 export type TendrilLayerProps = {
@@ -62,6 +66,8 @@ layout(std140) uniform tendrilUniforms {
   float scarAlpha;
   float freshAlpha;
   float pulseStrength;
+  float scarMode;
+  int enabledMask;
 } tendril;
 `;
 
@@ -74,6 +80,7 @@ in float instanceScarDay;
 in float instanceWoundDist;
 in float instanceArcFromWound;
 in float instanceVictimW;
+in float instanceModality;
 out float tendril_alpha;
 out float tendril_fresh;
 float tendril_widthScale;
@@ -87,23 +94,35 @@ in float tendril_fresh;
     float tendril_tF = tendril.timeDay - instanceWoundDay;
     float tendril_env = step(0.0, tendril_tF)
       * (1.0 - smoothstep(tendril.fullDays, tendril.fadeDays, tendril_tF));
-    float tendril_on = step(instanceScarDay, tendril.timeDay);
+    // legend gate: hide segments whose modality checkbox is off
+    int tendril_bit = 1 << int(instanceModality + 0.5);
+    float tendril_modOn = (tendril.enabledMask & tendril_bit) != 0 ? 1.0 : 0.0;
+    float tendril_on = step(instanceScarDay, tendril.timeDay) * tendril_modOn;
     float tendril_reach = tendril.reachKm
       * (0.5 + 0.5 * min(instanceVictimW / tendril.victimNorm, 2.0));
     float tendril_norm = clamp(instanceWoundDist / tendril_reach, 0.0, 1.0);
-    // thickest at the massacre centre, tapering to 0 at reach
+    // thickest at the wound centre, tapering to 0 at reach
     float tendril_taper = pow(1.0 - tendril_norm, tendril.widthFalloff);
-    tendril_widthScale = tendril_on * tendril_taper * tendril.widthBoost
-      * mix(tendril.scarWidth, 1.0, tendril_env);
-    float tendril_pd =
-      (instanceArcFromWound - tendril_tF * tendril.pulseSpeedKmPerDay)
-      / tendril.pulseWidthKm;
-    float tendril_pulse = exp(-tendril_pd * tendril_pd) * tendril_env;
-    tendril_fresh = tendril_env;
-    tendril_alpha = tendril_on * tendril_taper
-      * mix(tendril.scarAlpha,
-            tendril.freshAlpha + tendril.pulseStrength * tendril_pulse,
-            tendril_env);
+    if (tendril.scarMode > 0.5) {
+      // permanent scar pass: thin, dark, NORMAL blending so any number of
+      // overlapping strands composites to one ceiling alpha — every scar
+      // settles to the same intensity regardless of how many victims fell.
+      tendril_widthScale = tendril_on * tendril_taper * tendril.widthBoost
+        * tendril.scarWidth;
+      tendril_alpha = tendril_on * tendril_taper * tendril.scarAlpha;
+      tendril_fresh = 0.0;
+    } else {
+      // fresh-flare pass: transient, ADDITIVE so dense/deadly wounds burn hot.
+      float tendril_pd =
+        (instanceArcFromWound - tendril_tF * tendril.pulseSpeedKmPerDay)
+        / tendril.pulseWidthKm;
+      float tendril_pulse = exp(-tendril_pd * tendril_pd) * tendril_env;
+      tendril_widthScale = tendril_on * tendril_taper * tendril.widthBoost
+        * mix(tendril.scarWidth, 1.0, tendril_env);
+      tendril_alpha = tendril_on * tendril_taper * tendril_env
+        * (tendril.freshAlpha + tendril.pulseStrength * tendril_pulse);
+      tendril_fresh = tendril_env;
+    }
     `,
     'vs:DECKGL_FILTER_SIZE': /* glsl */ `
     size.xy *= tendril_widthScale;
@@ -135,6 +154,8 @@ in float tendril_fresh;
     scarAlpha: 'f32',
     freshAlpha: 'f32',
     pulseStrength: 'f32',
+    scarMode: 'f32',
+    enabledMask: 'i32',
   },
   getUniforms: (opts?: { timeDay?: number } & TendrilShaderParams) => ({
     timeDay: opts?.timeDay ?? 0,
@@ -150,6 +171,8 @@ in float tendril_fresh;
     scarAlpha: opts?.scarAlpha ?? SCAR_ALPHA,
     freshAlpha: opts?.freshAlpha ?? FRESH_ALPHA,
     pulseStrength: opts?.pulseStrength ?? PULSE_STRENGTH,
+    scarMode: opts?.scarMode ?? 0,
+    enabledMask: opts?.enabledMask ?? -1,
   }),
 } as const;
 
@@ -163,6 +186,7 @@ export class TendrilExtension extends LayerExtension {
     getWoundDist: { type: 'accessor', value: 1e6 },
     getArcFromWound: { type: 'accessor', value: 0 },
     getVictimW: { type: 'accessor', value: 1 },
+    getModality: { type: 'accessor', value: 0 },
   };
 
   getShaders(this: Layer) {
@@ -178,6 +202,7 @@ export class TendrilExtension extends LayerExtension {
       instanceWoundDist: { size: 1, accessor: 'getWoundDist' },
       instanceArcFromWound: { size: 1, accessor: 'getArcFromWound' },
       instanceVictimW: { size: 1, accessor: 'getVictimW' },
+      instanceModality: { size: 1, accessor: 'getModality' },
     });
   }
 

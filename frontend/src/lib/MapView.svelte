@@ -13,15 +13,15 @@
     ElectionsData,
     Munis,
     MuniShapes,
-    ModalityMeta,
     Election,
   } from './data';
   import { formatDay, formatInt } from './data';
   import { MODALITY_COLORS, hexToRgb } from './colors';
   import { COLOR_BUCKET_DAYS } from './memoria';
-  import { app } from './state.svelte';
+  import { app, type Hover } from './state.svelte';
   import { dbg } from './debug.svelte';
   import { t, ui, modalityName } from './i18n.svelte';
+  import { muniLabel as fmtMuniLabel, responsible } from './eventFormat';
 
   let {
     violence,
@@ -42,6 +42,13 @@
   let container: HTMLDivElement;
   let overlay: MapboxOverlay | null = null;
   let mapReady = $state(false);
+
+  // Last cursor position over the map canvas (deck pick coords), or null when
+  // the pointer is off the map. Plain (non-reactive) let: read on demand to
+  // re-pick the memoria tooltip as time advances during playback — deck's
+  // onHover only fires on pointer movement, so a stationary cursor never
+  // re-triggers it (see the re-pick effect at the bottom of the script).
+  let lastPointer: { x: number; y: number } | null = null;
 
   // One extension instance shared by all violence layers (deck dedupes shaders).
   const yearFilter = new DataFilterExtension({ filterSize: 1 });
@@ -64,44 +71,39 @@
   // deck.gl compares `props.data` by identity: a fresh object (or subarray) per
   // tick would invalidate and re-upload every GPU attribute on each scrub —
   // exactly what the filterRange design exists to avoid (docs/stack-decision.md).
-  const violenceData = $derived(
+  // Every event renders as a red wound/scar; the GPU filter value is the wound
+  // day (exact date; -1 never flares) or, for scars, the year-close scar day.
+  const woundDataByMod = $derived(
     violence.meta.modalities.map((m) => ({
-      length: m.end - m.start,
+      length: m.n,
       attributes: {
         getPosition: { value: violence.pos.subarray(m.start * 2, m.end * 2), size: 2 },
         getRadius: { value: violence.radius.subarray(m.start, m.end), size: 1 },
-        getFilterValue: { value: violence.yearF32.subarray(m.start, m.end), size: 1 },
+        getFilterValue: { value: violence.dayF32.subarray(m.start, m.end), size: 1 },
+      },
+    }))
+  );
+  const scarDataByMod = $derived(
+    violence.meta.modalities.map((m) => ({
+      length: m.n,
+      attributes: {
+        getPosition: { value: violence.pos.subarray(m.start * 2, m.end * 2), size: 2 },
+        getRadius: { value: violence.radius.subarray(m.start, m.end), size: 1 },
+        getFilterValue: { value: violence.scarDayF32.subarray(m.start, m.end), size: 1 },
       },
     }))
   );
 
-  // Memoria: massacre slice (modalities[0]) with day-resolution filter values.
-  // Same identity rule — built once, filterRange uniforms do the animation.
-  // Slices use maMeta.start/end (start is 0 today, but the layout contract is
-  // the meta offsets, not the modality order).
-  const maMeta = $derived(violence.meta.modalities[0]);
-  const woundData = $derived({
-    length: maMeta.n,
-    attributes: {
-      getPosition: { value: violence.pos.subarray(maMeta.start * 2, maMeta.end * 2), size: 2 },
-      getRadius: { value: violence.radius.subarray(maMeta.start, maMeta.end), size: 1 },
-      getFilterValue: { value: violence.maDayF32, size: 1 },
-    },
-  });
-  const scarData = $derived({
-    length: maMeta.n,
-    attributes: {
-      getPosition: { value: violence.pos.subarray(maMeta.start * 2, maMeta.end * 2), size: 2 },
-      getRadius: { value: violence.radius.subarray(maMeta.start, maMeta.end), size: 1 },
-      getFilterValue: { value: violence.maScarDayF32, size: 1 },
-    },
-  });
+  const modByCode = $derived(
+    new Map(violence.meta.modalities.map((m) => [m.code, m]))
+  );
 
-  // Static memoria geometry, built at load and rebuilt when the debug panel
-  // commits a geometry param (slider release only — see DebugPanel). Two
-  // decorrelated fields: a broad primary field and a finer detail field.
+  // One SHARED tendril field across every event type (plus a finer second field
+  // for visual richness), seeded ∝ victims. Built at load and rebuilt only when
+  // the debug panel commits a geometry param (slider release — see DebugPanel).
+  // Toggling a modality is a uniform update (enabledMask), never a rebuild.
   const tendrilData = $derived.by(() =>
-    buildTendrils(violence, maMeta, {
+    buildTendrils(violence, violence.modOf, {
       seed: 0x1958,
       nCurves: dbg.nCurves,
       stepKm: dbg.stepKm,
@@ -113,7 +115,7 @@
     })
   );
   const tendrilData2 = $derived.by(() =>
-    buildTendrils(violence, maMeta, {
+    buildTendrils(violence, violence.modOf, {
       seed: 0x77aa,
       nCurves: dbg.t2Curves,
       stepKm: dbg.t2StepKm,
@@ -143,24 +145,16 @@
   // wasted work while the wound uniforms animate smoothly.
   const colorBucket = $derived(Math.floor(app.mday / COLOR_BUCKET_DAYS));
 
-  function muniLabel(idx: number): string {
-    if (idx === 0xffff) return t('unknown');
-    return `${munis.names[idx]}, ${munis.depts[idx]}`;
-  }
+  const muniLabel = (idx: number) => fmtMuniLabel(munis, idx);
 
-  function violenceHover(info: PickingInfo, m: ModalityMeta) {
-    if (!info.picked || info.index < 0) {
-      app.hover = null;
-      return;
-    }
-    const gi = m.start + info.index;
+  // Single-event detail card, built from a global event index so it can be
+  // produced from a fresh re-pick (during playback) as well as a live hover.
+  function violenceCard(gi: number, x: number, y: number): Hover {
+    const m = violence.meta.modalities[violence.modOf[gi]];
     const exactDate = formatDay(violence.day[gi], ui.lang);
-    const cat = violence.meta.respCategories[violence.cat[gi]];
-    const grp = violence.meta.respGroups[violence.grp[gi]];
-    const resp = grp && grp !== 'NO IDENTIFICADO' && grp !== 'NO APLICA' ? `${cat} · ${grp}` : cat;
-    app.hover = {
-      x: info.x,
-      y: info.y,
+    return {
+      x,
+      y,
       accent: MODALITY_COLORS[m.code],
       title: modalityName(m.code),
       rows: [
@@ -170,40 +164,59 @@
         },
         { label: t('municipality'), value: muniLabel(violence.muni[gi]) },
         { label: t('victims'), value: formatInt(violence.victims[gi], ui.lang) },
-        { label: t('responsible'), value: resp },
+        { label: t('responsible'), value: responsible(violence, gi) },
         { label: t('record'), value: `N.º ${violence.id[gi]}` },
       ],
     };
   }
 
-  // Memoria wound/scar hover: a few px on screen can cover many massacres at
-  // national zoom, so gather everything under the cursor (fixed pixel radius —
-  // the covered ground area shrinks as the user zooms in) and list them all.
-  function memoriaWoundHover(info: PickingInfo) {
-    if (!info.picked || info.index < 0 || !overlay) {
+  // Build the memoria tooltip by re-picking every enabled wound/scar layer at a
+  // screen position. Decoupled from deck's hover event so it can run both on a
+  // live hover and as time advances under a stationary cursor during playback
+  // (deck's onHover only fires on pointer movement). A few px on screen can
+  // cover many events at national zoom, so gather everything under the cursor
+  // (fixed pixel radius — the covered ground area shrinks as the user zooms in)
+  // and list them all. `hintGi`, when ≥ 0, is the directly-hovered event,
+  // guaranteed to be included even if the multi-pick radius misses it.
+  // Gather every event under a screen position (a few px cover many records at
+  // national zoom), returned as global indices sorted oldest-first. `hintGi`,
+  // when ≥ 0, is the directly-picked event, guaranteed included even if the
+  // multi-pick radius misses it. Shared by the hover card and the click handler.
+  function gatherEventsAt(x: number, y: number, hintGi = -1, depth = 12): number[] {
+    if (!overlay) return [];
+    const layerIds: string[] = [];
+    for (const mm of violence.meta.modalities) {
+      if (app.enabled[mm.code]) layerIds.push(`wound-core-${mm.code}`, `scar-${mm.code}`);
+    }
+    const picks = overlay.pickMultipleObjects({ x, y, radius: 6, layerIds, depth });
+    const seen = new Set<number>(); // global indices
+    if (hintGi >= 0) seen.add(hintGi);
+    for (const p of picks) {
+      if (p.index < 0) continue;
+      const code = (p.layer?.id ?? '').replace(/^(wound-core|scar)-/, '');
+      const mm = modByCode.get(code);
+      if (mm) seen.add(mm.start + p.index);
+    }
+    return [...seen].sort(
+      (a, b) => violence.year[a] - violence.year[b] || violence.day[a] - violence.day[b]
+    );
+  }
+
+  function memoriaPickAt(x: number, y: number, hintGi = -1) {
+    if (!overlay) return;
+    const idxs = gatherEventsAt(x, y, hintGi);
+    if (idxs.length === 0) {
       app.hover = null;
       return;
     }
-    const picks = overlay.pickMultipleObjects({
-      x: info.x,
-      y: info.y,
-      radius: 6,
-      layerIds: ['ma-scars', 'ma-wounds-core'],
-      depth: 12,
-    });
-    const seen = new Set<number>();
-    for (const p of picks) if (p.index >= 0) seen.add(p.index);
-    if (seen.size <= 1) {
-      violenceHover(info, maMeta); // single massacre: full detail card
+    if (idxs.length === 1) {
+      app.hover = violenceCard(idxs[0], x, y); // single event: full detail card
       return;
     }
-    const idxs = [...seen]
-      .map((i) => maMeta.start + i)
-      .sort((a, b) => violence.year[a] - violence.year[b] || violence.day[a] - violence.day[b]);
     const MAX_ROWS = 6;
     const rows = idxs.slice(0, MAX_ROWS).map((gi) => ({
       label: formatDay(violence.day[gi], ui.lang) ?? String(violence.year[gi]),
-      value: `${muniLabel(violence.muni[gi])} · ${formatInt(violence.victims[gi], ui.lang)} ${t('victims').toLowerCase()}`,
+      value: `${modalityName(violence.meta.modalities[violence.modOf[gi]].code)} · ${muniLabel(violence.muni[gi])} · ${formatInt(violence.victims[gi], ui.lang)} ${t('victims').toLowerCase()}`,
     }));
     if (idxs.length > MAX_ROWS) {
       rows.push({
@@ -212,12 +225,41 @@
       });
     }
     app.hover = {
-      x: info.x,
-      y: info.y,
-      accent: MODALITY_COLORS[maMeta.code],
-      title: `${formatInt(idxs.length, ui.lang)} ${modalityName(maMeta.code).toLowerCase()}`,
+      x,
+      y,
+      accent: 'rgb(255, 47, 64)',
+      title: `${formatInt(idxs.length, ui.lang)} ${ui.lang === 'es' ? 'casos' : 'cases'}`,
       rows,
     };
+  }
+
+  // resolve the directly-picked event's global index from a wound/scar pick
+  function pickedGi(info: PickingInfo): number {
+    const code = (info.layer?.id ?? '').replace(/^(wound-core|scar)-/, '');
+    const mm = modByCode.get(code);
+    return mm ? mm.start + info.index : -1;
+  }
+
+  // deck hover entry for the wound/scar dot layers
+  function woundHover(info: PickingInfo) {
+    if (!info.picked || info.index < 0) {
+      app.hover = null;
+      return;
+    }
+    memoriaPickAt(info.x, info.y, pickedGi(info));
+  }
+
+  // deck click entry: pin every event under the click in the detail panel.
+  // Depth 48 only here — picking runs one render pass per depth level over a
+  // small region, fine for a discrete click but too costly for the hover path
+  // (memoriaPickAt fires on pointer movement and per colour bucket), which
+  // keeps the default depth 12.
+  function woundClick(info: PickingInfo) {
+    if (!info.picked || info.index < 0) return;
+    const idxs = gatherEventsAt(info.x, info.y, pickedGi(info), 48);
+    if (idxs.length === 0) return;
+    app.hover = null;
+    app.selected = idxs;
   }
 
   interface ElectionPoint {
@@ -282,34 +324,30 @@
 
   function buildLayers(): Layer[] {
     const layers: Layer[] = [];
-    const isViolence = app.tab === 'violence';
     const isMemoria = app.tab === 'memoria';
-    const range: [number, number] = app.allYears
-      ? [violence.meta.yearMin, violence.meta.yearMax]
-      : [app.year, app.year];
-
-    for (const [i, m] of violence.meta.modalities.entries()) {
-      layers.push(
-        new ScatterplotLayer({
-          id: `v-${m.code}`,
-          visible: isViolence && app.enabled[m.code],
-          data: violenceData[i],
-          getFillColor: [...hexToRgb(MODALITY_COLORS[m.code]), 185],
-          radiusUnits: 'meters',
-          radiusScale: 900,
-          radiusMinPixels: 1.7,
-          radiusMaxPixels: 16,
-          stroked: false,
-          pickable: true,
-          onHover: (info: PickingInfo) => violenceHover(info, m),
-          extensions: [yearFilter],
-          filterRange: range,
-        })
-      );
-    }
-
-    // ---- memoria: wounds/scars ----
+    const mods = violence.meta.modalities;
     const tDay = app.mday;
+    const freshRange: [number, number] = [Math.max(-0.5, tDay - dbg.fadeDays), tDay];
+    const softRange: [number, number] = [tDay - 30, tDay];
+
+    // modality visibility packed into one bitmask: toggling a checkbox is a
+    // single-int uniform update for the shared tendril field, never a rebuild.
+    // (The wound/scar DOT layers are per-modality and toggle with `visible`.)
+    const enabledMask = mods.reduce(
+      (acc, m, i) => (app.enabled[m.code] ? acc | (1 << i) : acc),
+      0
+    );
+    // one SHARED tendril field (+ a finer second one), drawn twice: a scar pass
+    // (normal blend, uniform settled alpha) and a fresh pass (additive flare)
+    const tendrilFieldList = [
+      { id: 't1', data: tendrilData, width: dbg.baseWidth },
+      { id: 't2', data: tendrilData2, width: dbg.t2BaseWidth },
+    ];
+
+    // ---- memoria: every event type as red wounds/scars/tendrils ----
+    // Global z-order: mask, scar tendrils, scar dots (bottom), then fresh
+    // tendrils, wound glow, wound core (top). Dot layers are always present and
+    // toggled with `visible`; tendril layers are gated by the modality bitmask.
     layers.push(
       // country silhouette (union of muni polygons) rendered to the mask FBO,
       // not the screen; clips the tendrils to land
@@ -319,92 +357,118 @@
         data: shapes as unknown as GeoJSON.FeatureCollection,
         operation: 'mask',
         stroked: false,
-      }),
-      // permanent scars: every massacre that has already happened stays marked
-      new ScatterplotLayer({
-        id: 'ma-scars',
-        visible: isMemoria,
-        data: scarData,
-        getFillColor: [96, 16, 22, dbg.scarDotAlpha],
-        radiusUnits: 'meters',
-        radiusScale: dbg.scarScale,
-        radiusMinPixels: 1.6,
-        radiusMaxPixels: 14,
-        stroked: false,
-        pickable: isMemoria,
-        onHover: memoriaWoundHover,
-        extensions: [yearFilter],
-        filterRange: [-0.5, tDay] as [number, number],
-      }),
-      // blood tendrils: static flow-field curves, invisible before their
-      // massacre; the shader makes them flare bright and thick at the wound
-      // (tapering to 0 with distance) with an outward pulse, then settle into
-      // a permanent dark scar state — all from the time uniform
-      new LineLayer({
-        id: 'ma-tendrils',
-        visible: isMemoria,
-        data: tendrilData,
-        getColor: [255, 58, 28, 255],
-        getWidth: dbg.baseWidth, // base; the shader scales it up at the wound centre
-        widthUnits: 'pixels',
-        updateTriggers: { getWidth: dbg.baseWidth },
-        parameters: ADDITIVE_BLEND,
-        extensions: [tendrilExt, memoriaMask],
-        maskId: 'memoria-mask',
-        tendrilTime: tDay,
-        tendrilParams,
-      }),
-      // second, finer tendril field (own seed/noise): breaks the visual
-      // regularity of a single flow field; same shader and time uniforms
-      new LineLayer({
-        id: 'ma-tendrils-2',
-        visible: isMemoria && dbg.t2Curves > 0,
-        data: tendrilData2,
-        getColor: [255, 58, 28, 255],
-        getWidth: dbg.t2BaseWidth,
-        widthUnits: 'pixels',
-        updateTriggers: { getWidth: dbg.t2BaseWidth },
-        parameters: ADDITIVE_BLEND,
-        extensions: [tendrilExt, memoriaMask],
-        maskId: 'memoria-mask',
-        tendrilTime: tDay,
-        tendrilParams,
-      }),
-      // wound glow: additive blending makes overlapping massacres burn hotter
-      new ScatterplotLayer({
-        id: 'ma-wounds-glow',
-        visible: isMemoria,
-        data: woundData,
-        getFillColor: [255, 58, 28, dbg.glowAlpha],
-        radiusUnits: 'meters',
-        radiusScale: dbg.glowScale,
-        radiusMinPixels: 5,
-        radiusMaxPixels: dbg.glowMaxPx,
-        stroked: false,
-        parameters: ADDITIVE_BLEND,
-        extensions: [yearFilter],
-        filterRange: [Math.max(-0.5, tDay - dbg.fadeDays), tDay] as [number, number],
-        filterSoftRange: [tDay - 30, tDay] as [number, number],
-      }),
-      // wound core: appears at full size on the exact date, then contracts and
-      // fades over ~3 years (filterTransformSize/Color) into the scar beneath
-      new ScatterplotLayer({
-        id: 'ma-wounds-core',
-        visible: isMemoria,
-        data: woundData,
-        getFillColor: [255, 47, 64, dbg.coreAlpha],
-        radiusUnits: 'meters',
-        radiusScale: dbg.coreScale,
-        radiusMinPixels: 2.2,
-        radiusMaxPixels: dbg.coreMaxPx,
-        stroked: false,
-        pickable: isMemoria,
-        onHover: memoriaWoundHover,
-        extensions: [yearFilter],
-        filterRange: [Math.max(-0.5, tDay - dbg.fadeDays), tDay] as [number, number],
-        filterSoftRange: [tDay - 30, tDay] as [number, number],
       })
     );
+
+    // permanent scar tendrils (NORMAL blending): the settled scar state. Because
+    // overlapping strands composite to one ceiling alpha, every scar reaches the
+    // same intensity over time, no matter how many victims (how much blood) fell.
+    for (const f of tendrilFieldList) {
+      layers.push(
+        new LineLayer({
+          id: `${f.id}-scar`,
+          visible: isMemoria && f.data.length > 0,
+          data: f.data,
+          getColor: [255, 58, 28, 255],
+          getWidth: f.width,
+          widthUnits: 'pixels',
+          updateTriggers: { getWidth: f.width },
+          extensions: [tendrilExt, memoriaMask],
+          maskId: 'memoria-mask',
+          tendrilTime: tDay,
+          tendrilParams: { ...tendrilParams, enabledMask, scarMode: 1 },
+        })
+      );
+    }
+
+    // permanent scars: every event that has already happened stays marked
+    for (const [i, m] of mods.entries()) {
+      layers.push(
+        new ScatterplotLayer({
+          id: `scar-${m.code}`,
+          visible: isMemoria && app.enabled[m.code],
+          data: scarDataByMod[i],
+          getFillColor: [96, 16, 22, dbg.scarDotAlpha],
+          radiusUnits: 'meters',
+          radiusScale: dbg.scarScale,
+          radiusMinPixels: 1.6,
+          radiusMaxPixels: 14,
+          stroked: false,
+          pickable: isMemoria,
+          onHover: woundHover,
+          onClick: woundClick,
+          extensions: [yearFilter],
+          filterRange: [-0.5, tDay] as [number, number],
+        })
+      );
+    }
+
+    // fresh blood tendrils (ADDITIVE): the transient flare that spreads from
+    // each wound on its date with an outward pulse and fades over ~3 years;
+    // dense/deadly wounds burn hotter. Same geometry as the scar pass above.
+    for (const f of tendrilFieldList) {
+      layers.push(
+        new LineLayer({
+          id: `${f.id}-fresh`,
+          visible: isMemoria && f.data.length > 0,
+          data: f.data,
+          getColor: [255, 58, 28, 255],
+          getWidth: f.width, // base; the shader scales it up at the wound centre
+          widthUnits: 'pixels',
+          updateTriggers: { getWidth: f.width },
+          parameters: ADDITIVE_BLEND,
+          extensions: [tendrilExt, memoriaMask],
+          maskId: 'memoria-mask',
+          tendrilTime: tDay,
+          tendrilParams: { ...tendrilParams, enabledMask, scarMode: 0 },
+        })
+      );
+    }
+
+    // wound glow: additive blending makes overlapping wounds burn hotter
+    for (const [i, m] of mods.entries()) {
+      layers.push(
+        new ScatterplotLayer({
+          id: `glow-${m.code}`,
+          visible: isMemoria && app.enabled[m.code],
+          data: woundDataByMod[i],
+          getFillColor: [255, 58, 28, dbg.glowAlpha],
+          radiusUnits: 'meters',
+          radiusScale: dbg.glowScale,
+          radiusMinPixels: 5,
+          radiusMaxPixels: dbg.glowMaxPx,
+          stroked: false,
+          parameters: ADDITIVE_BLEND,
+          extensions: [yearFilter],
+          filterRange: freshRange,
+          filterSoftRange: softRange,
+        })
+      );
+    }
+
+    // wound core: appears at full size on the exact date, then contracts and
+    // fades over ~3 years (filterTransformSize/Color) into the scar beneath
+    for (const [i, m] of mods.entries()) {
+      layers.push(
+        new ScatterplotLayer({
+          id: `wound-core-${m.code}`,
+          visible: isMemoria && app.enabled[m.code],
+          data: woundDataByMod[i],
+          getFillColor: [255, 47, 64, dbg.coreAlpha],
+          radiusUnits: 'meters',
+          radiusScale: dbg.coreScale,
+          radiusMinPixels: 2.2,
+          radiusMaxPixels: dbg.coreMaxPx,
+          stroked: false,
+          pickable: isMemoria,
+          onHover: woundHover,
+          onClick: woundClick,
+          extensions: [yearFilter],
+          filterRange: freshRange,
+          filterSoftRange: softRange,
+        })
+      );
+    }
 
     const e = elections.bodies[app.body][app.electionIdx[app.body]];
     if (e) {
@@ -450,7 +514,24 @@
       mapReady = true;
     });
 
+    // Track the cursor in deck pick coords independently of deck's onHover (which
+    // only fires on movement) so the memoria tooltip can be re-evaluated as time
+    // advances during playback. The UI panels are absolutely-positioned siblings
+    // of this container, so moving onto them fires pointerleave here — clearing
+    // the position keeps the re-pick from resurrecting a tooltip over chrome.
+    const onPointerMove = (e: PointerEvent) => {
+      const r = container.getBoundingClientRect();
+      lastPointer = { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const onPointerLeave = () => {
+      lastPointer = null;
+    };
+    container.addEventListener('pointermove', onPointerMove);
+    container.addEventListener('pointerleave', onPointerLeave);
+
     return () => {
+      container.removeEventListener('pointermove', onPointerMove);
+      container.removeEventListener('pointerleave', onPointerLeave);
       overlay = null;
       map.remove();
     };
@@ -461,12 +542,16 @@
     overlay.setProps({ layers: buildLayers() });
   });
 
-  // Tooltips are suppressed while memoria time is flowing: the field under a
-  // stationary cursor keeps changing, so a pinned card would silently show
-  // score/coverage from the hover instant. Pause to inspect.
+  // Keep the memoria tooltip live while time is flowing. deck's onHover only
+  // fires on pointer movement, so under a stationary cursor the events/field
+  // beneath it change without the card refreshing. Re-pick at the last cursor
+  // position each colour bucket (the granularity the choropleth updates at) so
+  // the card tracks what is actually under the cursor instead of going stale.
   $effect(() => {
     void colorBucket;
-    if (app.playing && app.tab === 'memoria' && app.hover) app.hover = null;
+    if (app.playing && app.tab === 'memoria' && lastPointer) {
+      memoriaPickAt(lastPointer.x, lastPointer.y);
+    }
   });
 </script>
 

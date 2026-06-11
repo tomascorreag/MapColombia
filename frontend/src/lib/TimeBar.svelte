@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { ViolenceData, ElectionsData } from './data';
-  import { formatInt } from './data';
   import { MAX_DAY, formatMonthYear, yearProgress } from './memoria';
   import { app } from './state.svelte';
   import { t, ui, electionLabel } from './i18n.svelte';
@@ -14,47 +13,30 @@
   const yearMax = $derived(violence.meta.yearMax);
   const nYears = $derived(yearMax - yearMin + 1);
 
-  // per-year totals across the enabled modalities (sqrt scale for the bars —
-  // AS peaks would otherwise flatten everything else)
-  const hist = $derived.by(() => {
-    const out = new Array<number>(nYears).fill(0);
-    for (const m of violence.meta.modalities) {
-      if (!app.enabled[m.code]) continue;
-      for (let i = 0; i < nYears; i++) out[i] += m.yearCounts[i];
-    }
-    return out;
-  });
-  const histMax = $derived(Math.max(1, ...hist));
-
-  const yearCount = $derived(
-    app.allYears ? hist.reduce((a, b) => a + b, 0) : (hist[app.year - yearMin] ?? 0)
-  );
-
   const electionList = $derived(elections.bodies[app.body]);
   const electionSel = $derived(electionList[app.electionIdx[app.body]]);
 
-  // memoria: massacre VICTIMS per year (the wound metric — area follows victims)
+  // memoria: VICTIMS per year summed across the enabled modalities (the wound
+  // metric — area follows victims). Recomputes only when the enabled set
+  // changes, not per playback frame.
   const maHist = $derived.by(() => {
     const out = new Array<number>(nYears).fill(0);
-    const ma = violence.meta.modalities[0];
-    for (let i = 0; i < ma.n; i++) {
-      out[violence.year[ma.start + i] - yearMin] += violence.victims[ma.start + i];
+    for (const m of violence.meta.modalities) {
+      if (!app.enabled[m.code]) continue;
+      for (let i = 0; i < m.n; i++) {
+        out[violence.year[m.start + i] - yearMin] += violence.victims[m.start + i];
+      }
     }
     return out;
   });
   const maHistMax = $derived(Math.max(1, ...maHist));
 
-  // playback: advance one year (violence) or one election (elections) per tick
+  // elections playback: advance one election per tick
   $effect(() => {
-    if (!app.playing || app.tab === 'memoria') return;
+    if (!app.playing || app.tab !== 'elections') return;
     const id = setInterval(() => {
-      if (app.tab === 'violence') {
-        app.allYears = false;
-        app.year = app.year >= yearMax ? yearMin : app.year + 1;
-      } else {
-        const idx = app.electionIdx[app.body];
-        app.electionIdx[app.body] = idx >= electionList.length - 1 ? 0 : idx + 1;
-      }
+      const idx = app.electionIdx[app.body];
+      app.electionIdx[app.body] = idx >= electionList.length - 1 ? 0 : idx + 1;
     }, 420);
     return () => clearInterval(id);
   });
@@ -84,6 +66,10 @@
     { v: 720, label: '4×' },
   ];
 
+  // First timeline interaction this session: drops the attention pulse on the
+  // play button and the one-time "press play" hint armed by the welcome modal.
+  let interacted = $state(false);
+
   // keyboard steps for the day slider: ±1 day per keypress over a 25k-day range
   // is unusable — arrows move a month, PageUp/Down a year
   function mdayKeys(ev: KeyboardEvent) {
@@ -101,79 +87,22 @@
     else if (ev.key === 'End') next = MAX_DAY;
     if (next === null) return;
     ev.preventDefault();
+    interacted = true;
     app.playing = false;
     app.mday = Math.max(0, Math.min(MAX_DAY, next));
-  }
-
-  function barYear(i: number): number {
-    return yearMin + i;
   }
 </script>
 
 <div class="timebar">
-  {#if app.tab === 'violence'}
+  {#if app.tab === 'memoria'}
     <div class="readout">
       <button
         class="play mono"
-        onclick={() => (app.playing = !app.playing)}
-        aria-label={app.playing ? t('pause') : t('play')}
-        title={app.playing ? t('pause') : t('play')}
-      >
-        {app.playing ? '❚❚' : '▶'}
-      </button>
-      <span class="year mono">{app.allYears ? `${yearMin}–${yearMax}` : app.year}</span>
-      <span class="count mono dim">
-        {formatInt(yearCount, ui.lang)}
-        {app.allYears ? t('events_total') : `${t('events_in')} ${app.year}`}
-      </span>
-      <label class="all mono">
-        <input type="checkbox" bind:checked={app.allYears} />
-        {t('all_years')}
-      </label>
-    </div>
-
-    <div class="strip">
-      <svg
-        class="hist"
-        viewBox="0 0 {nYears} 30"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        {#each hist as v, i (i)}
-          <rect
-            x={i + 0.12}
-            y={30 - Math.sqrt(v / histMax) * 30}
-            width="0.76"
-            height={Math.sqrt(v / histMax) * 30}
-            class:current={!app.allYears && barYear(i) === app.year}
-            class:all={app.allYears}
-          />
-        {/each}
-      </svg>
-      <input
-        class="slider"
-        type="range"
-        min={yearMin}
-        max={yearMax}
-        step="1"
-        bind:value={app.year}
-        oninput={() => {
-          app.allYears = false;
-          app.playing = false;
+        class:beckon={!interacted && !app.playing}
+        onclick={() => {
+          interacted = true;
+          app.playing = !app.playing;
         }}
-        aria-label={t('year')}
-      />
-      <div class="axis mono dim" aria-hidden="true">
-        <span>{yearMin}</span><span>1975</span><span>1990</span><span>2005</span><span
-          >{yearMax}</span
-        >
-      </div>
-    </div>
-  {:else if app.tab === 'memoria'}
-    <div class="readout">
-      <button
-        class="play mono"
-        onclick={() => (app.playing = !app.playing)}
         aria-label={app.playing ? t('pause') : t('play')}
         title={app.playing ? t('pause') : t('play')}
       >
@@ -184,6 +113,9 @@
       <span class="yeardial" aria-hidden="true">
         <span class="yearfill" style:width="{yearProgress(app.mday).frac * 100}%"></span>
       </span>
+      {#if app.playHint && !interacted && !app.playing}
+        <span class="hint mono">{t('hint_play')}</span>
+      {/if}
       <span class="speeds mono" role="group" aria-label={t('speed')}>
         {#each SPEEDS as s (s.v)}
           <button
@@ -199,14 +131,14 @@
     </div>
 
     <div class="strip">
-      <svg class="hist" viewBox="0 0 {nYears} 30" preserveAspectRatio="none" aria-hidden="true">
+      <svg class="hist" viewBox="0 0 {nYears} 44" preserveAspectRatio="none" aria-hidden="true">
         {#each maHist as v, i (i)}
           <rect
             class="ma"
             x={i + 0.12}
-            y={30 - Math.sqrt(v / maHistMax) * 30}
+            y={44 - Math.sqrt(v / maHistMax) * 44}
             width="0.76"
-            height={Math.sqrt(v / maHistMax) * 30}
+            height={Math.sqrt(v / maHistMax) * 44}
           />
         {/each}
       </svg>
@@ -217,7 +149,10 @@
         max={MAX_DAY}
         step="1"
         bind:value={app.mday}
-        oninput={() => (app.playing = false)}
+        oninput={() => {
+          interacted = true;
+          app.playing = false;
+        }}
         onkeydown={mdayKeys}
         aria-label={t('date')}
         aria-valuetext={formatMonthYear(app.mday, ui.lang)}
@@ -283,19 +218,56 @@
   }
 
   .play {
-    font-size: 13px;
+    font-size: 16px;
     color: var(--gold);
-    border: 1px solid var(--hairline);
-    border-radius: 2px;
-    width: 30px;
-    height: 26px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
     line-height: 1;
     flex: none;
     align-self: center;
   }
 
   .play:hover {
-    border-color: var(--gold);
+    color: var(--ink);
+    background: var(--gold);
+  }
+
+  /* attention affordance until the first interaction — the global
+     prefers-reduced-motion override (app.css) caps it at one iteration */
+  .beckon {
+    animation: beckon 2.6s ease-out infinite;
+  }
+
+  @keyframes beckon {
+    0% {
+      box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.35);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(201, 162, 39, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(201, 162, 39, 0);
+    }
+  }
+
+  .hint {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    align-self: center;
+    animation: hintpulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes hintpulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 1;
+    }
   }
 
   .year {
@@ -310,22 +282,6 @@
     font-size: 11px;
   }
 
-  .all {
-    margin-left: auto;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--paper-dim);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-
-  .all input {
-    accent-color: var(--gold);
-  }
-
   .strip {
     position: relative;
     margin-top: 6px;
@@ -334,16 +290,11 @@
   .hist {
     display: block;
     width: 100%;
-    height: 30px;
+    height: 44px;
   }
 
   .hist rect {
     fill: rgba(232, 64, 58, 0.38);
-  }
-
-  .hist rect.current,
-  .hist rect.all {
-    fill: var(--accent);
   }
 
   .slider {
@@ -352,36 +303,36 @@
     display: block;
     width: 100%;
     margin: 0;
-    height: 18px;
+    height: 24px;
     background: transparent;
     cursor: pointer;
   }
 
   .slider::-webkit-slider-runnable-track {
-    height: 2px;
+    height: 3px;
     background: var(--hairline);
   }
 
   .slider::-moz-range-track {
-    height: 2px;
+    height: 3px;
     background: var(--hairline);
   }
 
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 4px;
-    height: 16px;
-    margin-top: -7px;
-    border-radius: 1px;
+    width: 7px;
+    height: 22px;
+    margin-top: -9.5px;
+    border-radius: 2px;
     background: var(--gold);
     border: none;
   }
 
   .slider::-moz-range-thumb {
-    width: 4px;
-    height: 16px;
-    border-radius: 1px;
+    width: 7px;
+    height: 22px;
+    border-radius: 2px;
     background: var(--gold);
     border: none;
   }
@@ -421,12 +372,12 @@
   }
 
   .spd {
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.06em;
     color: var(--paper-faint);
     border: 1px solid var(--hairline);
     border-radius: 2px;
-    padding: 3px 7px;
+    padding: 4px 9px;
   }
 
   .spd:hover {

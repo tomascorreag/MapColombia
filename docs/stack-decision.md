@@ -66,8 +66,15 @@
 - **Direct deck.gl integration** instead of MIERUNE svelte-maplibre-gl: one map view
   doesn't justify the wrapper dependency; `MapboxOverlay` + a single `$effect` is ~30
   lines (`frontend/src/lib/MapView.svelte`). Revisit if the map/UI surface grows.
-- **Dev basemap is CARTO dark-matter** (free with attribution) — self-hosted PMTiles on
-  R2 stays the production plan (the PMTiles-on-Pages bug is unchanged).
+- **Dev basemap is CARTO dark-matter** — self-hosted PMTiles on R2 stays the production
+  plan (the PMTiles-on-Pages bug is unchanged). ⚠ Legal note (2026-06-10): CARTO scopes
+  free basemap use to "CARTO grantees" for non-commercial purposes and the governing
+  T&Cs PDF (2024-05-23, linked from carto.com/basemaps) is not publicly readable —
+  free-use eligibility for this site is UNVERIFIED. Attribution (© CARTO,
+  © OpenStreetMap contributors) is required and surfaced by MapLibre's attribution
+  control. **Do not ship CARTO tiles to production** without written confirmation;
+  the PMTiles plan moots this (then attribute © OpenStreetMap contributors, ODbL,
+  + Protomaps).
 - **Violence ships as binary columnar buffers** (`violence.bin`, ~8 MB for 341,547
   events) consumed via deck.gl's binary-attributes path — pos f32 / day i32 / id u32 /
   year u16 / victims u16 / muni u16 / cat u8 / grp u8, modality-sorted so each modality

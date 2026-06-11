@@ -38,6 +38,13 @@ interface BufferLayout {
   bytes: number;
 }
 
+export interface DetailsMeta {
+  file: string;
+  buffers: Record<string, BufferLayout>;
+  occupations: string[];
+  note: string;
+}
+
 export interface ViolenceMeta {
   n: number;
   epoch: string;
@@ -47,9 +54,30 @@ export interface ViolenceMeta {
   modalities: ModalityMeta[];
   respCategories: string[];
   respGroups: string[];
+  details: DetailsMeta;
   unmatchedMuni: number;
   source: { name: string; corte: string; publisher: string; license_note: string };
   integrity: string;
+}
+
+// Per-event victim portrait, gi-aligned to ViolenceData. Loaded lazily (only
+// when the first detail panel opens) — kept out of the initial payload and the
+// per-frame hot path. All columns are Uint16Array of length meta.n.
+export interface ViolenceDetails {
+  civ: Uint16Array; // case-level civilian total
+  comb: Uint16Array; // case-level combatant total
+  vn: Uint16Array; // victims individually recorded in victimas_*
+  nMale: Uint16Array;
+  nFemale: Uint16Array;
+  nChild: Uint16Array;
+  nAdolescent: Uint16Array;
+  nAdult: Uint16Array;
+  nElder: Uint16Array;
+  nFatal: Uint16Array;
+  nNonFatal: Uint16Array;
+  occTop: Uint16Array; // index into occupations; 0xFFFF = none recorded
+  occTopN: Uint16Array;
+  occupations: string[];
 }
 
 export interface ViolenceData {
@@ -64,13 +92,16 @@ export interface ViolenceData {
   cat: Uint8Array; // index into respCategories
   grp: Uint8Array; // index into respGroups
   radius: Float32Array; // sqrt(victims), precomputed for getRadius
-  // Memoria view (massacres = modalities[0] slice): day as f32 for the GPU
+  // Memoria view (every event, all modalities): day as f32 for the GPU wound
   // filter (-1 = exact date unknown, never shown as a wound), and the scar
   // appearance day — the exact day when known, otherwise Dec 31 of the known
   // year (the scar then asserts only "this had happened by the end of that
   // year"; a display rule, the binary day stays -1).
-  maDayF32: Float32Array;
-  maScarDayF32: Float32Array;
+  dayF32: Float32Array;
+  scarDayF32: Float32Array;
+  // global index -> modality index (modalities partition the event range);
+  // shared lookup for every component that resolves an event's modality
+  modOf: Uint8Array;
 }
 
 export interface Election {
@@ -153,24 +184,24 @@ export async function loadViolence(base = 'data'): Promise<ViolenceData> {
   const day = view(bin, meta.buffers.day) as Int32Array;
   const radius = new Float32Array(meta.n);
   const yearF32 = new Float32Array(meta.n);
+  // Memoria wound/scar filter values for EVERY event (all modalities). The
+  // wound day is the exact day (-1 = unknown exact date -> never a wound); the
+  // scar day is the exact day when known, otherwise Dec 31 of the known year
+  // (the scar then asserts only "this had happened by the end of that year"; a
+  // display rule, the binary day stays -1).
+  const epochMs = Date.UTC(1958, 0, 1);
+  const dayF32 = new Float32Array(meta.n);
+  const scarDayF32 = new Float32Array(meta.n);
   for (let i = 0; i < meta.n; i++) {
     radius[i] = Math.sqrt(Math.max(victims[i], 1));
     yearF32[i] = year[i];
+    dayF32[i] = day[i]; // -1 = unknown exact date -> never a wound
+    scarDayF32[i] =
+      day[i] >= 0 ? day[i] : (Date.UTC(year[i], 11, 31) - epochMs) / 86_400_000;
   }
 
-  // Memoria wound/scar filter values for the massacre slice (modalities[0]).
-  const ma = meta.modalities[0];
-  if (ma.code !== 'MA') throw new Error('modalities[0] is not MA');
-  const maDayF32 = new Float32Array(ma.n);
-  const maScarDayF32 = new Float32Array(ma.n);
-  for (let i = 0; i < ma.n; i++) {
-    const gi = ma.start + i;
-    maDayF32[i] = day[gi]; // -1 = unknown exact date -> never a wound
-    maScarDayF32[i] =
-      day[gi] >= 0
-        ? day[gi]
-        : (Date.UTC(year[gi], 11, 31) - Date.UTC(1958, 0, 1)) / 86_400_000;
-  }
+  const modOf = new Uint8Array(meta.n);
+  meta.modalities.forEach((m, i) => modOf.fill(i, m.start, m.end));
 
   return {
     meta,
@@ -184,8 +215,39 @@ export async function loadViolence(base = 'data'): Promise<ViolenceData> {
     cat: view(bin, meta.buffers.cat) as Uint8Array,
     grp: view(bin, meta.buffers.grp) as Uint8Array,
     radius,
-    maDayF32,
-    maScarDayF32,
+    dayF32,
+    scarDayF32,
+    modOf,
+  };
+}
+
+// Lazy companion to loadViolence: fetches the gi-aligned victim-detail buffers
+// described by meta.details. Called the first time a detail panel opens.
+export async function loadViolenceDetails(
+  meta: ViolenceMeta,
+  base = 'data'
+): Promise<ViolenceDetails> {
+  const d = meta.details;
+  const bin = await fetch(`${base}/${d.file}`).then((r) => {
+    if (!r.ok) throw new Error(`${d.file} ${r.status}`);
+    return r.arrayBuffer();
+  });
+  const col = (name: string) => view(bin, d.buffers[name]) as Uint16Array;
+  return {
+    civ: col('civ'),
+    comb: col('comb'),
+    vn: col('vn'),
+    nMale: col('nMale'),
+    nFemale: col('nFemale'),
+    nChild: col('nChild'),
+    nAdolescent: col('nAdolescent'),
+    nAdult: col('nAdult'),
+    nElder: col('nElder'),
+    nFatal: col('nFatal'),
+    nNonFatal: col('nNonFatal'),
+    occTop: col('occTop'),
+    occTopN: col('occTopN'),
+    occupations: d.occupations,
   };
 }
 
