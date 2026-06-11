@@ -25,7 +25,7 @@ export function toggleLang() {
 }
 
 const dict: Record<string, { es: string; en: string }> = {
-  title: { es: 'Memoria de la violencia', en: 'A Memory of Violence' },
+  title: { es: 'Cicatrices de violencia', en: 'Scars of Violence' },
   eyebrow: { es: 'Archivo cartográfico · Colombia 1958–2026', en: 'Cartographic archive · Colombia 1958–2026' },
   subtitle: {
     es: 'El conflicto armado, municipio por municipio',

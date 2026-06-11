@@ -40,7 +40,8 @@
       return true;
     }
   })();
-  if (firstVisit) app.overlay = 'welcome';
+  // Show the welcome modal on every page load (not just first visit).
+  app.overlay = 'welcome';
   function closeWelcome() {
     try {
       localStorage.setItem(WELCOME_KEY, '1');
@@ -286,8 +287,13 @@
   .timebar-wrap {
     position: absolute;
     z-index: 10;
-    left: 50%;
-    transform: translateX(-50%);
+    /* center via auto margins, not transform: the .rise entrance animation
+       animates `transform` with fill-mode both, so a translateX(-50%) here
+       gets clobbered by the animation's final translateY(0) and the box ends
+       up shifted right by half its width */
+    left: 0;
+    right: 0;
+    margin-inline: auto;
     bottom: 22px;
     width: min(620px, calc(100vw - 420px));
   }
