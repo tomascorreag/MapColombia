@@ -19,7 +19,7 @@ The artifact is a web page that displays both layers dynamically (map + time dim
 
 ## Build & run
 
-- Pipeline: `python pipeline/build_frontend_data.py` → `data/processed/frontend/` (violence.bin binary columnar + elections.json + munis.json + munis_shapes.json + memoria.json). Requires raw data (see Data sources) and `geopandas pyogrio shapely>=2.1` for the polygon step.
+- Pipeline: `python pipeline/build_frontend_data.py` → `data/processed/frontend/` (violence.bin binary columnar + violence_details.bin gi-aligned per-event victim portrait, lazy-loaded by the click panel + elections.json + munis.json + munis_shapes.json + memoria.json). Requires raw data (see Data sources) and `geopandas pyogrio shapely>=2.1` for the polygon step.
 - Frontend: `cd frontend && npm run dev` (predev hook copies `data/processed/frontend/` → `public/data/`; that copy is gitignored — the canonical artifact is in `data/processed/`).
 - Checks: `npm run check` (svelte-check + tsc), `npm run build`; visual smoke test `node scripts/smoke.mjs` against a dev server on :5199 (Playwright); perf probe `node scripts/probe-fps.mjs` (headed — headless WebGL is software-rendered).
 - The Memoria tab's left–right scores come from the curated, cited table `pipeline/party_lr.py` — scholarly interpretation, flagged for owner review; the per-row citation is the contract. Never add a score without one.
