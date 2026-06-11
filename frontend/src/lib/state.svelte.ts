@@ -36,10 +36,15 @@ class AppState {
   hover = $state<Hover | null>(null);
 
   // Click-to-pin: `selected` holds the global indices of ALL events under the
-  // last click (oldest-first; a few px cover many records at national zoom);
+  // last click (newest-first; a few px cover many records at national zoom);
   // empty = panel closed. Small, low-frequency state — safe to be deeply
   // reactive, unlike the $state.raw artifacts written every animation frame.
   selected = $state<number[]>([]);
+  // Timeline position (mday) at the moment `selected` was pinned. A snapshot,
+  // not a live read: mday keeps animating during playback while the pinned set
+  // does not grow, so the panel header must assert "hasta {month}" about the
+  // click moment. null = panel closed.
+  selectedDay = $state<number | null>(null);
 
   // Which full-screen modal is open — a single enum keeps modals mutually
   // exclusive and lets the detail panel gate its Escape handler on it.

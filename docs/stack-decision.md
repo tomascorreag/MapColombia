@@ -112,6 +112,31 @@
   long tasks). Headless Playwright renders WebGL on SwiftShader — use it for console
   errors and layout, not for performance conclusions.
 
+## Device-performance tiers (2026-06-11)
+
+The memoria scene at full quality is ~6M tendril line instances + large additive
+sprites at devicePixelRatio — seconds per frame on integrated/software GPUs.
+`frontend/src/lib/perf.svelte.ts` defines three tiers (low/mid/high) that cap the
+expensive display knobs; `?tier=` forces one, and demotions persist via
+localStorage (`mdv:tier:v1`).
+
+- **Tier selection**: GPU renderer string (WEBGL_debug_renderer_info) + cores/memory
+  heuristics at startup, then a runtime FPS governor (rAF-delta median during memoria
+  playback) demotes one tier at a time if frames stay >40 ms. Never promotes —
+  flapping would rebuild the tendril fields repeatedly.
+- **What tiers change** (display only, never data): tendril curve-pool caps (with a
+  stroke-width compensation so the field stays legible), rendering resolution
+  (deck `useDevicePixels` + maplibre `pixelRatio`/`setPixelRatio`), the additive
+  glow layer (capped on mid, off on low — worst overdraw), pick depths, the
+  stationary-cursor re-pick cadence during playback, and the panels'
+  `backdrop-filter` blur (`:root.no-blur` fallback — blur over an animating canvas
+  resamples every frame).
+- **Playback tick cap**: TimeBar clamps each rAF advance to 100 ms of real time —
+  below 10 fps sim time slows instead of silently lurching years per frame.
+- Measured on SwiftShader (same build, `probe-lowend.mjs`): high 23 s/frame,
+  low 6.2 s/frame, load 48 s → 11 s. Software GL stays unusable (not a target);
+  the headed reference (RTX-class) holds 76 fps at every tier.
+
 ## Unverified / to confirm during build
 
 - ~~DANE MGN exact download URL + license text~~ → verified 2026-06-05

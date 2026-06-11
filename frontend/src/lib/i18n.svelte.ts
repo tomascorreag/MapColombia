@@ -91,11 +91,13 @@ const dict: Record<string, { es: string; en: string }> = {
   n_more: { es: 'más', en: 'more' },
 
   // detail panel
-  coordinates: { es: 'Coordenadas', en: 'Coordinates' },
   view_geoportal: { es: 'Ver en el Geoportal del CNMH', en: 'View on the CNMH Geoportal' },
   license: { es: 'Licencia', en: 'License' },
   dataset: { es: 'Conjunto de datos', en: 'Dataset' },
-  cases_at_point: { es: 'casos en este punto', en: 'cases at this point' },
+  // header count is time-anchored to the click-time timeline month (app.selectedDay)
+  cases_through: { es: 'casos hasta', en: 'cases through' },
+  cases_through_one: { es: 'caso hasta', en: 'case through' },
+  record_no: { es: 'N.º', en: 'no.' },
   close: { es: 'Cerrar', en: 'Close' },
 
   // victim portrait (detail panel)
@@ -144,7 +146,7 @@ const dict: Record<string, { es: string; en: string }> = {
   credits_btn: { es: 'créditos y avisos', en: 'credits & notices' },
 
   // welcome modal (first-visit onboarding; reopened via the "?" button)
-  welcome_eyebrow: { es: 'Cómo leer este archivo', en: 'How to read this archive' },
+  welcome_eyebrow: { es: 'Cómo leer este artefacto', en: 'How to read this artifact' },
   welcome_what: {
     es: 'Este mapa presenta los eventos de violencia del conflicto armado colombiano documentados por el Centro Nacional de Memoria Histórica, 1958–2026. Cada evento aparece en su fecha como una herida que se extiende sobre el territorio; con los años se desvanece y deja una cicatriz permanente. Nada se estima: cada punto es un caso documentado, con su registro citado.',
     en: "This map presents the violence of Colombia's armed conflict as documented by the National Center for Historical Memory, 1958–2026. Each event appears on its date as a wound spreading across the territory; over the years it fades, leaving a permanent scar. Nothing is estimated: every point is a documented case with its cited record.",

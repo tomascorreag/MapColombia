@@ -18,6 +18,13 @@
   import Credits from './lib/Credits.svelte';
   import Welcome from './lib/Welcome.svelte';
   import { dbgEnabled } from './lib/debug.svelte';
+  import { perf, PERF } from './lib/perf.svelte';
+
+  // Low tier: drop the panels' backdrop blur — it re-samples the animating
+  // map canvas every frame. The .no-blur fallback is a more opaque panel bg.
+  $effect(() => {
+    document.documentElement.classList.toggle('no-blur', !PERF[perf.tier].blur);
+  });
 
   // $state.raw: loaded artifacts are immutable — deep reactive proxies over
   // megabytes of parsed JSON would register one signal per array element, and

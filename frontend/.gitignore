@@ -26,5 +26,6 @@ dist-ssr
 # synced copy of data/processed/frontend (canonical lives in repo root)
 public/data/
 
-# smoke-test screenshots
+# smoke-test / perf-probe screenshots
 scripts/shot-*.png
+scripts/probe-*.png

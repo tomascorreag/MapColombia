@@ -48,7 +48,10 @@
     let raf = 0;
     let last = performance.now();
     const step = (now: number) => {
-      app.mday = Math.min(MAX_DAY, app.mday + ((now - last) / 1000) * app.mspeed);
+      // cap the per-tick advance at 100 ms of real time: on a machine that
+      // can't hold 10 fps, sim time slows down rather than lurching years
+      // ahead in invisible jumps (a memorial must not skip eras silently)
+      app.mday = Math.min(MAX_DAY, app.mday + (Math.min(now - last, 100) / 1000) * app.mspeed);
       last = now;
       if (app.mday >= MAX_DAY) {
         app.playing = false;

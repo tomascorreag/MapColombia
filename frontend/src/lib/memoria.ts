@@ -60,6 +60,12 @@ export function formatMonthYear(day: number, lang: 'es' | 'en'): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+/** "marzo de 2020" (ES, lowercase for mid-sentence/header use) / "March 2020" (EN) */
+export function formatMonthYearInline(day: number, lang: 'es' | 'en'): string {
+  const s = formatMonthYear(day, lang);
+  return lang === 'es' ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+}
+
 /** year + fraction of that year elapsed at `day` (timeline readout) */
 export function yearProgress(day: number): { year: number; frac: number } {
   const d = new Date(EPOCH_MS + day * DAY_MS);

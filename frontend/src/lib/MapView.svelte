@@ -20,6 +20,7 @@
   import { COLOR_BUCKET_DAYS } from './memoria';
   import { app, type Hover } from './state.svelte';
   import { dbg } from './debug.svelte';
+  import { perf, PERF, startFpsGovernor } from './perf.svelte';
   import { t, ui, modalityName } from './i18n.svelte';
   import { muniLabel as fmtMuniLabel, responsible } from './eventFormat';
 
@@ -40,8 +41,18 @@
   const STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
   let container: HTMLDivElement;
+  let map: maplibregl.Map | null = null;
   let overlay: MapboxOverlay | null = null;
   let mapReady = $state(false);
+
+  // Device-tier caps (docs in perf.svelte.ts): the dbg knobs stay the look's
+  // source of truth, the tier mins/caps them so weak GPUs render a sparser,
+  // lower-resolution version of the same scene. `P` changes at most twice per
+  // session (governor demotions), each a one-time tendril-field rebuild.
+  const P = $derived(PERF[perf.tier]);
+  const dprCap = $derived(
+    Math.min(typeof devicePixelRatio === 'number' ? devicePixelRatio : 1, P.dprCap)
+  );
 
   // Last cursor position over the map canvas (deck pick coords), or null when
   // the pointer is off the map. Plain (non-reactive) let: read on demand to
@@ -105,7 +116,7 @@
   const tendrilData = $derived.by(() =>
     buildTendrils(violence, violence.modOf, {
       seed: 0x1958,
-      nCurves: dbg.nCurves,
+      nCurves: Math.min(dbg.nCurves, P.curves1),
       stepKm: dbg.stepKm,
       reachKm: dbg.reachKm,
       noiseLen1: dbg.noiseLen1,
@@ -117,7 +128,7 @@
   const tendrilData2 = $derived.by(() =>
     buildTendrils(violence, violence.modOf, {
       seed: 0x77aa,
-      nCurves: dbg.t2Curves,
+      nCurves: Math.min(dbg.t2Curves, P.curves2),
       stepKm: dbg.t2StepKm,
       reachKm: dbg.reachKm,
       noiseLen1: dbg.t2NoiseLen1,
@@ -179,10 +190,13 @@
   // and list them all. `hintGi`, when ≥ 0, is the directly-hovered event,
   // guaranteed to be included even if the multi-pick radius misses it.
   // Gather every event under a screen position (a few px cover many records at
-  // national zoom), returned as global indices sorted oldest-first. `hintGi`,
-  // when ≥ 0, is the directly-picked event, guaranteed included even if the
-  // multi-pick radius misses it. Shared by the hover card and the click handler.
-  function gatherEventsAt(x: number, y: number, hintGi = -1, depth = 12): number[] {
+  // national zoom), returned as global indices sorted newest-first — the most
+  // recent events sit nearest the timeline position the user is looking at.
+  // Within a year, day = -1 (exact day unknown) sorts after dated events.
+  // `hintGi`, when ≥ 0, is the directly-picked event, guaranteed included even
+  // if the multi-pick radius misses it. Shared by the hover card and the click
+  // handler, so both surfaces list events in the same order.
+  function gatherEventsAt(x: number, y: number, hintGi: number, depth: number): number[] {
     if (!overlay) return [];
     const layerIds: string[] = [];
     for (const mm of violence.meta.modalities) {
@@ -198,13 +212,13 @@
       if (mm) seen.add(mm.start + p.index);
     }
     return [...seen].sort(
-      (a, b) => violence.year[a] - violence.year[b] || violence.day[a] - violence.day[b]
+      (a, b) => violence.year[b] - violence.year[a] || violence.day[b] - violence.day[a]
     );
   }
 
   function memoriaPickAt(x: number, y: number, hintGi = -1) {
     if (!overlay) return;
-    const idxs = gatherEventsAt(x, y, hintGi);
+    const idxs = gatherEventsAt(x, y, hintGi, P.hoverDepth);
     if (idxs.length === 0) {
       app.hover = null;
       return;
@@ -250,16 +264,17 @@
   }
 
   // deck click entry: pin every event under the click in the detail panel.
-  // Depth 48 only here — picking runs one render pass per depth level over a
-  // small region, fine for a discrete click but too costly for the hover path
-  // (memoriaPickAt fires on pointer movement and per colour bucket), which
-  // keeps the default depth 12.
+  // The deeper clickDepth only here — picking runs one render pass per depth
+  // level over a small region, fine for a discrete click but too costly for
+  // the hover path (memoriaPickAt fires on pointer movement and per colour
+  // bucket), which keeps the shallower hoverDepth.
   function woundClick(info: PickingInfo) {
     if (!info.picked || info.index < 0) return;
-    const idxs = gatherEventsAt(info.x, info.y, pickedGi(info), 48);
+    const idxs = gatherEventsAt(info.x, info.y, pickedGi(info), P.clickDepth);
     if (idxs.length === 0) return;
     app.hover = null;
     app.selected = idxs;
+    app.selectedDay = app.mday; // snapshot for the panel's "hasta {month}" header
   }
 
   interface ElectionPoint {
@@ -339,9 +354,10 @@
     );
     // one SHARED tendril field (+ a finer second one), drawn twice: a scar pass
     // (normal blend, uniform settled alpha) and a fresh pass (additive flare)
+    // widthScale partially compensates the sparser curve pools on lower tiers
     const tendrilFieldList = [
-      { id: 't1', data: tendrilData, width: dbg.baseWidth },
-      { id: 't2', data: tendrilData2, width: dbg.t2BaseWidth },
+      { id: 't1', data: tendrilData, width: dbg.baseWidth * P.widthScale },
+      { id: 't2', data: tendrilData2, width: dbg.t2BaseWidth * P.widthScale },
     ];
 
     // ---- memoria: every event type as red wounds/scars/tendrils ----
@@ -430,13 +446,15 @@
       layers.push(
         new ScatterplotLayer({
           id: `glow-${m.code}`,
-          visible: isMemoria && app.enabled[m.code],
+          visible: isMemoria && P.glow && app.enabled[m.code],
           data: woundDataByMod[i],
           getFillColor: [255, 58, 28, dbg.glowAlpha],
           radiusUnits: 'meters',
           radiusScale: dbg.glowScale,
           radiusMinPixels: 5,
-          radiusMaxPixels: dbg.glowMaxPx,
+          // overdraw is radius²·DPR² fragments per sprite, additive (no
+          // early-z) — the tier cap is the main fill-rate lever
+          radiusMaxPixels: Math.min(dbg.glowMaxPx, P.glowMaxPx),
           stroked: false,
           parameters: ADDITIVE_BLEND,
           extensions: [yearFilter],
@@ -496,7 +514,7 @@
   }
 
   onMount(() => {
-    const map = new maplibregl.Map({
+    map = new maplibregl.Map({
       container,
       style: STYLE,
       center: [-73.6, 4.4],
@@ -504,11 +522,12 @@
       minZoom: 3.8,
       maxZoom: 13,
       attributionControl: { compact: true },
+      pixelRatio: dprCap,
     });
     map.dragRotate.disable();
     map.touchZoomRotate.disableRotation();
 
-    overlay = new MapboxOverlay({ interleaved: false, layers: [] });
+    overlay = new MapboxOverlay({ interleaved: false, layers: [], useDevicePixels: dprCap });
     map.addControl(overlay as unknown as maplibregl.IControl);
     map.on('load', () => {
       mapReady = true;
@@ -533,13 +552,28 @@
       container.removeEventListener('pointermove', onPointerMove);
       container.removeEventListener('pointerleave', onPointerLeave);
       overlay = null;
-      map.remove();
+      map?.remove();
+      map = null;
     };
   });
 
   $effect(() => {
     if (!mapReady || !overlay) return;
-    overlay.setProps({ layers: buildLayers() });
+    overlay.setProps({ layers: buildLayers(), useDevicePixels: dprCap });
+  });
+
+  // basemap resolution follows governor demotions (deck's follows via the
+  // setProps above; the construction-time values cover the common no-demotion
+  // session)
+  $effect(() => {
+    if (mapReady) map?.setPixelRatio(dprCap);
+  });
+
+  // While memoria playback runs, sample frame times and demote the tier if
+  // the device can't hold frame rate (one-way; persists across visits).
+  $effect(() => {
+    if (!(app.playing && app.tab === 'memoria') || !mapReady) return;
+    return startFpsGovernor();
   });
 
   // Keep the memoria tooltip live while time is flowing. deck's onHover only
@@ -547,8 +581,11 @@
   // beneath it change without the card refreshing. Re-pick at the last cursor
   // position each colour bucket (the granularity the choropleth updates at) so
   // the card tracks what is actually under the cursor instead of going stale.
+  // Tier throttle: each re-pick is hoverDepth picking passes — skipped
+  // entirely on 'low' (the tooltip still refreshes on pointer movement).
   $effect(() => {
     void colorBucket;
+    if (P.repickBuckets === 0 || colorBucket % P.repickBuckets !== 0) return;
     if (app.playing && app.tab === 'memoria' && lastPointer) {
       memoriaPickAt(lastPointer.x, lastPointer.y);
     }

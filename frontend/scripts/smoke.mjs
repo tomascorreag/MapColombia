@@ -68,8 +68,12 @@ await page.getByRole('button', { name: /reproducir|play/i }).click();
 await page.waitForTimeout(3000);
 await shot('memoria-playing');
 // dispatchEvent: skip the actionability wait — the readout repaints every
-// frame during playback and Playwright's stability check never settles
-await page.getByRole('button', { name: /pausa|pause/i }).dispatchEvent('click');
+// frame during playback and Playwright's stability check never settles.
+// Conditional: under software WebGL a single frame can advance sim-time by
+// YEARS (mday += realDt × speed), so playback may have already hit the
+// window end and stopped itself, leaving the button as "Reproducir".
+const pauseBtn = page.getByRole('button', { name: /pausa|pause/i });
+if (await pauseBtn.count()) await pauseBtn.dispatchEvent('click');
 await page.waitForTimeout(400);
 
 // flip language, sanity-check EN strings render

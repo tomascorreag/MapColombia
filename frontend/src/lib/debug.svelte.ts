@@ -9,7 +9,9 @@ export const DBG_DEFAULTS = {
   // victims across all events (not split per modality). Each field is drawn
   // twice (scar + fresh pass), so total cost ≈ 2·(nCurves+t2Curves) curves —
   // push higher via the panel on a real GPU; the headless smoke test is the
-  // ceiling before software WebGL can't keep up during playback.
+  // ceiling before software WebGL can't keep up during playback. NOTE: the
+  // device tier (perf.svelte.ts) caps nCurves/t2Curves/glowMaxPx at render
+  // time — on a demoted machine the panel can't exceed the tier cap.
   nCurves: 80000,
   stepKm: 4.2,
   reachKm: 80,

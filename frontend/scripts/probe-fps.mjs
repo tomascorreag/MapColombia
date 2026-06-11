@@ -3,10 +3,19 @@ import { chromium } from 'playwright';
 
 const browser = await chromium.launch({ headless: false });
 const page = await browser.newPage({ viewport: { width: 1500, height: 900 } });
-// pre-set the welcome latch so the modal can't cover the canvas during sampling
-await page.addInitScript(() => localStorage.setItem('mdv:welcome:v1', '1'));
-await page.goto(process.env.SMOKE_URL ?? 'http://localhost:5199', { waitUntil: 'networkidle' });
+page.on('console', (m) => {
+  if (m.text().startsWith('[perf]')) console.log(m.text());
+});
+// pass e.g. `?tier=low` as argv[2] to force a perf tier
+const url = (process.env.SMOKE_URL ?? 'http://localhost:5199') + (process.argv[2] ?? '');
+await page.goto(url, { waitUntil: 'networkidle' });
 await page.waitForTimeout(4000);
+// the welcome modal shows on every load — dismiss it, then pause the
+// autoplay it triggers so the idle sample is actually idle
+await page.keyboard.press('Escape');
+const pauseBtn = page.getByRole('button', { name: /pausa|pause/i });
+if (await pauseBtn.count()) await pauseBtn.click();
+await page.waitForTimeout(500);
 
 // idle FPS first
 const fps = () =>
@@ -35,6 +44,10 @@ await page.evaluate(() => {
 });
 await page.getByRole('button', { name: /reproducir|play/i }).click();
 console.log('playing fps:', await fps());
+// with the cursor parked on the canvas: hover picking + playback re-pick
+await page.mouse.move(750, 450);
+console.log('playing fps (hovering):', await fps());
+await page.screenshot({ path: `scripts/probe-fps${process.argv[2] ? '-' + process.argv[2].replace(/\W+/g, '') : ''}.png` });
 const long = await page.evaluate(() => window.__long);
 console.log('long tasks (ms):', long.slice(0, 30), 'count:', long.length);
 await browser.close();

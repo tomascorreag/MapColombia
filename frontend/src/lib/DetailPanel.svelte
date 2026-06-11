@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { ViolenceData, ViolenceDetails, Munis } from './data';
-  import { formatDay, formatInt } from './data';
+  import { formatInt } from './data';
   import { app } from './state.svelte';
   import { t, ui, modalityName } from './i18n.svelte';
   import { MODALITY_COLORS } from './colors';
-  import { muniLabel, responsible } from './eventFormat';
+  import { formatMonthYearInline } from './memoria';
+  import { narrativeOf, portraitAddsInfo } from './narrative';
 
   let {
     violence,
@@ -65,32 +66,25 @@
   // no per-record deep link; the citation key is the CNMH record number below.
   const GEOPORTAL = 'https://geoportal-de-datos-abiertos-cnmh-cnmh.hub.arcgis.com/';
 
+  // Each event renders as one prose sentence (date, victim, modality verb,
+  // alleged perpetrator, place — see narrative.ts for the integrity rules)
+  // followed by the registro line. Coordinates are intentionally dropped: the
+  // point is on the map and the registro number is the citation key.
   function cardOf(gi: number) {
     const m = violence.meta.modalities[violence.modOf[gi]];
-    const exactDate = formatDay(violence.day[gi], ui.lang);
-    const lon = violence.pos[gi * 2];
-    const lat = violence.pos[gi * 2 + 1];
     return {
       code: m.code,
       accent: MODALITY_COLORS[m.code],
       title: modalityName(m.code),
-      rows: [
-        {
-          label: t('date'),
-          value: exactDate ?? `${violence.year[gi]} (${t('date_unknown_day')})`,
-        },
-        { label: t('municipality'), value: muniLabel(munis, violence.muni[gi]) },
-        { label: t('coordinates'), value: `${lat.toFixed(4)}, ${lon.toFixed(4)}` },
-        { label: t('victims'), value: formatInt(violence.victims[gi], ui.lang) },
-        { label: t('responsible'), value: responsible(violence, gi) },
-        { label: t('record'), value: `N.º ${violence.id[gi]}` },
-      ],
+      sentence: narrativeOf(violence, munis, details, gi, ui.lang),
+      registro: `${t('record')} ${t('record_no')} ${violence.id[gi]}`,
+      showPortrait: portraitAddsInfo(violence, details, gi),
     };
   }
 
-  // One card per event under the click, oldest-first (the order MapView pins
-  // them in). Reads the `details` prop, so portraits fill in when the lazy
-  // buffers arrive.
+  // One card per event under the click, newest-first (the order MapView pins
+  // them in). Reads the `details` prop, so sentences re-gender and portraits
+  // fill in when the lazy buffers arrive.
   const cards = $derived(
     app.selected.map((gi) => ({ gi, ...cardOf(gi), portrait: portraitOf(gi) }))
   );
@@ -102,6 +96,7 @@
 
   function close() {
     app.selected = [];
+    app.selectedDay = null;
   }
 
   function onkeydown(ev: KeyboardEvent) {
@@ -116,9 +111,9 @@
   <aside class="ficha rise detail">
     <div class="head">
       <div class="title">
-        {cards.length === 1
-          ? cards[0].title
-          : `${formatInt(cards.length, ui.lang)} ${t('cases_at_point')}`}
+        {formatInt(cards.length, ui.lang)}
+        {t(cards.length === 1 ? 'cases_through_one' : 'cases_through')}
+        {formatMonthYearInline(app.selectedDay ?? 0, ui.lang)}
       </div>
       <button class="close mono" onclick={close} aria-label={t('close')}>✕</button>
     </div>
@@ -126,18 +121,12 @@
     <div class="cards">
       {#each cards as c (c.gi)}
         <article class="card" style:--accent-c={c.accent}>
-          {#if cards.length > 1}
-            <div class="card-title">{c.title}</div>
-          {/if}
+          <div class="card-title">{c.title}</div>
 
-          <dl>
-            {#each c.rows as row (row.label)}
-              <dt class="mono">{row.label}</dt>
-              <dd>{row.value}</dd>
-            {/each}
-          </dl>
+          <p class="narrative">{c.sentence}</p>
+          <p class="registro mono dim">{c.registro}</p>
 
-          {#if c.portrait}
+          {#if c.portrait && c.showPortrait}
             <div class="portrait">
               <span class="eyebrow">{t('victims_portrait')}</span>
               {#if c.portrait.composition}
@@ -234,17 +223,16 @@
   .cards {
     display: flex;
     flex-direction: column;
+    gap: 12px;
   }
 
+  /* boxed card: subtle background + gap reads as separation at a glance, where
+     the old hairline divider between flush cards did not */
   .card {
     border-left: 3px solid var(--accent-c);
-    padding: 0 16px 0 13px;
-  }
-
-  .card + .card {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--hairline-soft);
+    background: rgba(255, 255, 255, 0.035);
+    border-radius: 0 2px 2px 0;
+    padding: 10px 16px 12px 13px;
   }
 
   .card-title {
@@ -255,26 +243,17 @@
     margin-bottom: 6px;
   }
 
-  dl {
+  .narrative {
     margin: 0;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 4px 12px;
-  }
-
-  dt {
-    font-size: 9px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--paper-faint);
-    align-self: baseline;
-    padding-top: 3px;
-  }
-
-  dd {
-    margin: 0;
-    font-size: 12.5px;
+    font-size: 13px;
+    line-height: 1.55;
     color: var(--paper);
+  }
+
+  .registro {
+    margin: 6px 0 0;
+    font-size: 10px;
+    letter-spacing: 0.06em;
   }
 
   .source {
