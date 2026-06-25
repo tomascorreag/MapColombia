@@ -1,0 +1,145 @@
+[
+  {
+    "idCaso": 397236,
+    "modality": "AB",
+    "modalityName": "ACCIONES BÉLICAS (AB)",
+    "municipioDane": 5361,
+    "municipio": "Ituango",
+    "departamento": "Antioquia",
+    "date": "2002-09-20",
+    "codedVictims": 200,
+    "codedResponsible": "AGENTE DEL ESTADO / FUERZA AÉREA"
+  },
+  {
+    "idCaso": 335679,
+    "modality": "SE",
+    "modalityName": "SECUESTRO (SE)",
+    "municipioDane": 76001,
+    "municipio": "Cali",
+    "departamento": "Valle del Cauca",
+    "date": "1999-05-30",
+    "codedVictims": 179,
+    "codedResponsible": "GUERRILLA / ELN"
+  },
+  {
+    "idCaso": 16881,
+    "modality": "AB",
+    "modalityName": "ACCIONES BÉLICAS (AB)",
+    "municipioDane": 27615,
+    "municipio": "Riosucio",
+    "departamento": "Chocó",
+    "date": "2001-12-01",
+    "codedVictims": 152,
+    "codedResponsible": "GUERRILLA / FARC"
+  },
+  {
+    "idCaso": 301816,
+    "modality": "RU",
+    "modalityName": "RECLUTAMIENTO Y UTILIZACIÓN DE MENORES DE 18 AÑOS DE EDAD (RU)",
+    "municipioDane": 41298,
+    "municipio": "Garzón",
+    "departamento": "Huila",
+    "date": "1984-09-06",
+    "codedVictims": 150,
+    "codedResponsible": "GUERRILLA / M19"
+  },
+  {
+    "idCaso": 17782,
+    "modality": "AB",
+    "modalityName": "ACCIONES BÉLICAS (AB)",
+    "municipioDane": 47053,
+    "municipio": "Aracataca",
+    "departamento": "Magdalena",
+    "date": "2002-04-16",
+    "codedVictims": 150,
+    "codedResponsible": "AGENTE DEL ESTADO / FUERZA AÉREA"
+  },
+  {
+    "idCaso": 320626,
+    "modality": "SE",
+    "modalityName": "SECUESTRO (SE)",
+    "municipioDane": 95200,
+    "municipio": "Miraflores",
+    "departamento": "Guaviare",
+    "date": "1998-08-03",
+    "codedVictims": 131,
+    "codedResponsible": "GUERRILLA / FARC"
+  },
+  {
+    "idCaso": 288776,
+    "modality": "MA",
+    "modalityName": "MASACRES (MA)",
+    "municipioDane": 19821,
+    "municipio": "Toribio",
+    "departamento": "Cauca",
+    "date": "1985-12-01",
+    "codedVictims": 126,
+    "codedResponsible": "GUERRILLA / DISIDENCIA FARC"
+  },
+  {
+    "idCaso": 185271,
+    "modality": "AT",
+    "modalityName": "ATENTADO TERRORISTA (AT)",
+    "municipioDane": 25754,
+    "municipio": "Soacha",
+    "departamento": "Cundinamarca",
+    "date": "1989-11-27",
+    "codedVictims": 107,
+    "codedResponsible": "GRUPO PARAMILITAR / NO IDENTIFICADO"
+  },
+  {
+    "idCaso": 12569,
+    "modality": "AB",
+    "modalityName": "ACCIONES BÉLICAS (AB)",
+    "municipioDane": 27615,
+    "municipio": "Riosucio",
+    "departamento": "Chocó",
+    "date": "1998-08-14",
+    "codedVictims": 102,
+    "codedResponsible": "AGENTE DEL ESTADO / EJÉRCITO NACIONAL"
+  },
+  {
+    "idCaso": 555200,
+    "modality": "SE",
+    "modalityName": "SECUESTRO (SE)",
+    "municipioDane": 5088,
+    "municipio": "Bello",
+    "departamento": "Antioquia",
+    "date": "1987",
+    "codedVictims": 100,
+    "codedResponsible": "GUERRILLA / ELN"
+  },
+  {
+    "idCaso": 323956,
+    "modality": "SE",
+    "modalityName": "SECUESTRO (SE)",
+    "municipioDane": 23068,
+    "municipio": "Ayapel",
+    "departamento": "Córdoba",
+    "date": "2015-07-04",
+    "codedVictims": 100,
+    "codedResponsible": "GRUPO ARMADO NO IDENTIFICADO / NO APLICA"
+  },
+  {
+    "idCaso": 18714,
+    "modality": "AB",
+    "modalityName": "ACCIONES BÉLICAS (AB)",
+    "municipioDane": 50370,
+    "municipio": "Uribe",
+    "departamento": "Meta",
+    "date": "2002-09-05",
+    "codedVictims": 100,
+    "codedResponsible": "AGENTE DEL ESTADO / FUERZA AÉREA"
+  },
+  {
+    "idCaso": 17811,
+    "modality": "AB",
+    "modalityName": "ACCIONES BÉLICAS (AB)",
+    "municipioDane": 47053,
+    "municipio": "Aracataca",
+    "departamento": "Magdalena",
+    "date": "2002-04-20",
+    "codedVictims": 100,
+    "codedResponsible": "AGENTE DEL ESTADO / FUERZA AÉREA"
+  }
+]

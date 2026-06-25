@@ -7,6 +7,7 @@
   import { DataFilterExtension, MaskExtension } from '@deck.gl/extensions';
   import type { PickingInfo, Layer } from '@deck.gl/core';
   import { TendrilExtension } from './TendrilExtension';
+  import { LossRasterLayer, SPOT_DIM } from './LossRasterLayer';
   import { buildTendrils } from './tendrils';
   import type {
     ViolenceData,
@@ -14,6 +15,8 @@
     Munis,
     MuniShapes,
     Election,
+    DeforestationData,
+    ShapeFeature,
   } from './data';
   import { formatDay, formatInt } from './data';
   import { MODALITY_COLORS, hexToRgb } from './colors';
@@ -22,18 +25,20 @@
   import { dbg } from './debug.svelte';
   import { perf, PERF, startFpsGovernor } from './perf.svelte';
   import { t, ui, modalityName } from './i18n.svelte';
-  import { muniLabel as fmtMuniLabel, responsible } from './eventFormat';
+  import { muniLabel as fmtMuniLabel, responsible, abParticipants, abInitiative } from './eventFormat';
 
   let {
     violence,
     elections,
     munis,
     shapes,
+    deforestation = null,
   }: {
     violence: ViolenceData;
     elections: ElectionsData;
     munis: Munis;
     shapes: MuniShapes;
+    deforestation?: DeforestationData | null;
   } = $props();
 
   // Dev/MVP basemap: CARTO dark matter (attribution required). The production
@@ -163,22 +168,25 @@
   function violenceCard(gi: number, x: number, y: number): Hover {
     const m = violence.meta.modalities[violence.modOf[gi]];
     const exactDate = formatDay(violence.day[gi], ui.lang);
-    return {
-      x,
-      y,
-      accent: MODALITY_COLORS[m.code],
-      title: modalityName(m.code),
-      rows: [
-        {
-          label: t('date'),
-          value: exactDate ?? `${violence.year[gi]} (${t('date_unknown_day')})`,
-        },
-        { label: t('municipality'), value: muniLabel(violence.muni[gi]) },
-        { label: t('victims'), value: formatInt(violence.victims[gi], ui.lang) },
-        { label: t('responsible'), value: responsible(violence, gi) },
-        { label: t('record'), value: `N.º ${violence.id[gi]}` },
-      ],
-    };
+    const rows = [
+      {
+        label: t('date'),
+        value: exactDate ?? `${violence.year[gi]} (${t('date_unknown_day')})`,
+      },
+      { label: t('municipality'), value: muniLabel(violence.muni[gi]) },
+      { label: t('victims'), value: formatInt(violence.victims[gi], ui.lang) },
+    ];
+    if (m.code === 'AB') {
+      // combat: show the participants + initiative, never a single "responsible"
+      const parts = abParticipants(violence, gi);
+      if (parts.length) rows.push({ label: t('participants'), value: parts.join(' · ') });
+      const init = abInitiative(violence, gi, ui.lang);
+      if (init) rows.push({ label: t('initiative'), value: init });
+    } else {
+      rows.push({ label: t('responsible'), value: responsible(violence, gi) });
+    }
+    rows.push({ label: t('record'), value: `N.º ${violence.id[gi]}` });
+    return { x, y, accent: MODALITY_COLORS[m.code], title: modalityName(m.code), rows };
   }
 
   // Build the memoria tooltip by re-picking every enabled wound/scar layer at a
@@ -337,8 +345,103 @@
     };
   }
 
+  // muni index -> per-year loss row (ha), for the deforestation readout/tooltip
+  const defLossByMuni = $derived.by(() => {
+    const map = new Map<number, number[]>();
+    if (deforestation) {
+      deforestation.m.forEach((mi, i) => map.set(mi, deforestation.loss[i]));
+    }
+    return map;
+  });
+
+  // cumulative loss (ha) for a muni through the scrubbed year, plus that year's loss
+  function defLossAt(muniIdx: number): { cum: number; yr: number } {
+    const row = defLossByMuni.get(muniIdx);
+    if (!row || !deforestation) return { cum: 0, yr: 0 };
+    const upto = app.defYear - deforestation.years[0]; // index into the year array
+    let cum = 0;
+    for (let i = 0; i <= upto && i < row.length; i++) cum += row[i];
+    return { cum, yr: upto >= 0 && upto < row.length ? row[upto] : 0 };
+  }
+
+  function defMuniHover(info: PickingInfo) {
+    const f = info.object as ShapeFeature | undefined;
+    const i = f?.properties?.i;
+    if (!info.picked || i == null) {
+      app.hover = null;
+      return;
+    }
+    const { cum, yr } = defLossAt(i);
+    app.hover = {
+      x: info.x,
+      y: info.y,
+      accent: 'rgb(232, 130, 30)',
+      title: muniLabel(i),
+      rows: [
+        {
+          label: `${t('def_cumulative_to')} ${app.defYear}`,
+          value: `${formatInt(Math.round(cum), ui.lang)} ${t('def_ha')}`,
+        },
+        {
+          label: `${t('def_loss_in')} ${app.defYear}`,
+          value: `${formatInt(Math.round(yr), ui.lang)} ${t('def_ha')}`,
+        },
+      ],
+    };
+  }
+
+  function defMuniClick(info: PickingInfo) {
+    const f = info.object as ShapeFeature | undefined;
+    const i = f?.properties?.i;
+    if (i == null) return;
+    app.hover = null;
+    app.defMuni = i;
+  }
+
   function buildLayers(): Layer[] {
     const layers: Layer[] = [];
+
+    // ---- deforestation: Hansen tree-cover-loss raster + muni pick targets ----
+    if (app.tab === 'deforestation') {
+      if (deforestation) {
+        layers.push(
+          new LossRasterLayer({
+            id: 'loss-raster',
+            image: deforestation.image,
+            codesImage: deforestation.codesImage, // 2nd sampler: ag-kind / legality / coca
+            bounds: deforestation.meta.display_raster.bounds_lnglat,
+            maxYear: app.defPos - 2000, // float lossyear threshold → smooth crossfade
+            // unified spotlight: which dimension+code the legend lens is hovering
+            spotDim: app.defSpot.dim ? SPOT_DIM[app.defSpot.dim] : 0,
+            spotCode: app.defSpot.code,
+            // crisp codes — never blend a year/class into its neighbour at edges
+            textureParameters: {
+              minFilter: 'nearest',
+              magFilter: 'nearest',
+            },
+            pickable: false,
+          } as never)
+        );
+        // transparent municipio polygons: invisible fill, faint outline, but
+        // pickable so click/hover resolve to a muni for the readout panel
+        layers.push(
+          new GeoJsonLayer({
+            id: 'def-munis',
+            data: shapes as unknown as GeoJSON.FeatureCollection,
+            stroked: true,
+            filled: true,
+            getFillColor: [0, 0, 0, 0],
+            getLineColor: [232, 130, 30, 22],
+            lineWidthMinPixels: 0.4,
+            pickable: true,
+            onHover: defMuniHover,
+            onClick: defMuniClick,
+          })
+        );
+      }
+      return layers;
+    }
+
     const isMemoria = app.tab === 'memoria';
     const mods = violence.meta.modalities;
     const tDay = app.mday;

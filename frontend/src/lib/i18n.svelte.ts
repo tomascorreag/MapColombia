@@ -83,6 +83,8 @@ const dict: Record<string, { es: string; en: string }> = {
   modality: { es: 'Modalidad', en: 'Type' },
   victims: { es: 'Víctimas', en: 'Victims' },
   responsible: { es: 'Presunto responsable', en: 'Alleged perpetrator' },
+  participants: { es: 'Participantes', en: 'Participants' },
+  initiative: { es: 'Iniciativa', en: 'Initiative' },
   party: { es: 'Partido', en: 'Party' },
   candidate: { es: 'Candidato', en: 'Candidate' },
   votes: { es: 'votos', en: 'votes' },
@@ -99,6 +101,16 @@ const dict: Record<string, { es: string; en: string }> = {
   cases_through_one: { es: 'caso hasta', en: 'case through' },
   record_no: { es: 'N.º', en: 'no.' },
   close: { es: 'Cerrar', en: 'Close' },
+
+  // event annotation modal ("Read more…")
+  read_more: { es: 'Leer más', en: 'Read more' },
+  story_eyebrow: { es: 'Narrativa documentada', en: 'Documented narrative' },
+  story_record: { es: 'CNMH · Registro', en: 'CNMH · Record' },
+  story_under_review: { es: 'Cifras en revisión', en: 'Figures under review' },
+  story_review_note: {
+    es: 'Las fuentes difieren en el número de víctimas de este evento; la cifra que se muestra es la registrada por el CNMH. Entrada pendiente de revisión editorial.',
+    en: 'Sources differ on this event’s victim count; the figure shown is the one recorded by the CNMH. Entry pending editorial review.',
+  },
 
   // victim portrait (detail panel)
   victims_portrait: { es: 'Las víctimas', en: 'The victims' },
@@ -221,6 +233,62 @@ const dict: Record<string, { es: string; en: string }> = {
   date_known_year: {
     es: 'casos con año conocido pero fecha exacta desconocida aparecen solo como cicatriz al cierre de su año, nunca como herida',
     en: 'cases with a known year but unknown exact date appear only as a scar once their year closes, never as a wound',
+  },
+
+  // deforestation view
+  def_title: { es: 'Bosque perdido', en: 'Forest Lost' },
+  def_eyebrow: {
+    es: 'Pérdida de cobertura arbórea · Colombia 2001–2025',
+    en: 'Tree-cover loss · Colombia 2001–2025',
+  },
+  def_subtitle: {
+    es: 'Dónde y cuándo se perdió el bosque',
+    en: 'Where and when forest was lost',
+  },
+  def_cumulative_to: { es: 'Pérdida acumulada hasta', en: 'Cumulative loss through' },
+  def_national_loss: { es: 'Pérdida anual nacional', en: 'National annual loss' },
+  def_hectares: { es: 'hectáreas', en: 'hectares' },
+  def_ha: { es: 'ha', en: 'ha' },
+  def_drivers_title: { es: 'Causas por año', en: 'Drivers by year' },
+  def_drivers_hint: {
+    es: 'Pasa el cursor sobre una causa para resaltar sus píxeles en el mapa.',
+    en: 'Hover a driver to spotlight its pixels on the map.',
+  },
+  def_lens_agri: { es: 'Agricultura', en: 'Agriculture' },
+  def_lens_legality: { es: 'Legalidad', en: 'Legality' },
+  def_lens_drivers: { es: 'Motores (WRI)', en: 'Drivers (WRI)' },
+  def_legality_hint: {
+    es: 'Pérdida dentro de áreas protegidas (RUNAP) y reservas de Ley 2ª. Clasificación zonal, no un fallo jurídico. Pasa el cursor para resaltar.',
+    en: 'Loss inside protected areas (RUNAP) and Ley 2ª reserves. Zonal classification, not a legal verdict. Hover to spotlight.',
+  },
+  def_agri_hint: {
+    es: 'Cobertura del suelo despejado (CORINE 2022) + coca (SIMCI). Pasto ≈ ganadería. Pasa el cursor para resaltar.',
+    en: 'Land cover of cleared land (CORINE 2022) + coca (SIMCI). Pasture ≈ cattle ranching. Hover to spotlight.',
+  },
+  def_cattle: { es: 'Inventario bovino (ICA)', en: 'Cattle inventory (ICA)' },
+  def_cattle_head: { es: 'cabezas', en: 'head' },
+  def_causes_title: { es: 'Ranking cualitativo IDEAM', en: 'IDEAM qualitative ranking' },
+  def_causes_disclaimer: {
+    es: 'Orden estimado según IDEAM — no es una proporción medida. Las causas y los actores se atribuyen a nivel regional (IDEAM SMByC, FCDS, MAAP), no por píxel. Pendiente de revisión.',
+    en: 'Estimated ordering per IDEAM — not a measured proportion. Drivers and actors are attributed regionally (IDEAM SMByC, FCDS, MAAP), not per pixel. Pending review.',
+  },
+  def_method_title: { es: 'Método', en: 'Method' },
+  def_method: {
+    es: 'Cada celda muestra el año más temprano de pérdida de cobertura arbórea (Hansen/UMD, 30 m, remuestreado para visualización). La pérdida de Hansen NO equivale a la deforestación del IDEAM (definiciones distintas). Las hectáreas por municipio se cuentan de los píxeles de 30 m, unidas por código DANE. Nada se estima ni se imputa.',
+    en: 'Each cell shows the earliest year of tree-cover loss (Hansen/UMD, 30 m, resampled for display). Hansen loss is NOT the same as IDEAM deforestation (different definitions). Per-municipio hectares are counted from the 30 m pixels, joined on DANE code. Nothing is estimated or imputed.',
+  },
+  def_ideam_ref: { es: 'Referencia IDEAM (deforestación)', en: 'IDEAM reference (deforestation)' },
+  def_hansen_series: { es: 'Hansen (pérdida de cobertura)', en: 'Hansen (tree-cover loss)' },
+  def_total_muni: { es: 'Pérdida acumulada', en: 'Cumulative loss' },
+  def_loss_in: { es: 'Pérdida en', en: 'Loss in' },
+  def_no_loss_muni: { es: 'Sin pérdida registrada', en: 'No recorded loss' },
+  def_click_hint: {
+    es: 'Haga clic en un municipio para ver su pérdida anual.',
+    en: 'Click a municipality to see its annual loss.',
+  },
+  def_welcome_what: {
+    es: 'Este mapa muestra la pérdida de cobertura arbórea en Colombia, 2001–2025, según los datos satelitales de Hansen/UMD (Global Forest Change). Cada celda aparece en el año más temprano en que se detectó pérdida. La pérdida de cobertura arbórea no equivale a la deforestación oficial del IDEAM: incluye plantaciones, incendios y pérdida natural. Los actores y las causas se atribuyen a nivel regional, no por píxel.',
+    en: 'This map shows tree-cover loss in Colombia, 2001–2025, from Hansen/UMD satellite data (Global Forest Change). Each cell appears in the earliest year loss was detected. Tree-cover loss is not the same as IDEAM official deforestation: it includes plantations, fire and natural loss. Actors and drivers are attributed regionally, not per pixel.',
   },
 };
 

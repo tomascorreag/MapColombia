@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ViolenceData, ViolenceDetails, Munis } from './data';
+  import type { ViolenceData, ViolenceDetails, Munis, EventAnnotations } from './data';
   import { formatInt } from './data';
   import { app } from './state.svelte';
   import { t, ui, modalityName } from './i18n.svelte';
@@ -11,7 +11,13 @@
     violence,
     munis,
     details,
-  }: { violence: ViolenceData; munis: Munis; details: ViolenceDetails | null } = $props();
+    annotations = null,
+  }: {
+    violence: ViolenceData;
+    munis: Munis;
+    details: ViolenceDetails | null;
+    annotations?: EventAnnotations | null;
+  } = $props();
 
   // source occupation strings are SHOUTY uppercase Spanish — render as sentence case
   function prettyOcc(s: string): string {
@@ -79,7 +85,14 @@
       sentence: narrativeOf(violence, munis, details, gi, ui.lang),
       registro: `${t('record')} ${t('record_no')} ${violence.id[gi]}`,
       showPortrait: portraitAddsInfo(violence, details, gi),
+      // curated long-form narrative for this exact IdCaso, if one exists
+      storyId: annotations?.[String(violence.id[gi])] ? violence.id[gi] : null,
     };
+  }
+
+  function openStory(idCaso: number) {
+    app.storyId = idCaso;
+    app.overlay = 'story';
   }
 
   // One card per event under the click, newest-first (the order MapView pins
@@ -88,6 +101,15 @@
   const cards = $derived(
     app.selected.map((gi) => ({ gi, ...cardOf(gi), portrait: portraitOf(gi) }))
   );
+
+  // reset the panel scroll to the top each time a different event (or set of
+  // events) is selected, so the new content opens from the top rather than
+  // wherever the previous reading left the scrollbar
+  let panelEl: HTMLElement | undefined = $state();
+  $effect(() => {
+    app.selected; // track: a new selection replaces the array reference
+    if (panelEl) panelEl.scrollTop = 0;
+  });
 
   // every distinct dataset across the pinned events, for the shared footer
   const datasets = $derived([
@@ -108,7 +130,7 @@
 <svelte:window {onkeydown} />
 
 {#if cards.length > 0}
-  <aside class="ficha rise detail">
+  <aside class="ficha rise detail" bind:this={panelEl}>
     <div class="head">
       <div class="title">
         {formatInt(cards.length, ui.lang)}
@@ -125,6 +147,13 @@
 
           <p class="narrative">{c.sentence}</p>
           <p class="registro mono dim">{c.registro}</p>
+
+          {#if c.storyId !== null}
+            {@const sid = c.storyId}
+            <button class="readmore" onclick={() => openStory(sid)}>
+              {t('read_more')} →
+            </button>
+          {/if}
 
           {#if c.portrait && c.showPortrait}
             <div class="portrait">
@@ -254,6 +283,19 @@
     margin: 6px 0 0;
     font-size: 10px;
     letter-spacing: 0.06em;
+  }
+
+  .readmore {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--gold);
+    border: 1px solid rgba(201, 162, 39, 0.35);
+    border-radius: 2px;
+    padding: 3px 8px;
+  }
+
+  .readmore:hover {
+    border-color: var(--gold);
   }
 
   .source {

@@ -51,6 +51,24 @@
    "length": 341547,
    "dtype": "uint8",
    "bytes": 341547
+  },
+  "ga2": {
+   "offset": 8197128,
+   "length": 341547,
+   "dtype": "uint8",
+   "bytes": 341547
+  },
+  "grp2": {
+   "offset": 8538675,
+   "length": 341547,
+   "dtype": "uint8",
+   "bytes": 341547
+  },
+  "initiative": {
+   "offset": 8880222,
+   "length": 341547,
+   "dtype": "uint8",
+   "bytes": 341547
   }
  },
  "modalities": [
@@ -1131,6 +1149,15 @@
   "PERUANO",
   "LOS TRAQUETOS"
  ],
+ "initiatives": [
+  "",
+  "FUERZAS ARMADAS ESTATALES",
+  "GRUPOS ARMADOS ORGANIZADOS",
+  "SIN INFORMACIÓN",
+  "NINGUNO",
+  "OTRO"
+ ],
+ "abParticipants": "For AB (acciones bélicas / combat) events the coded Presunto_Responsable is Grupo_Armado_1 — the first-listed combat party, often the ATTACKED force, NOT a perpetrator — so cat/grp must not be shown as 'responsible' for AB. cat/grp are that first party; ga2/grp2 (255 = none) are the second party's category / specific group; initiative indexes initiatives[] (which side took the offensive). Populated for AB only. ga2 comes from the geoportal cut; grp2 (specific group, e.g. FARC) and initiative are joined by IdCaso from the 2024-09-30 socrata cut (CC BY-SA), SIN INFORMACIÓN where that older cut lacks the row — never imputed.",
  "details": {
   "file": "violence_details.bin",
   "buffers": {
@@ -1257,8 +1284,8 @@
   "via": "datos.gov.co / CNMH ArcGIS Geoportal",
   "license": "CC BY 4.0",
   "license_url": "https://creativecommons.org/licenses/by/4.0/",
-  "license_note": "CC BY 4.0 stated in the licenseInfo field of all 11 ArcGIS Online items of the geoportal cut (verified 2026-06-10; snapshot in docs/evidence/cnmh-agol-license-2026-06-10.json). The 2024-09-30 socrata cut of the same system is CC BY-SA 4.0."
+  "license_note": "CC BY 4.0 stated in the licenseInfo field of all 11 ArcGIS Online items of the geoportal cut (verified 2026-06-10; snapshot in docs/evidence/cnmh-agol-license-2026-06-10.json). The 2024-09-30 socrata cut of the same system is CC BY-SA 4.0; the AB second-group name (grp2) and combat initiative are derived from that cut, so those two fields carry the CC BY-SA 4.0 ShareAlike term."
  },
  "integrity": "Events with unknown year (Anio_hecho=0), pre-1958 dates, out-of-range coordinates, or unknown municipality (whose source coordinates are department-centroid placeholders) are excluded and counted per modality in modalities[].excluded — never imputed. day=-1 means exact date unknown (year-level only). muni=65535 means the DANE code did not match the DIVIPOLA centroid table (e.g. non-municipalized areas).",
- "generated": "2026-06-10T23:24:12.678967+00:00"
+ "generated": "2026-06-24T19:50:36.914525+00:00"
 }

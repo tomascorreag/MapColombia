@@ -261,8 +261,8 @@ def build_violence(muni_idx):
         df = pd.read_csv(ROOT / entry["file"], low_memory=False, usecols=[
             "IdCaso", "Anio_hecho", "mes_hecho", "dia_hecho", "Nombre_Tipo",
             "Total_Victimas_Caso", "Geo_municipio", "Presunto_Responsable",
-            "Descripcion_Presunto_Responsabl", "Latitud", "Longitud",
-            "Total_victimas_civiles", "Total_combatientes"])
+            "Descripcion_Presunto_Responsabl", "Grupo_Armado_2", "Latitud",
+            "Longitud", "Total_victimas_civiles", "Total_combatientes"])
         total = len(df)
         name_es = df.Nombre_Tipo.mode().iat[0]
 
@@ -332,6 +332,73 @@ def build_violence(muni_idx):
     cat = intern(ev.Presunto_Responsable, cat_table, cat_idx)
     grp = intern(ev.Descripcion_Presunto_Responsabl, grp_table, grp_idx)
 
+    # AB (acciones bélicas) participant model. The flattened Presunto_Responsable
+    # equals Grupo_Armado_1, the FIRST-listed combat party — for guerrilla and
+    # paramilitar assaults on the security forces that is the ATTACKED force, not
+    # the aggressor (verified: 99.99% of AB rows have Presunto_Responsable ==
+    # Grupo_Armado_1; ~30k are AGENTE DEL ESTADO + GUERRILLA). Showing it as a
+    # "responsable" mislabels ~30k FARC/ELN combat actions as state-perpetrated.
+    # We carry the second participant (ga2 category / grp2 specific group) and
+    # the combat initiative so the frontend shows participants + initiative for
+    # AB instead. ga2/grp2 reuse the cat/grp tables (shared vocabulary; 255 =
+    # none — safe, both tables are far under 254). The specific second-group name
+    # (e.g. FARC) and the initiative exist only in the 2024-09-30 socrata cut
+    # (CC BY-SA), joined by IdCaso; AB rows newer than that cut (~1.5%) keep
+    # initiative SIN INFORMACIÓN — never imputed.
+    NONE8 = 0xFF
+
+    def intern_opt(value, table, index):
+        v = str(value).strip() if pd.notna(value) else ""
+        if v in ("", "-", "NO APLICA"):
+            return NONE8
+        if v not in index:
+            if len(table) >= 255:  # 255 reserved as the "none" sentinel
+                raise ValueError(f"more than 255 distinct values: {v!r}")
+            index[v] = len(table)
+            table.append(v)
+        return index[v]
+
+    ga2 = np.fromiter((intern_opt(v, cat_table, cat_idx) for v in ev.Grupo_Armado_2),
+                      dtype=np.uint8, count=n)
+
+    INIT_TABLE = ["", "FUERZAS ARMADAS ESTATALES", "GRUPOS ARMADOS ORGANIZADOS",
+                  "SIN INFORMACIÓN", "NINGUNO", "OTRO"]
+    init_idx = {v: i for i, v in enumerate(INIT_TABLE)}
+    sin_info = init_idx["SIN INFORMACIÓN"]
+    socr = {d["modality"]: d for d in cnmh_manifest["datasets"]
+            if d.get("family") == "socrata" and d.get("kind") == "casos"}
+    ga2desc_by_id, init_by_id = {}, {}
+    if "AB" in socr:
+        sdf = pd.read_csv(ROOT / socr["AB"]["file"], low_memory=False)
+        c_desc = next(c for c in sdf.columns if "Grupo Armado 2" in c and "escrip" in c)
+        sid = pd.to_numeric(sdf["ID Caso"], errors="coerce")
+        descs, inits = sdf[c_desc].tolist(), sdf["Iniciativa"].tolist()
+        for idc, dsc, ini in zip(sid, descs, inits):
+            if pd.notna(idc):
+                ga2desc_by_id[int(idc)] = dsc
+                init_by_id[int(idc)] = ini
+
+    ab_mod = MODALITY_ORDER.index("AB")
+    grp2 = np.full(n, NONE8, dtype=np.uint8)
+    initiative = np.zeros(n, dtype=np.uint8)
+    ev_ids = ev.IdCaso.to_numpy(dtype=np.int64)
+    ev_mod = ev.modality.to_numpy()
+    ab_total = int((ev_mod == ab_mod).sum())
+    ab_hit = 0
+    for i in range(n):
+        if ev_mod[i] != ab_mod:
+            continue
+        idc = int(ev_ids[i])
+        if idc in init_by_id:
+            ab_hit += 1
+            grp2[i] = intern_opt(ga2desc_by_id[idc], grp_table, grp_idx)
+            iv = str(init_by_id[idc]).strip().upper()
+            initiative[i] = init_idx.get(iv, sin_info)
+        else:  # AB row newer than the socrata cut: not imputed
+            initiative[i] = sin_info
+    print(f"  AB participant join: {ab_hit}/{ab_total} AB events enriched from "
+          f"socrata (GA2 group + initiative); {ab_total - ab_hit} newer -> SIN INFORMACIÓN")
+
     days = np.array([days_since_epoch(y, m, d) for y, m, d in
                      zip(ev.year, pd.to_numeric(ev.mes_hecho, errors="coerce").fillna(0),
                          pd.to_numeric(ev.dia_hecho, errors="coerce").fillna(0))],
@@ -357,7 +424,8 @@ def build_violence(muni_idx):
     # 4-byte-aligned buffers first, then 2-byte, then 1-byte
     buffers = [("pos", pos), ("day", days), ("id", ids),
                ("year", year), ("victims", victims), ("muni", muni),
-               ("cat", cat), ("grp", grp)]
+               ("cat", cat), ("grp", grp), ("ga2", ga2), ("grp2", grp2),
+               ("initiative", initiative)]
     layout, blob, offset = {}, bytearray(), 0
     for name, arr in buffers:
         b = arr.tobytes()
@@ -385,6 +453,18 @@ def build_violence(muni_idx):
         "modalities": modalities,
         "respCategories": cat_table,
         "respGroups": grp_table,
+        "initiatives": INIT_TABLE,
+        "abParticipants": (
+            "For AB (acciones bélicas / combat) events the coded "
+            "Presunto_Responsable is Grupo_Armado_1 — the first-listed combat "
+            "party, often the ATTACKED force, NOT a perpetrator — so cat/grp "
+            "must not be shown as 'responsible' for AB. cat/grp are that first "
+            "party; ga2/grp2 (255 = none) are the second party's category / "
+            "specific group; initiative indexes initiatives[] (which side took "
+            "the offensive). Populated for AB only. ga2 comes from the geoportal "
+            "cut; grp2 (specific group, e.g. FARC) and initiative are joined by "
+            "IdCaso from the 2024-09-30 socrata cut (CC BY-SA), SIN INFORMACIÓN "
+            "where that older cut lacks the row — never imputed."),
         "details": {
             "file": "violence_details.bin",
             "buffers": det_layout,
@@ -412,7 +492,10 @@ def build_violence(muni_idx):
                              "ArcGIS Online items of the geoportal cut (verified "
                              "2026-06-10; snapshot in docs/evidence/"
                              "cnmh-agol-license-2026-06-10.json). The 2024-09-30 "
-                             "socrata cut of the same system is CC BY-SA 4.0."),
+                             "socrata cut of the same system is CC BY-SA 4.0; the "
+                             "AB second-group name (grp2) and combat initiative "
+                             "are derived from that cut, so those two fields carry "
+                             "the CC BY-SA 4.0 ShareAlike term."),
         },
         "integrity": ("Events with unknown year (Anio_hecho=0), pre-1958 dates, "
                       "out-of-range coordinates, or unknown municipality (whose "

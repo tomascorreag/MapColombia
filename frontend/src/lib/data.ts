@@ -54,6 +54,7 @@ export interface ViolenceMeta {
   modalities: ModalityMeta[];
   respCategories: string[];
   respGroups: string[];
+  initiatives: string[]; // AB combat initiative labels (initiative indexes this)
   details: DetailsMeta;
   unmatchedMuni: number;
   source: { name: string; corte: string; publisher: string; license_note: string };
@@ -89,8 +90,15 @@ export interface ViolenceData {
   yearF32: Float32Array; // year as f32 for the GPU filter
   victims: Uint16Array;
   muni: Uint16Array; // index into Munis; 0xFFFF = unmatched
-  cat: Uint8Array; // index into respCategories
+  cat: Uint8Array; // index into respCategories (AB: first combat party, NOT a perpetrator)
   grp: Uint8Array; // index into respGroups
+  // AB (acciones bélicas) only: the second combat party + which side took the
+  // offensive. cat/grp are the first party (the coded "responsible", which for
+  // AB is the attacked force). 255 = no second party. initiative indexes
+  // meta.initiatives (0 = not applicable / non-AB). See meta.abParticipants.
+  ga2: Uint8Array; // index into respCategories; 255 = none
+  grp2: Uint8Array; // index into respGroups; 255 = none
+  initiative: Uint8Array; // index into meta.initiatives; 0 = N/A
   radius: Float32Array; // sqrt(victims), precomputed for getRadius
   // Memoria view (every event, all modalities): day as f32 for the GPU wound
   // filter (-1 = exact date unknown, never shown as a wound), and the scar
@@ -214,6 +222,9 @@ export async function loadViolence(base = 'data'): Promise<ViolenceData> {
     muni: view(bin, meta.buffers.muni) as Uint16Array,
     cat: view(bin, meta.buffers.cat) as Uint8Array,
     grp: view(bin, meta.buffers.grp) as Uint8Array,
+    ga2: view(bin, meta.buffers.ga2) as Uint8Array,
+    grp2: view(bin, meta.buffers.grp2) as Uint8Array,
+    initiative: view(bin, meta.buffers.initiative) as Uint8Array,
     radius,
     dayF32,
     scarDayF32,
@@ -255,6 +266,153 @@ export async function loadJson<T>(url: string): Promise<T> {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${url} ${r.status}`);
   return r.json() as Promise<T>;
+}
+
+// ---- event annotations ("Read more…") ---------------------------------------
+// Curated, source-cited long-form narrative for individual events, keyed by
+// CNMH IdCaso (string). An editorial layer kept OUT of the integrity-controlled
+// binaries — it links out from a coded value, never alters one. The hard gate
+// (exact-one-IdCaso) and merge policy live in docs/event-annotations.md.
+
+export interface AnnotationSource {
+  type: string; // primary | scholarship | tertiary
+  publisher: string;
+  title: string;
+  url: string;
+}
+
+export interface EventAnnotation {
+  idCaso: number;
+  match: {
+    modality: string;
+    municipioDane: number;
+    date: string; // ISO; = row Fecha_Hecho
+    codedVictims: number; // = row Total_Victimas_Caso (never overridden by prose)
+    codedResponsible: string;
+    candidatesInMuniYear: number;
+    disambiguatedBy: string[];
+  };
+  merge: {
+    mode: 'auto' | 'review_required';
+    reason: string | null;
+    reviewedBy: string | null;
+    reviewedOn: string | null;
+  };
+  title: { es: string; en: string };
+  narrative: { es: string; en: string };
+  sources: AnnotationSource[];
+}
+
+export type EventAnnotations = Record<string, EventAnnotation>;
+
+// Small JSON (a few KB); lazy-loaded on first panel open, never blocks startup.
+export async function loadAnnotations(base = 'data'): Promise<EventAnnotations> {
+  return loadJson<EventAnnotations>(`${base}/annotations.json`);
+}
+
+// ---- deforestation (Hansen tree-cover loss) ----------------------------------
+
+export interface DeforestationCause {
+  rank: number;
+  driver_es: string;
+  driver_en: string;
+  note_es: string;
+  note_en: string;
+  source: string;
+}
+
+// WRI/GDM dominant-driver class (the quantified, per-year, mappable "causes")
+export interface DeforestationDriver {
+  code: number; // 1..7, matches the PNG blue-channel code
+  label_es: string;
+  label_en: string;
+}
+
+// Kind of agriculture (CORINE subsequent land cover): 1 pasto, 2 cultivos, 3 mosaico
+export interface DeforestationAgKind {
+  code: number; // matches the codes-PNG red-channel code
+  label_es: string;
+  label_en: string;
+}
+
+// Legality (zonal): 1 protected (RUNAP), 2 forest reserve (Ley 2ª), 3 other
+export interface DeforestationLegality {
+  code: number; // matches the codes-PNG green-channel code
+  label_es: string;
+  label_en: string;
+}
+
+interface SourceMeta {
+  name: string;
+  citation: string;
+  license?: string;
+  license_note?: string;
+  caveat: string;
+}
+
+export interface DeforestationData {
+  meta: {
+    render_source: { name: string; version: string; citation: string; license_note: string };
+    definition_caveat: string;
+    join: string;
+    display_raster: {
+      file: string;
+      encoding: string;
+      year_map: string;
+      bounds_lnglat: [number, number, number, number];
+      crs: string;
+      downsample_note: string;
+      excludes: string;
+    };
+    area_method: string;
+    ideam_caveat: string;
+    drivers_source?: { name: string; citation: string; license: string; caveat: string };
+    codes_raster?: { file: string; encoding: string };
+    agkind_source?: SourceMeta;
+    coca_source?: SourceMeta;
+    cattle_source?: SourceMeta & { years: number[] };
+    legality_source?: { name: string; citation: string; caveat: string };
+    pending_owner_review: boolean;
+  };
+  years: number[]; // 2001..2025
+  m: number[]; // muni indices (into Munis) that have any loss
+  loss: number[][]; // per-muni annual loss in ha, aligned to `years`
+  national: number[]; // national annual loss in ha (Hansen)
+  ideam_national: { year: number; ha: number; source: string }[];
+  causes: DeforestationCause[];
+  drivers: DeforestationDriver[]; // WRI/GDM driver classes (code -> label)
+  loss_by_driver: Record<string, number[]>; // driver code -> annual ha, aligned to `years`
+  // Phase 2a — kind of agriculture + coca + cattle
+  agkinds: DeforestationAgKind[]; // CORINE ag-kind classes (code -> label)
+  loss_by_agkind: Record<string, number[]>; // ag-kind code -> annual loss ha
+  coca_loss_by_year: number[]; // loss ha in coca-by-then cells, aligned to `years`
+  coca_area_by_year: (number | null)[]; // SIMCI national monitored coca area, ha (null past 2023)
+  cattle: Record<string, Record<string, number>>; // muni index -> { year -> head }
+  // Phase 2b — legality
+  legality_classes: DeforestationLegality[];
+  loss_by_legality: Record<string, number[]>; // legality code -> annual loss ha
+  image: ImageBitmap; // the lossyear texture, attached after fetch
+  codesImage: ImageBitmap; // the companion codes texture (ag-kind / legality / coca)
+}
+
+// Companion to loadViolence: the small per-municipio/national JSON plus the
+// lossyear PNG decoded to an ImageBitmap for the deck.gl raster layer.
+export async function loadDeforestation(base = 'data'): Promise<DeforestationData> {
+  const png = (name: string) =>
+    fetch(`${base}/${name}`).then((r) => {
+      if (!r.ok) throw new Error(`${name} ${r.status}`);
+      return r.blob();
+    });
+  const [json, lossBlob, codesBlob] = await Promise.all([
+    loadJson<Omit<DeforestationData, 'image' | 'codesImage'>>(`${base}/deforestation.json`),
+    png('deforestation_lossyear.png'),
+    png('deforestation_codes.png'),
+  ]);
+  const [image, codesImage] = await Promise.all([
+    createImageBitmap(lossBlob),
+    createImageBitmap(codesBlob),
+  ]);
+  return { ...json, image, codesImage };
 }
 
 const EPOCH_MS = Date.UTC(1958, 0, 1);

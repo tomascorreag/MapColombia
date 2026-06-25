@@ -13,7 +13,7 @@ import type { ViolenceData, ViolenceDetails, Munis } from './data';
 import { formatDay, formatInt } from './data';
 import type { Lang } from './i18n.svelte';
 import { modalityName } from './i18n.svelte';
-import { muniLabel, isRealGroup } from './eventFormat';
+import { muniLabel, isRealGroup, abParticipants, abInitiative } from './eventFormat';
 
 // Grammatical gender of the chosen ES noun phrase — NOT the victim's sex.
 // Participles agree with the noun: "una persona fue asesinada" is feminine
@@ -186,7 +186,13 @@ function verbPhrase(
 
 // Event-framed core for AT AP AB DB — and the guard for any modality recorded
 // with zero victims, where a victim-subject sentence would assert too much.
-function eventPhrase(code: string, n: number, lang: Lang): string {
+function eventPhrase(
+  code: string,
+  n: number,
+  lang: Lang,
+  details: ViolenceDetails | null,
+  gi: number
+): string {
   const nn = formatInt(n, lang);
   const vEs = `dejó ${nn} víctima${n === 1 ? '' : 's'}`;
   const vEn = `left ${nn} victim${n === 1 ? '' : 's'}`;
@@ -199,9 +205,31 @@ function eventPhrase(code: string, n: number, lang: Lang): string {
       if (n > 0)
         return lang === 'es' ? `un ataque a la población ${vEs}` : `an attack on a town ${vEn}`;
       return lang === 'es' ? 'se registró un ataque a la población' : 'an attack on a town was recorded';
-    case 'AB':
-      if (n > 0) return lang === 'es' ? `una acción bélica ${vEs}` : `a combat action ${vEn}`;
+    case 'AB': {
+      // AB victims are fatalities (Total_Victimas = civilian + combatant deaths,
+      // 100% of rows; wounded are tracked separately) — "muertos"/"dead", not the
+      // generic "víctimas". A combat action can be a massacre of civilians caught
+      // in it (Bojayá: 81 civilians, 0 combatants) or a purely military engagement
+      // (El Billar: all combatants). When the dead are civilian, say so on the lead
+      // line rather than flattening it to a neutral combat toll; the portrait below
+      // carries the full split either way. civ/comb come from the lazy details, so
+      // this resolves once they load (until then, the neutral "muertos" form).
+      if (n > 0) {
+        const civ = details ? details.civ[gi] : 0;
+        if (details && civ === n)
+          return lang === 'es'
+            ? `una acción bélica en la que ${n === 1 ? 'murió' : 'murieron'} ${nn} ${n === 1 ? 'civil' : 'civiles'}`
+            : `a combat action in which ${nn} ${n === 1 ? 'civilian was' : 'civilians were'} killed`;
+        if (details && civ > 0)
+          return lang === 'es'
+            ? `una acción bélica dejó ${nn} muerto${n === 1 ? '' : 's'}, entre ellos ${formatInt(civ, 'es')} civil${civ === 1 ? '' : 'es'}`
+            : `a combat action left ${nn} dead, including ${formatInt(civ, 'en')} civilian${civ === 1 ? '' : 's'}`;
+        return lang === 'es'
+          ? `una acción bélica dejó ${nn} muerto${n === 1 ? '' : 's'}`
+          : `a combat action left ${nn} dead`;
+      }
       return lang === 'es' ? 'se registró una acción bélica' : 'a combat action was recorded';
+    }
     case 'DB':
       if (n > 0)
         return lang === 'es'
@@ -279,6 +307,21 @@ function perpOf(violence: ViolenceData, gi: number, lang: Lang): string | null {
   return phrase;
 }
 
+// AB (combat) clause: "; participantes: A y B; iniciativa: …". Replaces the
+// "presunto responsable" label, which is meaningless for AB. Group names are
+// appended verbatim uppercase, matching perpOf()'s convention.
+function abTail(violence: ViolenceData, gi: number, lang: Lang): string {
+  const parts = abParticipants(violence, gi);
+  const init = abInitiative(violence, gi, lang);
+  let s = '';
+  if (parts.length) {
+    const joined = parts.join(lang === 'es' ? ' y ' : ' and ');
+    s += lang === 'es' ? `; participantes: ${joined}` : `; participants: ${joined}`;
+  }
+  if (init) s += lang === 'es' ? `; iniciativa: ${init}` : `; initiative: ${init}`;
+  return s;
+}
+
 /**
  * One prose sentence for event `gi`, e.g. ES: "El 3 de mayo de 1958 un hombre
  * civil murió asesinado por el bandolerismo (presunto) en Mariquita, Tolima."
@@ -317,13 +360,23 @@ export function narrativeOf(
   if (eventFramed) {
     // label form ("presunto responsable: X") carries the allegation without
     // ES participle agreement against the event noun or a+el contractions
-    let sent = lang === 'es' ? `${date} ${eventPhrase(code, n, lang)}` : `${date}, ${eventPhrase(code, n, lang)}`;
+    let sent =
+      lang === 'es'
+        ? `${date} ${eventPhrase(code, n, lang, details, gi)}`
+        : `${date}, ${eventPhrase(code, n, lang, details, gi)}`;
     if (place) sent += ` ${place}`;
-    sent += perp
-      ? lang === 'es'
-        ? `; presunto responsable: ${perp}`
-        : `; alleged perpetrator: ${perp}`
-      : noPerpTail;
+    if (code === 'AB') {
+      // AB is combat: the coded "responsible" is the first combat party (often
+      // the attacked force), not a perpetrator. Show the participants and which
+      // side took the offensive instead — never a "responsable" label.
+      sent += abTail(violence, gi, lang);
+    } else {
+      sent += perp
+        ? lang === 'es'
+          ? `; presunto responsable: ${perp}`
+          : `; alleged perpetrator: ${perp}`
+        : noPerpTail;
+    }
     return sent + '.';
   }
 
@@ -358,6 +411,10 @@ export function portraitAddsInfo(
   if (details.occTop[gi] !== 0xffff) return true;
   const n = violence.victims[gi];
   const code = violence.meta.modalities[violence.modOf[gi]].code;
+  // AB (combat): the civilian/combatant split is the load-bearing honest
+  // framing — the narrative keeps the overall count, the portrait shows how
+  // many were combatants. Surface it whenever either is recorded.
+  if (code === 'AB' && (details.civ[gi] > 0 || details.comb[gi] > 0)) return true;
   if (n > 1) return details.vn[gi] > 0 || (details.civ[gi] > 0 && details.comb[gi] > 0);
   if (n === 1) {
     // event-framed sentences carry no per-victim attributes at all

@@ -221,6 +221,28 @@ corrections live in `DATE_OVERRIDES` (build_frontend_data.py), each with a citat
   actions will not appear as wounds. Mapiripán (1997-07-15, 35) and El Salado
   (2000-02-16, 60) are in MA and verified against the record.
 
+### AB `Presunto_Responsable` is NOT a perpetrator (discovered 2026-06-24)
+
+- For **AB (Acciones Bélicas / combat)**, the geoportal cut's `Presunto_Responsable`
+  is literally `Grupo_Armado_1` (verified: 99.99% identity). `Grupo_Armado_1` is the
+  **first-listed combat party — for guerrilla/paramilitar assaults on the security
+  forces that is the ATTACKED force, not the aggressor.** Across the shipped AB slice,
+  36,123/38,907 rows (93%) read `AGENTE DEL ESTADO`, of which 29,799 are
+  `GA1=AGENTE DEL ESTADO + GA2=GUERRILLA` — i.e. ~30k FARC/ELN attacks on the army that
+  the flattened field would mislabel as state-perpetrated. **Never display the AB
+  `Presunto_Responsable` as "responsable".**
+- The honest AB model is the multi-actor combat record: `Grupo_Armado_1/2/3` (the
+  parties), `Iniciativa` (which side took the offensive), and the casualty split
+  (`Total_victimas_civiles` vs `Total_combatientes`). The "victims" of AB rows are
+  overwhelmingly **combatants** (e.g. Gutiérrez 13340: 55 dead = 17 soldiers + 38 FARC;
+  civilians ≈ 0 across the combat tail). `Iniciativa` and the specific second-group
+  name (e.g. FARC) live **only in the 2024-09-30 socrata cut (CC BY-SA)** — the
+  geoportal cut has `Grupo_Armado_2` at category level but no `Iniciativa` and no GA2
+  description. The build joins them by `IdCaso` (98.7% of AB rows; newer rows → SIN
+  INFORMACIÓN, never imputed). Frontend renders AB as participants + initiative, with
+  the civ/combatant split in the portrait. See `meta.abParticipants` and the `ga2`/
+  `grp2`/`initiative` buffers.
+
 ### CEDE .tab encoding (discovered 2026-06-05)
 
 - The Dataverse-ingested `.tab` files have **irrecoverably corrupted accents**

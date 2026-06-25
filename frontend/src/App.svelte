@@ -5,17 +5,28 @@
     Munis,
     MuniShapes,
     ViolenceDetails,
+    EventAnnotations,
+    DeforestationData,
   } from './lib/data';
-  import { loadViolence, loadViolenceDetails, loadJson } from './lib/data';
+  import {
+    loadViolence,
+    loadViolenceDetails,
+    loadAnnotations,
+    loadJson,
+    loadDeforestation,
+  } from './lib/data';
   import { app } from './lib/state.svelte';
   import { t, ui, toggleLang } from './lib/i18n.svelte';
   import MapView from './lib/MapView.svelte';
   import TimeBar from './lib/TimeBar.svelte';
   import LegendMemoria from './lib/LegendMemoria.svelte';
+  import LegendDeforestation from './lib/LegendDeforestation.svelte';
+  import DeforestationReadout from './lib/DeforestationReadout.svelte';
   import Tooltip from './lib/Tooltip.svelte';
   import DetailPanel from './lib/DetailPanel.svelte';
   import DebugPanel from './lib/DebugPanel.svelte';
   import Credits from './lib/Credits.svelte';
+  import EventStory from './lib/EventStory.svelte';
   import Welcome from './lib/Welcome.svelte';
   import { dbgEnabled } from './lib/debug.svelte';
   import { perf, PERF } from './lib/perf.svelte';
@@ -36,6 +47,26 @@
   let shapes = $state.raw<MuniShapes | null>(null);
   let error = $state<string | null>(null);
 
+  // URL flag: ?section=deforestation opens the deforestation view (mirrors the
+  // existing ?tier/?lang/?debug query-param pattern; no path routing needed).
+  const isDeforestation =
+    new URLSearchParams(location.search).get('section') === 'deforestation';
+  if (isDeforestation) app.tab = 'deforestation';
+
+  // Hansen tree-cover-loss artifacts — only fetched when the deforestation view
+  // is active, so violence visitors never pay for them. $state.raw (it holds an
+  // ImageBitmap + typed rows that never need deep reactivity).
+  let deforestation = $state.raw<DeforestationData | null>(null);
+  let defRequested = false;
+  $effect(() => {
+    if (app.tab === 'deforestation' && !deforestation && !defRequested) {
+      defRequested = true;
+      loadDeforestation()
+        .then((d) => (deforestation = d))
+        .catch((err: Error) => (error = err.message));
+    }
+  });
+
   // First-visit onboarding: the welcome modal shows once (localStorage latch)
   // and stays reopenable via the "?" button. localStorage can throw in private
   // modes — degraded mode is "welcome shows every visit", acceptable.
@@ -47,8 +78,9 @@
       return true;
     }
   })();
-  // Show the welcome modal on every page load (not just first visit).
-  app.overlay = 'welcome';
+  // Show the welcome modal on every page load (not just first visit). The
+  // welcome copy is violence-specific, so skip it on the deforestation view.
+  app.overlay = isDeforestation ? null : 'welcome';
   function closeWelcome() {
     try {
       localStorage.setItem(WELCOME_KEY, '1');
@@ -71,6 +103,20 @@
       loadViolenceDetails(violence.meta)
         .then((d) => (details = d))
         .catch(() => (detailsRequested = false)); // allow a retry on next open
+    }
+  });
+
+  // Curated "Read more…" annotations — tiny JSON, fetched lazily the first time
+  // a panel opens (same trigger as details). Non-fatal: the button is an
+  // enhancement, so a failed fetch leaves annotations null and simply hides it.
+  let annotations = $state.raw<EventAnnotations | null>(null);
+  let annotationsRequested = false;
+  $effect(() => {
+    if (app.selected.length > 0 && !annotationsRequested) {
+      annotationsRequested = true;
+      loadAnnotations()
+        .then((a) => (annotations = a))
+        .catch(() => (annotationsRequested = false)); // allow a retry on next open
     }
   });
 
@@ -111,7 +157,7 @@
   </div>
 {:else}
   <main>
-    <MapView {violence} {elections} {munis} {shapes} />
+    <MapView {violence} {elections} {munis} {shapes} {deforestation} />
 
     <!-- header + legend share one flex rail so the panel always flows below
          the header, whatever height the current language wraps to -->
@@ -119,9 +165,9 @@
       <header class="ficha rise" style="animation-delay: 0.05s">
       <div class="head-row">
         <div>
-          <span class="eyebrow">{t('eyebrow')}</span>
-          <h1>{t('title')}</h1>
-          <p class="sub">{t('subtitle')}</p>
+          <span class="eyebrow">{app.tab === 'deforestation' ? t('def_eyebrow') : t('eyebrow')}</span>
+          <h1>{app.tab === 'deforestation' ? t('def_title') : t('title')}</h1>
+          <p class="sub">{app.tab === 'deforestation' ? t('def_subtitle') : t('subtitle')}</p>
         </div>
         <div class="hbtns">
           <button
@@ -144,16 +190,28 @@
       </header>
 
       <aside class="ficha rise panel" style="animation-delay: 0.15s">
-        <LegendMemoria {violence} />
+        {#if app.tab === 'deforestation'}
+          {#if deforestation}
+            <LegendDeforestation {deforestation} />
+          {/if}
+        {:else}
+          <LegendMemoria {violence} />
+        {/if}
       </aside>
     </div>
 
     <div class="ficha rise timebar-wrap" style="animation-delay: 0.25s">
-      <TimeBar {violence} {elections} />
+      <TimeBar {violence} {elections} {deforestation} />
     </div>
 
     <Tooltip />
-    <DetailPanel {violence} {munis} {details} />
+    {#if app.tab === 'deforestation'}
+      {#if deforestation}
+        <DeforestationReadout {deforestation} {munis} />
+      {/if}
+    {:else}
+      <DetailPanel {violence} {munis} {details} {annotations} />
+    {/if}
 
     {#if dbgEnabled && app.tab === 'memoria'}
       <DebugPanel />
@@ -161,7 +219,11 @@
 
     <footer class="mono">
       <span class="dim">{t('sources')}:</span>
-      CNMH/SIEVCAC · CEDE · DANE · MinSalud ·
+      {#if app.tab === 'deforestation'}
+        Hansen/UMD GFC · IDEAM · DANE ·
+      {:else}
+        CNMH/SIEVCAC · CEDE · DANE · MinSalud ·
+      {/if}
       <button class="credits-btn" onclick={() => (app.overlay = 'credits')}>
         {t('credits_btn')}
       </button>
@@ -169,6 +231,16 @@
 
     {#if app.overlay === 'credits'}
       <Credits onclose={() => (app.overlay = null)} />
+    {/if}
+
+    {#if app.overlay === 'story' && annotations && app.storyId !== null && annotations[String(app.storyId)]}
+      <EventStory
+        annotation={annotations[String(app.storyId)]}
+        onclose={() => {
+          app.overlay = null;
+          app.storyId = null;
+        }}
+      />
     {/if}
 
     {#if app.overlay === 'welcome'}

@@ -1,13 +1,28 @@
 <script lang="ts">
-  import type { ViolenceData, ElectionsData } from './data';
+  import type { ViolenceData, ElectionsData, DeforestationData } from './data';
   import { MAX_DAY, formatMonthYear, yearProgress } from './memoria';
   import { app } from './state.svelte';
   import { t, ui, electionLabel } from './i18n.svelte';
+  import { formatInt } from './data';
 
   let {
     violence,
     elections,
-  }: { violence: ViolenceData; elections: ElectionsData } = $props();
+    deforestation = null,
+  }: {
+    violence: ViolenceData;
+    elections: ElectionsData;
+    deforestation?: DeforestationData | null;
+  } = $props();
+
+  // deforestation: national annual loss bars + the bar max (for the histogram)
+  const defNatMax = $derived(
+    deforestation ? Math.max(1, ...deforestation.national) : 1
+  );
+  const defYearMin = $derived(deforestation ? deforestation.years[0] : 2001);
+  const defYearMax = $derived(
+    deforestation ? deforestation.years[deforestation.years.length - 1] : 2024
+  );
 
   const yearMin = $derived(violence.meta.yearMin);
   const yearMax = $derived(violence.meta.yearMax);
@@ -30,6 +45,37 @@
     return out;
   });
   const maHistMax = $derived(Math.max(1, ...maHist));
+
+  // deforestation playback: continuous time via rAF so the loss raster dissolves
+  // in and the playhead glides, instead of jumping a whole year per tick. Loops
+  // back to the start once the present is reached (an exploration, not a memorial).
+  const DEF_RATE = 1.6; // calendar years per real second
+  $effect(() => {
+    if (!app.playing || app.tab !== 'deforestation') return;
+    let raf = 0;
+    let last = performance.now();
+    const step = (now: number) => {
+      // cap the per-tick advance so a stalled tab resumes smoothly, never lurching
+      const dt = Math.min(now - last, 100) / 1000;
+      last = now;
+      const next = app.defPos + dt * DEF_RATE;
+      app.defPos = next > defYearMax ? defYearMin : next;
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  });
+
+  // Histogram fill fraction: years already passed are full (1); the year
+  // currently elapsing fills from the bottom up proportionally to the fractional
+  // scrub position; future years are 0 (only the faint silhouette shows).
+  function defBarFill(year: number): number {
+    const f = app.defPos;
+    const whole = Math.floor(f);
+    if (year <= whole) return 1;
+    if (year === whole + 1) return f - whole;
+    return 0;
+  }
 
   // elections playback: advance one election per tick
   $effect(() => {
@@ -166,6 +212,59 @@
         >
       </div>
     </div>
+  {:else if app.tab === 'deforestation'}
+    <div class="readout">
+      <button
+        class="play mono"
+        onclick={() => (app.playing = !app.playing)}
+        aria-label={app.playing ? t('pause') : t('play')}
+        title={app.playing ? t('pause') : t('play')}
+      >
+        {app.playing ? '❚❚' : '▶'}
+      </button>
+      <span class="year mono">{app.defYear}</span>
+      {#if deforestation}
+        <span class="count mono dim">
+          {formatInt(Math.round(deforestation.national[app.defYear - defYearMin]), ui.lang)}
+          {t('def_ha')} · {t('def_hansen_series')}
+        </span>
+      {/if}
+    </div>
+    <div class="strip">
+      {#if deforestation}
+        <svg
+          class="hist"
+          viewBox="0 0 {deforestation.years.length} 44"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {#each deforestation.national as v, i (i)}
+            {@const h = Math.sqrt(v / defNatMax) * 44}
+            {@const f = defBarFill(defYearMin + i)}
+            <!-- faint full-height silhouette: shows the spike that's coming -->
+            <rect class="def track" x={i + 0.12} y={44 - h} width="0.76" height={h} />
+            <!-- solid fill, grows from the bottom as the year elapses -->
+            {#if f > 0}
+              <rect class="def" x={i + 0.12} y={44 - h * f} width="0.76" height={h * f} />
+            {/if}
+          {/each}
+        </svg>
+      {/if}
+      <input
+        class="slider"
+        type="range"
+        min={defYearMin}
+        max={defYearMax}
+        step="any"
+        bind:value={app.defPos}
+        oninput={() => (app.playing = false)}
+        aria-label={t('year')}
+        aria-valuetext={String(app.defYear)}
+      />
+      <div class="axis mono dim" aria-hidden="true">
+        <span>{defYearMin}</span><span>{defYearMax}</span>
+      </div>
+    </div>
   {:else}
     <div class="readout">
       <button
@@ -293,7 +392,7 @@
   .hist {
     display: block;
     width: 100%;
-    height: 44px;
+    height: 64px;
   }
 
   .hist rect {
@@ -394,6 +493,14 @@
 
   .hist rect.ma {
     fill: rgba(255, 47, 64, 0.42);
+  }
+
+  .hist rect.def {
+    fill: rgba(232, 130, 30, 0.62);
+  }
+
+  .hist rect.def.track {
+    fill: rgba(232, 130, 30, 0.18);
   }
 
   .ticks {
