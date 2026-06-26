@@ -251,6 +251,75 @@ def load_boundary_masks(muni_lab):
     return leg
 
 
+def load_treecover_grid(tiles, version):
+    """Per-cell mean year-2000 canopy cover from Hansen treecover2000 tiles.
+
+    Returns a ROWSxCOLS float64 grid in 0..100 (percent canopy). Each coarse cell
+    is the block-mean of its FACTOR x FACTOR native 30 m pixels — the standing
+    forest baseline that the jungle-green background backdrop renders. Native tile
+    offsets are whole multiples of FACTOR (bbox + tile corners are integer degrees),
+    so coarse cells tile the native grid exactly; no resampling here.
+    treecover2000 is a year-2000 snapshot (canopy %, not biomass), visualization-only.
+    """
+    tc = np.zeros((ROWS, COLS), dtype=np.float64)
+    cnt = np.zeros((ROWS, COLS), dtype=np.float64)
+    for tile in tiles:
+        lon_nw, lat_nw = parse_tile(tile)
+        path = RAW / f"Hansen_{version}_treecover2000_{tile}.tif"
+        if not path.exists():
+            print(f"  treecover tile {tile} MISSING ({path.name}) — skipped")
+            continue
+        cc0 = round((lon_nw - WEST) / NATIVE_DEG) // FACTOR     # coarse col offset
+        cr0_base = round((NORTH - lat_nw) / NATIVE_DEG) // FACTOR  # coarse row offset
+        with rasterio.open(path) as ds:
+            W, H = ds.width, ds.height
+            wtrim = W - (W % FACTOR)
+            ncols = wtrim // FACTOR
+            for r0 in range(0, H, STRIP):
+                h = min(STRIP, H - r0) - (min(STRIP, H - r0) % FACTOR)
+                if h <= 0:
+                    continue
+                gr0 = cr0_base + r0 // FACTOR
+                nrows = h // FACTOR
+                if gr0 + nrows <= 0 or gr0 >= ROWS:
+                    continue                                    # strip outside grid rows
+                arr = ds.read(1, window=Window(0, r0, wtrim, h))  # uint8 0..100
+                block = arr.reshape(nrows, FACTOR, ncols, FACTOR).mean(axis=(1, 3))
+                drow_lo, drow_hi = max(0, gr0), min(ROWS, gr0 + nrows)
+                dcol_lo, dcol_hi = max(0, cc0), min(COLS, cc0 + ncols)
+                if drow_hi <= drow_lo or dcol_hi <= dcol_lo:
+                    continue
+                brow_lo, bcol_lo = drow_lo - gr0, dcol_lo - cc0
+                tc[drow_lo:drow_hi, dcol_lo:dcol_hi] += block[
+                    brow_lo:brow_lo + (drow_hi - drow_lo),
+                    bcol_lo:bcol_lo + (dcol_hi - dcol_lo)]
+                cnt[drow_lo:drow_hi, dcol_lo:dcol_hi] += 1.0
+        print(f"  treecover tile {tile}")
+    return np.where(cnt > 0, tc / np.maximum(cnt, 1.0), 0.0)
+
+
+def write_forest_png(tc_grid, muni_lab):
+    """EPSG:3857 RGBA backdrop deforestation_forest.png (visualization-only):
+      R = year-2000 canopy cover percent, scaled 0..255 (0..100% x 2.55)
+      G, B = 0 (reserved)
+      A = 255 inside the Colombia land footprint, else 0 (clips green to the country)
+    A separate single-texture BitmapLayer renders the jungle-green background from
+    this; canopy drives the green depth, alpha clips it to land. Independent texture
+    (own sampler) so it does not touch the lossyear layer's packed-channel path."""
+    country = muni_lab >= 0
+    canopy = np.where(country, np.clip(tc_grid * 2.55, 0, 255), 0).astype(np.uint8)
+    mask01 = country.astype(np.uint8)
+    dst_transform, dw, dh = calculate_default_transform(
+        "EPSG:4326", "EPSG:3857", COLS, ROWS, WEST, SOUTH, EAST, NORTH)
+    rgba = np.zeros((dh, dw, 4), dtype=np.uint8)
+    rgba[..., 0] = _to_3857(canopy, dst_transform, dw, dh, Resampling.bilinear)
+    rgba[..., 3] = np.where(_to_3857(mask01, dst_transform, dw, dh) > 0, 255, 0)
+    p = OUT / "deforestation_forest.png"
+    Image.fromarray(rgba, "RGBA").save(p, optimize=True)
+    print(f"deforestation_forest.png: {dw} x {dh} px, {p.stat().st_size/1e6:.2f} MB "
+          f"(canopy mean inside country = {tc_grid[country].mean():.1f}%)")
+
+
 def main():
     manifest = json.loads((RAW / "manifest.json").read_text(encoding="utf-8"))
     tiles = [f["tile"] for f in manifest["files"]]
@@ -396,48 +465,52 @@ def main():
           f"{sum(d.get(2023, 0) for d in cattle.values()):,} head")
 
     write_png(disp, frac255, drv_cell, agkind_cell, coca_first, legality_cell)
+    # jungle-green background backdrop: year-2000 canopy density, clipped to country
+    tc_grid = load_treecover_grid(tiles, manifest["version"])
+    write_forest_png(tc_grid, muni_lab)
     write_json(muni_ha, national, national_by_driver, national_by_agkind,
                coca_loss_ha, coca_area_by_year, cattle, national_by_legality)
 
 
-def _to_3857(src, dst_transform, dw, dh):
+def _to_3857(src, dst_transform, dw, dh, resampling=Resampling.nearest):
     src_transform = from_origin(WEST, NORTH, CELL_DEG, CELL_DEG)
     dst = np.zeros((dh, dw), dtype=np.uint8)
     reproject(source=src, destination=dst,
               src_transform=src_transform, src_crs="EPSG:4326",
               dst_transform=dst_transform, dst_crs="EPSG:3857",
-              resampling=Resampling.nearest)
+              resampling=resampling)
     return dst
 
 
 def write_png(disp, frac255, drv_cell, agkind_cell, coca_first, legality_cell):
-    """Two grid-aligned EPSG:3857 RGBA textures (same bounds/size; sampled together
-    by LossRasterLayer):
-      deforestation_lossyear.png  R=earliest loss-year, G=loss density, B=driver, A=mask
-      deforestation_codes.png     R=ag-kind (1..3), G=legality (phase 2b; 0 now),
-                                  B=earliest coca year (1..23; 0 none), A=mask"""
+    """Single EPSG:3857 RGBA texture deforestation_lossyear.png:
+      R = earliest loss-year code (1..25; 0 = no loss)
+      G = loss density (0..255)
+      B = PACKED codes: bits 0-2 driver (0..7), bits 3-4 ag-kind (0..3),
+          bits 5-6 legality (0..3), bit 7 coca-present (0/1)
+      A = 255 where loss (kept opaque; data in A would risk premultiply corruption)
+    All codes packed into B so the frontend needs ONE texture (a 2nd BitmapLayer
+    sampler fails luma's _areTexturesRenderable and silently skips the draw)."""
     dst_transform, dw, dh = calculate_default_transform(
         "EPSG:4326", "EPSG:3857", COLS, ROWS, WEST, SOUTH, EAST, NORTH)
     dst_year = _to_3857(disp, dst_transform, dw, dh)
     mask = np.where(dst_year > 0, 255, 0).astype(np.uint8)
 
+    drv = _to_3857(drv_cell, dst_transform, dw, dh).astype(np.uint16)
+    agk = _to_3857(agkind_cell, dst_transform, dw, dh).astype(np.uint16)
+    leg = _to_3857(legality_cell, dst_transform, dw, dh).astype(np.uint16)
+    coca = (_to_3857(coca_first, dst_transform, dw, dh) > 0).astype(np.uint16)
+    packed = ((drv & 7) | ((agk & 3) << 3) | ((leg & 3) << 5) | ((coca & 1) << 7))
+
     rgba = np.zeros((dh, dw, 4), dtype=np.uint8)
     rgba[..., 0] = dst_year                                 # red   = year code
     rgba[..., 1] = _to_3857(frac255, dst_transform, dw, dh)  # green = loss density
-    rgba[..., 2] = _to_3857(drv_cell, dst_transform, dw, dh)  # blue  = driver code
+    rgba[..., 2] = packed.astype(np.uint8)                  # blue  = packed codes
     rgba[..., 3] = mask
     p = OUT / "deforestation_lossyear.png"
     Image.fromarray(rgba, "RGBA").save(p, optimize=True)
-    print(f"deforestation_lossyear.png: {dw} x {dh} px, {p.stat().st_size/1e6:.2f} MB")
-
-    codes = np.zeros((dh, dw, 4), dtype=np.uint8)
-    codes[..., 0] = _to_3857(agkind_cell, dst_transform, dw, dh)  # red   = ag-kind 1..3
-    codes[..., 1] = _to_3857(legality_cell, dst_transform, dw, dh)  # green = legality 1..3
-    codes[..., 2] = _to_3857(coca_first, dst_transform, dw, dh)   # blue  = coca first year
-    codes[..., 3] = mask                                    # same loss mask as main
-    pc = OUT / "deforestation_codes.png"
-    Image.fromarray(codes, "RGBA").save(pc, optimize=True)
-    print(f"deforestation_codes.png: {dw} x {dh} px, {pc.stat().st_size/1e6:.2f} MB")
+    print(f"deforestation_lossyear.png: {dw} x {dh} px, {p.stat().st_size/1e6:.2f} MB "
+          f"(B packs driver/ag-kind/legality/coca)")
 
 
 def write_json(muni_ha, national, national_by_driver, national_by_agkind,
@@ -493,8 +566,10 @@ def write_json(muni_ha, national, national_by_driver, national_by_agkind,
             "display_raster": {
                 "file": "deforestation_lossyear.png",
                 "encoding": ("red = earliest loss year code (1..25); green = loss density "
-                             "(fraction of cell's 30 m pixels lost, 0..255); blue = dominant "
-                             "driver code (1..7, 0 = none); alpha 0 = no loss. "
+                             "(fraction of cell's 30 m pixels lost, 0..255); blue = PACKED codes "
+                             "(bits 0-2 WRI driver 0..7, bits 3-4 ag-kind 0..3, bits 5-6 legality "
+                             "0..3, bit 7 coca-present); alpha 0 = no loss. Requires nearest "
+                             "filtering so the packed byte is not interpolated. "
                              "Display opacity follows density so a stray pixel is near-invisible; "
                              "appearance year = the cell's EARLIEST loss (intensity reflects total "
                              "loss, a documented approximation vs per-year density)"),
@@ -506,6 +581,24 @@ def write_json(muni_ha, national, national_by_driver, national_by_agkind,
                                     "from native 30 m pixels, not from this raster"),
                 "excludes": "San Andres/Providencia/Malpelo islands (outside bbox)",
             },
+            "forest_raster": {
+                "file": "deforestation_forest.png",
+                "encoding": ("red = year-2000 tree canopy cover percent (0..100 scaled "
+                             "to 0..255); alpha 255 inside the Colombia land footprint. "
+                             "Drives the jungle-green background backdrop only."),
+                "bounds_lnglat": [WEST, SOUTH, EAST, NORTH],
+                "crs": "EPSG:3857 (web mercator)",
+                "source": {
+                    "name": "Hansen Global Forest Change treecover2000",
+                    "version": "GFC-2025-v1.13",
+                    "citation": ("Hansen, M. C., et al. (2013), Science 342:850-853; "
+                                 "Global Forest Change GFC-2025-v1.13, band treecover2000."),
+                    "license_note": "Freely available with citation.",
+                },
+                "caveat": ("Year-2000 canopy-percent SNAPSHOT, not current forest and not "
+                           "species/biomass. Visualization-only backdrop; loss after 2000 "
+                           "is shown by the lossyear layer rendered on top."),
+            },
             "area_method": ("native 30 m loss pixels counted per municipio x year, "
                             "latitude-corrected (cos lat); hectares"),
             "ideam_caveat": cur.ATTRIBUTION_NOTE,
@@ -514,13 +607,6 @@ def write_json(muni_ha, national, national_by_driver, national_by_agkind,
                 "citation": cur.DRIVERS[0]["source"],
                 "license": "CC BY 4.0",
                 "caveat": cur.DRIVERS_CAVEAT,
-            },
-            "codes_raster": {
-                "file": "deforestation_codes.png",
-                "encoding": ("companion texture, same grid/bounds as the lossyear PNG. "
-                             "red = ag-kind (1 pasto, 2 cultivos, 3 mosaico; 0 none); "
-                             "green = legality (phase 2b; 0 for now); blue = earliest coca "
-                             "year (1..23 = 2001..2023; 0 none); alpha = same loss mask."),
             },
             "agkind_source": {
                 "name": "IDEAM CORINE Land Cover Colombia (national 1:100k, 2022)",

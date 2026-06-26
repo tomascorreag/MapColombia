@@ -11,9 +11,12 @@
 > - **2b legality:** RUNAP protected areas + Ley 2ª forest reserves (`download_boundaries.py`) →
 >   per-cell zonal legality. Headline: **482,015 ha** loss inside protected areas, **1,645,739 ha**
 >   inside Ley 2ª reserves. **UPRA frontera (465k features, broken TLS) and resguardos DEFERRED.**
-> - **Frontend:** companion `deforestation_codes.png` (R=ag-kind, G=legality, B=coca year) bound as
->   a 2nd sampler in `LossRasterLayer`; unified `defSpot` spotlight (spotDim/spotCode); 3-way lens
->   toggle (Agricultura | Legalidad | Motores) in `LegendDeforestation`. MapBiomas path abandoned.
+> - **Frontend:** the four codes (driver/ag-kind/legality/coca-present) are **bit-packed into the
+>   single lossyear PNG's blue channel** and unpacked in the shader — a 2nd BitmapLayer sampler fails
+>   luma's `_areTexturesRenderable` and silently skips the draw (empty map, no console error), so the
+>   originally-planned companion `deforestation_codes.png` was abandoned. Unified `defSpot` spotlight
+>   (spotDim/spotCode); 3-way lens toggle (Agricultura | Legalidad | Motores). MapBiomas path abandoned.
+>   `smoke-deforestation.mjs` now samples canvas pixels (the console-error gate missed the blank map).
 
 **Goal:** refine the "causes" of the deforestation view beyond the shipped WRI driver layer (which
 collapses ~89 % of Colombian loss into one bucket, "permanent agriculture"). Two phases:

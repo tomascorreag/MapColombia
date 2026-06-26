@@ -1,10 +1,16 @@
-// Pixel-raster tree-cover-loss layer. A BitmapLayer subclass sampling TWO
-// grid-aligned textures:
-//   image      (deforestation_lossyear.png) RED = earliest loss-year code (1..25),
-//              GREEN = loss density, BLUE = WRI dominant-driver code (1..7; 0 none).
-//   codesImage (deforestation_codes.png)    RED = ag-kind (1 pasto/2 cultivos/3 mosaico),
-//              GREEN = legality code (phase 2b), BLUE = earliest coca year (1..23; 0 none).
-// Both share the exact same grid, so a single texCoord (`uv`) samples both.
+// Pixel-raster tree-cover-loss layer. A BitmapLayer subclass sampling ONE
+// texture (deforestation_lossyear.png):
+//   R = earliest loss-year code (1..25 = 2001..2025; 0 = no loss)
+//   G = loss density (0..255) → opacity
+//   B = PACKED codes, 8 bits:  bits 0-2 WRI driver (0..7)
+//                              bits 3-4 ag-kind  (0 none/1 pasto/2 cultivos/3 mosaico)
+//                              bits 5-6 legality (0 none/1 protected/2 reserve/3 other)
+//                              bit  7   coca present (0/1)
+//   A = 255 where loss (kept opaque — storing data in A risks premultiply corruption)
+//
+// Packing into one texture sidesteps luma's second-sampler binding (a 2nd
+// BitmapLayer texture fails `_areTexturesRenderable` and silently skips the draw).
+// Nearest filtering is REQUIRED so the packed byte is never interpolated.
 //
 // FLOAT uniforms drive everything on the GPU per frame without re-uploading:
 //   maxYear  — fractional calendar position; thresholds the cumulative reveal.
@@ -12,10 +18,6 @@
 //              3 legality, 4 coca); spotCode — the code within that dimension to
 //              spotlight. Matched cells take the dimension's colour and pop; the
 //              rest fade to faint context. One code path serves every lens.
-// Same "filter on the GPU, never touch attributes per frame" design as the
-// violence layer (docs/stack-decision.md); std140 + setShaderModuleProps mirrors
-// TendrilExtension. The codes texture is a second sampler bound the same way as
-// BitmapLayer's own bitmapTexture.
 import { BitmapLayer } from '@deck.gl/layers';
 import type { BitmapLayerProps } from '@deck.gl/layers';
 
@@ -58,13 +60,75 @@ export const SPOT_DIM: Record<string, number> = {
   coca: 4,
 };
 
-const uniformBlock = /* glsl */ `\
-uniform sampler2D codesTexture;
+// Recency-raster shader knobs. These defaults ARE the shipped look — the ?debug panel
+// (defDebug.svelte.ts) mutates copies of them live; production always reads these.
+export const FIRE_DEFAULTS = {
+  // dissolve-in duration (timeline-years) as the playhead reaches each loss cohort
+  fadeIn: 0.4,
+  // burn-front cooling span (timeline-years): a cohort glows hot when the playhead
+  // reaches it and cools to a deep ember over this many years behind the playhead
+  cool: 12,
+  // how far into its loss year a pixel can burn (0 = whole cohort at the year edge,
+  // 1 = spread across the full year), modulated by coherent noise for an organic front
+  jitter: 0.85,
+  // spatial frequency of that burn noise (cycles across the raster; higher = finer)
+  noiseScale: 160,
+};
+export type FireKnobs = typeof FIRE_DEFAULTS;
 
+// Burn-front colour ramp: 4 stops keyed on heat (0 = long-cooled, 1 = at the front /
+// freshly cleared). Deep ember -> red -> orange -> hot near-white: every stop is a
+// visible warm tone (NO grey), so cooled loss still reads as cumulative extent. The
+// ?debug panel edits copies of these; production reads them verbatim. pos is the heat
+// position.
+export const RAMP_DEFAULTS: { hex: string; pos: number }[] = [
+  { hex: '#7a1606', pos: 0.0 }, // deep ember (long cooled)
+  { hex: '#d11c0d', pos: 0.4 }, // red
+  { hex: '#ff8a1f', pos: 0.72 }, // orange
+  { hex: '#fff1c2', pos: 1.0 }, // hot near-white (at the front)
+];
+// hex "#rrggbb" -> [r,g,b,pos] in 0..1 for a vec4 ramp uniform.
+export function rampStopToVec4(s: { hex: string; pos: number }): [number, number, number, number] {
+  const h = s.hex.replace('#', '');
+  return [
+    parseInt(h.slice(0, 2), 16) / 255,
+    parseInt(h.slice(2, 4), 16) / 255,
+    parseInt(h.slice(4, 6), 16) / 255,
+    s.pos,
+  ];
+}
+const RAMP_VEC4 = RAMP_DEFAULTS.map(rampStopToVec4);
+type Vec4 = [number, number, number, number];
+type FireOpts = Partial<FireKnobs> & {
+  maxYear?: number;
+  spotDim?: number;
+  spotCode?: number;
+  spotYear?: number;
+  filterDim?: number;
+  filterMask?: number;
+  ramp0?: Vec4;
+  ramp1?: Vec4;
+  ramp2?: Vec4;
+  ramp3?: Vec4;
+};
+
+const uniformBlock = /* glsl */ `\
 layout(std140) uniform lossUniforms {
   float maxYear;
   float spotDim;
   float spotCode;
+  float spotYear;    // >0: restrict the spotlight to loss of this single year (code = year-2000); 0: cumulative
+  float filterDim;   // active lens dimension for bucket visibility (1 driver/2 kind/3 legality); 0: no filtering
+  float filterMask;  // bitmask of ENABLED codes within filterDim (bit code-1); a cleared bit hides that bucket
+  float fadeIn;      // dissolve-in duration (timeline-years) as the playhead reaches a cohort
+  float cool;        // burn-front cooling span (timeline-years) behind the playhead
+  float jitter;      // how far into the loss year a pixel can burn (0..1), noise-modulated
+  float noiseScale;  // spatial frequency of the burn noise
+  // recency colour ramp: 4 stops, rgb in .xyz and recency position in .w (ascending).
+  vec4 ramp0;
+  vec4 ramp1;
+  vec4 ramp2;
+  vec4 ramp3;
 } loss;
 
 // MUST mirror DRIVER_COLORS (code -> rgb, 0..1).
@@ -85,63 +149,122 @@ vec3 agKindColor(float d) {
   if (i == 2) return vec3(0.471, 0.769, 0.408);
   return vec3(0.729, 0.635, 0.471);
 }
-// Phase 2b legality palette (stub until the legality channel is populated).
+// MUST mirror LEGALITY_COLORS.
 vec3 legalityColor(float d) {
   int i = int(d + 0.5);
   if (i == 1) return vec3(0.886, 0.250, 0.220); // protected (clearing illegal)
   if (i == 2) return vec3(0.945, 0.553, 0.227); // forest reserve
-  if (i == 3) return vec3(0.937, 0.792, 0.353); // outside ag frontier
-  return vec3(0.553, 0.561, 0.580);             // permitted
+  return vec3(0.553, 0.561, 0.580);             // other / no special restriction
 }
 vec3 cocaColor() { return vec3(0.769, 0.282, 0.808); } // MUST mirror COCA_COLOR
+
+// fireRamp: recency ramp keyed on recency r in [0,1] (0 = oldest loss, 1 = newest).
+// Runs through the 4 debug-tunable stops (ramp0 -> ramp3); each stop's .w is its
+// recency position; smoothstep between consecutive positions.
+vec3 fireRamp(float r) {
+  vec3 c = loss.ramp0.xyz;
+  c = mix(c, loss.ramp1.xyz, smoothstep(loss.ramp0.w, loss.ramp1.w, r));
+  c = mix(c, loss.ramp2.xyz, smoothstep(loss.ramp1.w, loss.ramp2.w, r));
+  c = mix(c, loss.ramp3.xyz, smoothstep(loss.ramp2.w, loss.ramp3.w, r));
+  return c;
+}
+// SMOOTH value noise (geo-locked, spatially coherent — NOT per-cell white noise). Used
+// to vary how far into its loss year each pixel "burns", giving the front an organic
+// wavy edge. Coherent = neighbours get similar offsets, so it does not strobe on pan.
+float vhash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+float vnoise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  float a = vhash(i), b = vhash(i + vec2(1.0, 0.0));
+  float c = vhash(i + vec2(0.0, 1.0)), d = vhash(i + vec2(1.0, 1.0));
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
 `;
 
 const lossModule = {
   name: 'loss',
   fs: uniformBlock,
   inject: {
-    // BitmapLayer hands the sampled texel to DECKGL_FILTER_COLOR as `color`
-    // (rgba, 0..1). This hook is a separate function (color, geometry) — the
-    // main-local `uv` is NOT in scope, but the bitmap fragment copies it to
-    // `geometry.uv`, which we use to sample the companion codes texture at the
-    // identical coordinate.
+    // BitmapLayer hands the sampled texel to DECKGL_FILTER_COLOR as `color` (rgba,
+    // 0..1). The blue channel packs four codes (see header); we unpack with integer
+    // bit ops (GLSL ES 3.00 / WebGL2).
     'fs:DECKGL_FILTER_COLOR': /* glsl */ `
-    float ly = floor(color.r * 255.0 + 0.5);
-    if (ly < 0.5) discard;
-    // smooth reveal: a loss cohort fades in across the calendar year that ends at
-    // its own code (fade 0 at maxYear==ly-1, full at maxYear>=ly), so scrubbing or
-    // playing the float year DISSOLVES new loss in instead of popping it on.
-    float fade = clamp(loss.maxYear - ly + 1.0, 0.0, 1.0);
-    if (fade < 0.01) discard;
-    // green channel = loss density (fraction of the cell cleared). Opacity tracks
-    // it (gamma'd) so a single stray pixel is near-invisible and only concentrated
-    // clearing reads as solid — honest extent, not "any loss = full cell".
+    // === DETERMINISTIC RECENCY RASTER ===========================================
+    // Rewritten from the old per-cell stochastic "fire" model (random ignite/ash, a
+    // re-ignition loop, value-noise flicker, fwidth edge rims). That model painted a
+    // high-frequency RANDOM field of bright/grey cells: panning swept screen pixels
+    // across it and the random per-cell states made it strobe — flicker independent of
+    // texture filtering. This version is fully deterministic and spatially COHERENT:
+    // a cell's colour depends only on its loss YEAR, so neighbours look alike and there
+    // is nothing to flicker when the camera moves. Colour comes from the year, opacity
+    // from density, with a soft reveal as the playhead reaches each cohort.
+    //
+    // Texel: R = loss-year code (1..25), G = density, B = packed codes, A = loss mask.
+    if (color.a < 0.5) discard;                          // outside the loss extent
+    float ly = max(floor(color.r * 255.0 + 0.5), 1.0);   // loss year (1=2001 .. 25=2025)
     float density = color.g;
-    float a = clamp(pow(density, 0.6) * 0.95, 0.0, 0.95) * fade;
+    // Per-pixel burn moment WITHIN the loss year: smooth, geo-locked value noise offsets
+    // how far into the year each pixel ignites (jitter = how much of the year it can eat
+    // into, 0 = whole cohort lights at the year boundary, 1 = spread across the full
+    // year). Coherent noise -> the front gets an organic wavy edge, neighbours stay
+    // similar, so it does NOT strobe on pan. burnT replaces the hard (ly-1) year edge.
+    float burn  = vnoise(geometry.uv * loss.noiseScale);   // smooth 0..1
+    float burnT = (ly - 1.0) + loss.jitter * burn;         // this pixel's ignition (years)
+    // Reveal: the pixel dissolves in over fadeIn years once the playhead reaches burnT.
+    // Deterministic in (burnT, maxYear) only — identical every frame at a given playhead.
+    float reveal = smoothstep(burnT, burnT + max(loss.fadeIn, 0.05), loss.maxYear);
+    if (reveal <= 0.0) discard;                          // not yet reached by the playhead
+    // unpack the packed blue channel (codes; consumed only by the lens/filter branches)
+    int packed = int(color.b * 255.0 + 0.5);
+    float driverCode = float(packed & 7);
+    float agKind = float((packed >> 3) & 3);
+    float legality = float((packed >> 5) & 3);
+    float cocaPresent = float((packed >> 7) & 1);
+    // bucket visibility: hide loss whose active-lens code is toggled off in the
+    // legend. Code 0 (unclassified for this dimension) is untoggleable context and
+    // always survives; only the ranked buckets (code >= 1) can be filtered out.
+    if (loss.filterDim > 0.5) {
+      float fcode = (loss.filterDim < 1.5) ? driverCode
+                  : (loss.filterDim < 2.5) ? agKind
+                  : legality;
+      int ci = int(fcode + 0.5);
+      if (ci > 0 && (int(loss.filterMask + 0.5) & (1 << (ci - 1))) == 0) discard;
+    }
+    // Burn-front colour: a cohort glows hot the moment the playhead reaches it, then
+    // cools smoothly to a deep ember over the cool-span (timeline-years) as the playhead
+    // moves past. heat is a continuous function of (loss year, playhead) only — NO per-cell
+    // randomness — so the front is calm under pan and smooth under scrub/play, and old
+    // loss settles to a still-visible ember (never grey) so cumulative extent reads.
+    float age  = loss.maxYear - burnT;                   // timeline-years behind the front
+    float heat = 1.0 - clamp(age / max(loss.cool, 0.001), 0.0, 1.0);  // 1 fresh .. 0 cold
+    vec3 rgb = fireRamp(heat);
+    // Opacity by cumulative clearing density (gamma'd so stray pixels stay faint and
+    // concentrated clearing reads solid), faded in by the reveal.
+    float a = clamp(pow(density, 0.6) * 0.95, 0.0, 0.95) * reveal;
     if (a < 0.02) discard;
-    float driverCode = floor(color.b * 255.0 + 0.5);
-    // recency ramp: older loss amber, recent loss hot red (GFW-like).
-    float tnorm = clamp((ly - 1.0) / 24.0, 0.0, 1.0);
-    vec3 rgb = mix(vec3(0.86, 0.53, 0.12), vec3(1.0, 0.30, 0.10), tnorm);
+
     // spotlight: light one code within the active dimension; fade everything else.
     if (loss.spotDim > 0.5) {
       float code;
       vec3 hi;
-      if (loss.spotDim < 1.5) {             // driver (main blue channel)
+      if (loss.spotDim < 1.5) {             // driver
         code = driverCode; hi = lossDriverColor(loss.spotCode);
-      } else {
-        vec4 cc = texture(codesTexture, geometry.uv);
-        if (loss.spotDim < 2.5) {           // ag-kind (codes red)
-          code = floor(cc.r * 255.0 + 0.5); hi = agKindColor(loss.spotCode);
-        } else if (loss.spotDim < 3.5) {    // legality (codes green)
-          code = floor(cc.g * 255.0 + 0.5); hi = legalityColor(loss.spotCode);
-        } else {                            // coca (codes blue = earliest coca year)
-          float cy = floor(cc.b * 255.0 + 0.5);
-          code = (cy > 0.5 && cy <= loss.maxYear) ? loss.spotCode : 0.0;
-          hi = cocaColor();
-        }
+      } else if (loss.spotDim < 2.5) {      // ag-kind
+        code = agKind; hi = agKindColor(loss.spotCode);
+      } else if (loss.spotDim < 3.5) {      // legality
+        code = legality; hi = legalityColor(loss.spotCode);
+      } else {                              // coca (presence bit)
+        code = (cocaPresent > 0.5) ? loss.spotCode : 0.0;
+        hi = cocaColor();
       }
-      if (abs(code - loss.spotCode) < 0.5) {
+      // year mode restricts the highlight to the single scrubbed year's loss;
+      // total mode (spotYear==0) lights every matching year up to maxYear.
+      bool yearMatch = (loss.spotYear < 0.5) || (abs(ly - loss.spotYear) < 0.5);
+      if (abs(code - loss.spotCode) < 0.5 && yearMatch) {
         rgb = hi;
         a = clamp(a * 1.3 + 0.18, 0.0, 0.98);
       } else {
@@ -153,20 +276,53 @@ const lossModule = {
     color = vec4(rgb, a);
     `,
   },
-  uniformTypes: { maxYear: 'f32', spotDim: 'f32', spotCode: 'f32' },
-  getUniforms: (opts?: { maxYear?: number; spotDim?: number; spotCode?: number }) => ({
+  uniformTypes: {
+    maxYear: 'f32',
+    spotDim: 'f32',
+    spotCode: 'f32',
+    spotYear: 'f32',
+    filterDim: 'f32',
+    filterMask: 'f32',
+    fadeIn: 'f32',
+    cool: 'f32',
+    jitter: 'f32',
+    noiseScale: 'f32',
+    ramp0: 'vec4<f32>',
+    ramp1: 'vec4<f32>',
+    ramp2: 'vec4<f32>',
+    ramp3: 'vec4<f32>',
+  },
+  getUniforms: (opts?: FireOpts) => ({
     maxYear: opts?.maxYear ?? 25,
     spotDim: opts?.spotDim ?? 0,
     spotCode: opts?.spotCode ?? 0,
+    spotYear: opts?.spotYear ?? 0,
+    filterDim: opts?.filterDim ?? 0,
+    filterMask: opts?.filterMask ?? 0,
+    fadeIn: opts?.fadeIn ?? FIRE_DEFAULTS.fadeIn,
+    cool: opts?.cool ?? FIRE_DEFAULTS.cool,
+    jitter: opts?.jitter ?? FIRE_DEFAULTS.jitter,
+    noiseScale: opts?.noiseScale ?? FIRE_DEFAULTS.noiseScale,
+    ramp0: opts?.ramp0 ?? RAMP_VEC4[0],
+    ramp1: opts?.ramp1 ?? RAMP_VEC4[1],
+    ramp2: opts?.ramp2 ?? RAMP_VEC4[2],
+    ramp3: opts?.ramp3 ?? RAMP_VEC4[3],
   }),
 } as const;
 
-export type LossRasterLayerProps = BitmapLayerProps & {
-  maxYear?: number;
-  spotDim?: number;
-  spotCode?: number;
-  codesImage?: unknown; // second texture (deforestation_codes.png), type 'image'
-};
+export type LossRasterLayerProps = BitmapLayerProps &
+  Partial<FireKnobs> & {
+    maxYear?: number;
+    spotDim?: number;
+    spotCode?: number;
+    spotYear?: number;
+    filterDim?: number;
+    filterMask?: number;
+    ramp0?: Vec4;
+    ramp1?: Vec4;
+    ramp2?: Vec4;
+    ramp3?: Vec4;
+  };
 
 export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
   static layerName = 'LossRasterLayer';
@@ -175,9 +331,17 @@ export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
     maxYear: { type: 'number', value: 25 } as const,
     spotDim: { type: 'number', value: 0 } as const,
     spotCode: { type: 'number', value: 0 } as const,
-    // async:true makes deck.gl decode the ImageBitmap into a luma Texture, exactly
-    // like the base `image` prop; this.props.codesImage is a Texture by draw time.
-    codesImage: { type: 'image', value: null, async: true } as const,
+    spotYear: { type: 'number', value: 0 } as const,
+    filterDim: { type: 'number', value: 0 } as const,
+    filterMask: { type: 'number', value: 0 } as const,
+    fadeIn: { type: 'number', value: FIRE_DEFAULTS.fadeIn } as const,
+    cool: { type: 'number', value: FIRE_DEFAULTS.cool } as const,
+    jitter: { type: 'number', value: FIRE_DEFAULTS.jitter } as const,
+    noiseScale: { type: 'number', value: FIRE_DEFAULTS.noiseScale } as const,
+    ramp0: { type: 'array', value: RAMP_VEC4[0] } as const,
+    ramp1: { type: 'array', value: RAMP_VEC4[1] } as const,
+    ramp2: { type: 'array', value: RAMP_VEC4[2] } as const,
+    ramp3: { type: 'array', value: RAMP_VEC4[3] } as const,
   };
 
   getShaders() {
@@ -186,15 +350,23 @@ export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
   }
 
   draw(opts: Parameters<BitmapLayer['draw']>[0]) {
-    // Bind the codes sampler + the float uniforms before the base draw issues the
-    // model.draw. Fall back to the main image so the sampler is always valid even
-    // on the first frame before the codes texture finishes decoding.
+    const p = this.props;
     this.setShaderModuleProps({
       loss: {
-        maxYear: this.props.maxYear ?? 25,
-        spotDim: this.props.spotDim ?? 0,
-        spotCode: this.props.spotCode ?? 0,
-        codesTexture: this.props.codesImage ?? this.props.image,
+        maxYear: p.maxYear ?? 25,
+        spotDim: p.spotDim ?? 0,
+        spotCode: p.spotCode ?? 0,
+        spotYear: p.spotYear ?? 0,
+        filterDim: p.filterDim ?? 0,
+        filterMask: p.filterMask ?? 0,
+        fadeIn: p.fadeIn ?? FIRE_DEFAULTS.fadeIn,
+        cool: p.cool ?? FIRE_DEFAULTS.cool,
+        jitter: p.jitter ?? FIRE_DEFAULTS.jitter,
+        noiseScale: p.noiseScale ?? FIRE_DEFAULTS.noiseScale,
+        ramp0: p.ramp0 ?? RAMP_VEC4[0],
+        ramp1: p.ramp1 ?? RAMP_VEC4[1],
+        ramp2: p.ramp2 ?? RAMP_VEC4[2],
+        ramp3: p.ramp3 ?? RAMP_VEC4[3],
       },
     });
     super.draw(opts);

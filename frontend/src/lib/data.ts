@@ -364,10 +364,17 @@ export interface DeforestationData {
       downsample_note: string;
       excludes: string;
     };
+    forest_raster?: {
+      file: string;
+      encoding: string;
+      bounds_lnglat: [number, number, number, number];
+      crs: string;
+      source: { name: string; version: string; citation: string; license_note: string };
+      caveat: string;
+    };
     area_method: string;
     ideam_caveat: string;
     drivers_source?: { name: string; citation: string; license: string; caveat: string };
-    codes_raster?: { file: string; encoding: string };
     agkind_source?: SourceMeta;
     coca_source?: SourceMeta;
     cattle_source?: SourceMeta & { years: number[] };
@@ -391,28 +398,30 @@ export interface DeforestationData {
   // Phase 2b — legality
   legality_classes: DeforestationLegality[];
   loss_by_legality: Record<string, number[]>; // legality code -> annual loss ha
-  image: ImageBitmap; // the lossyear texture, attached after fetch
-  codesImage: ImageBitmap; // the companion codes texture (ag-kind / legality / coca)
+  // the lossyear texture; blue channel packs driver/ag-kind/legality/coca codes
+  image: ImageBitmap;
+  // year-2000 canopy backdrop (R = canopy%, A = country mask); jungle-green layer.
+  // Optional: absent if the build ran without treecover2000 tiles.
+  forestImage: ImageBitmap | null;
 }
 
 // Companion to loadViolence: the small per-municipio/national JSON plus the
 // lossyear PNG decoded to an ImageBitmap for the deck.gl raster layer.
 export async function loadDeforestation(base = 'data'): Promise<DeforestationData> {
-  const png = (name: string) =>
-    fetch(`${base}/${name}`).then((r) => {
-      if (!r.ok) throw new Error(`${name} ${r.status}`);
+  const [json, lossBlob, forestBlob] = await Promise.all([
+    loadJson<Omit<DeforestationData, 'image' | 'forestImage'>>(`${base}/deforestation.json`),
+    fetch(`${base}/deforestation_lossyear.png`).then((r) => {
+      if (!r.ok) throw new Error(`deforestation_lossyear.png ${r.status}`);
       return r.blob();
-    });
-  const [json, lossBlob, codesBlob] = await Promise.all([
-    loadJson<Omit<DeforestationData, 'image' | 'codesImage'>>(`${base}/deforestation.json`),
-    png('deforestation_lossyear.png'),
-    png('deforestation_codes.png'),
+    }),
+    // backdrop is optional — tolerate a 404 (build without treecover tiles)
+    fetch(`${base}/deforestation_forest.png`)
+      .then((r) => (r.ok ? r.blob() : null))
+      .catch(() => null),
   ]);
-  const [image, codesImage] = await Promise.all([
-    createImageBitmap(lossBlob),
-    createImageBitmap(codesBlob),
-  ]);
-  return { ...json, image, codesImage };
+  const image = await createImageBitmap(lossBlob);
+  const forestImage = forestBlob ? await createImageBitmap(forestBlob) : null;
+  return { ...json, image, forestImage };
 }
 
 const EPOCH_MS = Date.UTC(1958, 0, 1);

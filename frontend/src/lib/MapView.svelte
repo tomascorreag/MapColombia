@@ -7,7 +7,8 @@
   import { DataFilterExtension, MaskExtension } from '@deck.gl/extensions';
   import type { PickingInfo, Layer } from '@deck.gl/core';
   import { TendrilExtension } from './TendrilExtension';
-  import { LossRasterLayer, SPOT_DIM } from './LossRasterLayer';
+  import { LossRasterLayer, SPOT_DIM, rampStopToVec4 } from './LossRasterLayer';
+  import { ForestLayer, hexToVec4 } from './ForestLayer';
   import { buildTendrils } from './tendrils';
   import type {
     ViolenceData,
@@ -23,6 +24,8 @@
   import { COLOR_BUCKET_DAYS } from './memoria';
   import { app, type Hover } from './state.svelte';
   import { dbg } from './debug.svelte';
+  import { defDbg, defRamp } from './defDebug.svelte';
+  import { forestDbg, forestColors } from './forestDebug.svelte';
   import { perf, PERF, startFpsGovernor } from './perf.svelte';
   import { t, ui, modalityName } from './i18n.svelte';
   import { muniLabel as fmtMuniLabel, responsible, abParticipants, abInitiative } from './eventFormat';
@@ -404,21 +407,49 @@
     // ---- deforestation: Hansen tree-cover-loss raster + muni pick targets ----
     if (app.tab === 'deforestation') {
       if (deforestation) {
+        // jungle-green canopy backdrop (year-2000 treecover) under the loss raster
+        if (deforestation.forestImage) {
+          layers.push(
+            new ForestLayer({
+              id: 'forest-bg',
+              image: deforestation.forestImage,
+              bounds: (deforestation.meta.forest_raster ?? deforestation.meta.display_raster)
+                .bounds_lnglat,
+              maxYear: app.defPos - 2000, // only used when sway > 0
+              ...forestDbg,
+              lowCol: hexToVec4(forestColors.lowCol),
+              highCol: hexToVec4(forestColors.highCol),
+              // smooth backdrop: canopy is continuous, linear filtering is fine
+              textureParameters: { minFilter: 'linear', magFilter: 'linear' },
+              pickable: false,
+            } as never)
+          );
+        }
         layers.push(
           new LossRasterLayer({
             id: 'loss-raster',
             image: deforestation.image,
-            codesImage: deforestation.codesImage, // 2nd sampler: ag-kind / legality / coca
             bounds: deforestation.meta.display_raster.bounds_lnglat,
             maxYear: app.defPos - 2000, // float lossyear threshold → smooth crossfade
             // unified spotlight: which dimension+code the legend lens is hovering
             spotDim: app.defSpot.dim ? SPOT_DIM[app.defSpot.dim] : 0,
             spotCode: app.defSpot.code,
-            // crisp codes — never blend a year/class into its neighbour at edges
-            textureParameters: {
-              minFilter: 'nearest',
-              magFilter: 'nearest',
-            },
+            // year mode restricts the spotlight to one year's loss; 0 = cumulative
+            spotYear: app.defSpotYear,
+            // bucket visibility toggles (per active lens dimension)
+            filterDim: app.defFilter.dim,
+            filterMask: app.defFilter.mask,
+            // recency-raster knobs (defDbg defaults = shipped look; ?debug panel tunes live)
+            ...defDbg,
+            // recency colour ramp stops (hex+pos -> vec4 rgb+pos)
+            ramp0: rampStopToVec4(defRamp[0]),
+            ramp1: rampStopToVec4(defRamp[1]),
+            ramp2: rampStopToVec4(defRamp[2]),
+            ramp3: rampStopToVec4(defRamp[3]),
+            // Nearest: one exact colour per cell (R year / B codes never blended into a
+            // neighbour). The shader is spatially coherent (colour = f(year), no per-cell
+            // randomness) so this does not strobe when panning.
+            textureParameters: { minFilter: 'nearest', magFilter: 'nearest' },
             pickable: false,
           } as never)
         );

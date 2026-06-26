@@ -41,6 +41,35 @@ console.log('header h1:', h1);
 console.log('year readout:', yearReadout);
 await shot('defor-2024');
 
+// RENDER GATE: the loss raster must actually paint pixels. A 2nd-texture binding
+// failure (or any silent draw skip) leaves the map empty with NO console error —
+// console-error-only gating misses it. Composite all canvases and count amber loss
+// pixels across a grid; fail if the map is blank.
+const litCount = await page.evaluate(() => {
+  const tmp = document.createElement('canvas');
+  tmp.width = 1400;
+  tmp.height = 880;
+  const ctx = tmp.getContext('2d', { willReadFrequently: true });
+  for (const cv of document.querySelectorAll('canvas')) {
+    try {
+      ctx.drawImage(cv, 0, 0, tmp.width, tmp.height);
+    } catch {
+      /* cross-canvas draw may throw; skip */
+    }
+  }
+  const img = ctx.getImageData(0, 0, tmp.width, tmp.height).data;
+  let lit = 0;
+  for (let y = 0; y < tmp.height; y += 20) {
+    for (let x = 0; x < tmp.width; x += 20) {
+      const i = (y * tmp.width + x) * 4;
+      if (img[i] > 70 && img[i] - img[i + 2] > 25) lit++; // amber: red ≫ blue
+    }
+  }
+  return lit;
+});
+console.log('loss raster lit pixels (sampled):', litCount);
+if (litCount < 50) bad.push(`loss raster appears EMPTY (only ${litCount} lit pixels)`);
+
 // scrub the year slider to an early year — cumulative loss should shrink
 const setYear = async (y) => {
   await page.$eval(

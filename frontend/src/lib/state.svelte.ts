@@ -82,6 +82,15 @@ class AppState {
     dim: null,
     code: 0,
   });
+  // Restrict the hover spotlight to a single loss-year (lossyear code = year-2000)
+  // when the legend is in 'year' mode; 0 = cumulative (all years through defYear).
+  // Set by the legend, read by MapView → LossRasterLayer.spotYear.
+  defSpotYear = $state(0);
+  // Bucket visibility (legend toggles), resolved for the raster shader: `dim` is
+  // the active lens dimension (1 driver / 2 kind / 3 legality), 0 = no filtering;
+  // `mask` is a bitmask of ENABLED codes (bit code-1). The legend owns the per-lens
+  // hidden set and writes this; MapView passes it through as filterDim/filterMask.
+  defFilter = $state<{ dim: number; mask: number }>({ dim: 0, mask: 0 });
 
   setAll(on: boolean) {
     for (const c of MODALITY_CODES) this.enabled[c] = on;

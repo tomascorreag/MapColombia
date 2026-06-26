@@ -257,6 +257,10 @@ const dict: Record<string, { es: string; en: string }> = {
   def_lens_agri: { es: 'Agricultura', en: 'Agriculture' },
   def_lens_legality: { es: 'Legalidad', en: 'Legality' },
   def_lens_drivers: { es: 'Motores (WRI)', en: 'Drivers (WRI)' },
+  def_mode_year: { es: 'Año', en: 'Year' },
+  def_mode_total: { es: 'Acumulado', en: 'Cumulative' },
+  def_bucket_hide: { es: 'Clic para ocultar en el mapa', en: 'Click to hide on map' },
+  def_bucket_show: { es: 'Clic para mostrar en el mapa', en: 'Click to show on map' },
   def_legality_hint: {
     es: 'Pérdida dentro de áreas protegidas (RUNAP) y reservas de Ley 2ª. Clasificación zonal, no un fallo jurídico. Pasa el cursor para resaltar.',
     en: 'Loss inside protected areas (RUNAP) and Ley 2ª reserves. Zonal classification, not a legal verdict. Hover to spotlight.',
@@ -265,6 +269,33 @@ const dict: Record<string, { es: string; en: string }> = {
     es: 'Cobertura del suelo despejado (CORINE 2022) + coca (SIMCI). Pasto ≈ ganadería. Pasa el cursor para resaltar.',
     en: 'Land cover of cleared land (CORINE 2022) + coca (SIMCI). Pasture ≈ cattle ranching. Hover to spotlight.',
   },
+  def_agri_vintage: {
+    es: 'Reparto según la cobertura de 2022, no el año del corte: una celda despejada en 2004 se clasifica por lo que era en 2022. Una sola clase por celda (~700 m); el pasto gana los empates. Cifras indicativas del orden, no hectáreas exactas.',
+    en: 'Buckets reflect 2022 cover, not the year of clearing: a cell cleared in 2004 is classed by what it was in 2022. One class per ~700 m cell; pasture wins ties. Figures indicate ordering, not exact hectares.',
+  },
+  // Per-lens provenance caveats (bilingual; previously baked single-language in
+  // deforestation.json meta and shown regardless of UI language).
+  def_cav_drivers: {
+    es: 'Motor de pérdida de cobertura arbórea por celda de 1 km (WRI/Google DeepMind), una ÚNICA clase dominante para 2001–2023 — no un muestreo anual. La variación año a año refleja solo CUÁNDO ocurrió la pérdida, atribuida al motor dominante del periodo en cada lugar. Clases globales genéricas, no los motores específicos de Colombia del IDEAM; motores de pérdida de cobertura (definición Hansen), no deforestación del IDEAM.',
+    en: "Driver of tree-cover loss per 1 km cell (WRI/Google DeepMind), a SINGLE dominant class for 2001–2023 — not a per-year survey. Year-to-year change reflects only WHEN loss occurred, attributed to each location's period-dominant driver. Generic global classes, not IDEAM's Colombia-specific drivers; tree-cover-loss drivers (Hansen definition), not IDEAM deforestation.",
+  },
+  def_cav_agkind: {
+    es: 'COBERTURA posterior del suelo (CORINE Land Cover, IDEAM, 2022) de las celdas despejadas — un proxy del USO del suelo, NO el agente del corte: muestra lo que la tierra ES hoy, no quién la taló. «Pastos» es cobertura de pasto, un proxy fuerte pero indirecto de la ganadería, nunca una prueba. Escala 1:100.000, unidad mínima 25 ha: el corte pequeño o fragmentado queda subresuelto. Cobertura leída contra una única fecha de 2022. CORINE clasifica la coca como cultivo permanente, así que la coca que alcanza a mapear se cuenta en «Cultivos»; las parcelas más pequeñas quedan bajo la unidad mínima y se reparten sin etiqueta entre las tres clases.',
+    en: 'Subsequent land COVER (CORINE Land Cover, IDEAM, 2022) of cleared cells — a proxy for land USE, NOT the clearing agent: it shows what the land IS now, not who cut it. «Pastos» is grass cover, a strong but indirect proxy for cattle ranching, never proof of it. Scale 1:100,000, minimum mapping unit 25 ha: small or fragmented clearing is under-resolved. Cover read against a single 2022 vintage. CORINE maps coca as a permanent crop, so any coca it resolves is counted under «Cultivos»; smaller coca plots fall below the mapping unit and scatter unlabeled across all three classes.',
+  },
+  def_cav_legality: {
+    es: 'Clasificación ZONAL, no un fallo jurídico: «dentro de un parque / reserva» significa uso del suelo NO permitido ALLÍ, nunca un veredicto contra una persona (no se observan permisos ni derechos por píxel). Los límites son de una sola fecha (RUNAP vigente; zonas de Ley 2ª de 1959) y se contrastan con pérdida de 2001–2025 — fecha etiquetada, jamás presentada como hecho anacrónico. Excluye la frontera agrícola UPRA y resguardos (MVP).',
+    en: 'ZONAL classification, not a legal ruling: «inside a park / reserve» means land use NOT permitted THERE, never a verdict against a person (permits and rights are not observed per pixel). Boundaries are single-vintage (current RUNAP; Ley 2ª zones of 1959) and contrasted with 2001–2025 loss — vintage labeled, never presented as an anachronistic fact. Excludes the UPRA agricultural frontier and resguardos (MVP).',
+  },
+  def_cav_definition: {
+    es: 'La PÉRDIDA de cobertura arbórea de Hansen incluye plantaciones, incendios y pérdida natural, y NO equivale a la deforestación del IDEAM (conversión permanente de bosque natural). Las dos series nacionales difieren por definición.',
+    en: 'Hansen tree-cover LOSS includes plantations, fire and natural loss and is NOT the same as IDEAM deforestation (permanent natural-forest conversion). The two national series differ by definition.',
+  },
+  def_coca_overlay: { es: 'presencia · 1 km, no comparable', en: 'presence · 1 km, not comparable' },
+  def_coca_note: {
+    es: 'Área de coca monitoreada (SIMCI/UNODC), un stock anual — no es pérdida de bosque ni una cobertura, por eso no se ordena junto a las clases de arriba. El mapa resalta la pérdida que coincide con celdas con coca: correlación de presencia, no causa.',
+    en: 'Monitored coca area (SIMCI/UNODC), an annual stock — not forest loss and not a land cover, so it is not ranked beside the classes above. The map highlights loss coinciding with coca cells: presence-correlation, not cause.',
+  },
   def_cattle: { es: 'Inventario bovino (ICA)', en: 'Cattle inventory (ICA)' },
   def_cattle_head: { es: 'cabezas', en: 'head' },
   def_causes_title: { es: 'Ranking cualitativo IDEAM', en: 'IDEAM qualitative ranking' },
@@ -272,6 +303,7 @@ const dict: Record<string, { es: string; en: string }> = {
     es: 'Orden estimado según IDEAM — no es una proporción medida. Las causas y los actores se atribuyen a nivel regional (IDEAM SMByC, FCDS, MAAP), no por píxel. Pendiente de revisión.',
     en: 'Estimated ordering per IDEAM — not a measured proportion. Drivers and actors are attributed regionally (IDEAM SMByC, FCDS, MAAP), not per pixel. Pending review.',
   },
+  def_disclaimers_title: { es: 'Advertencias', en: 'Disclaimers' },
   def_method_title: { es: 'Método', en: 'Method' },
   def_method: {
     es: 'Cada celda muestra el año más temprano de pérdida de cobertura arbórea (Hansen/UMD, 30 m, remuestreado para visualización). La pérdida de Hansen NO equivale a la deforestación del IDEAM (definiciones distintas). Las hectáreas por municipio se cuentan de los píxeles de 30 m, unidas por código DANE. Nada se estima ni se imputa.',

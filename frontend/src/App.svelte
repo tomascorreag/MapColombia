@@ -29,6 +29,15 @@
   import EventStory from './lib/EventStory.svelte';
   import Welcome from './lib/Welcome.svelte';
   import { dbgEnabled } from './lib/debug.svelte';
+  import { defDbg, defRamp, DEF_DBG_GROUPS, DEF_RAMP_LABELS } from './lib/defDebug.svelte';
+  import { FIRE_DEFAULTS, RAMP_DEFAULTS } from './lib/LossRasterLayer';
+  import {
+    forestDbg,
+    forestColors,
+    FOREST_DBG_GROUPS,
+    FOREST_COLOR_KEYS,
+  } from './lib/forestDebug.svelte';
+  import { FOREST_DEFAULTS, FOREST_COLORS } from './lib/ForestLayer';
   import { perf, PERF } from './lib/perf.svelte';
 
   // Low tier: drop the panels' backdrop blur — it re-samples the animating
@@ -161,7 +170,7 @@
 
     <!-- header + legend share one flex rail so the panel always flows below
          the header, whatever height the current language wraps to -->
-    <div class="rail">
+    <div class="rail" class:wide={app.tab === 'deforestation'}>
       <header class="ficha rise" style="animation-delay: 0.05s">
       <div class="head-row">
         <div>
@@ -215,6 +224,27 @@
 
     {#if dbgEnabled && app.tab === 'memoria'}
       <DebugPanel />
+    {/if}
+    {#if dbgEnabled && app.tab === 'deforestation'}
+      <DebugPanel
+        store={defDbg}
+        defaults={FIRE_DEFAULTS}
+        groups={DEF_DBG_GROUPS}
+        title="deforestation · debug"
+        ramp={defRamp}
+        rampDefaults={RAMP_DEFAULTS}
+        rampLabels={DEF_RAMP_LABELS}
+      />
+      <DebugPanel
+        store={forestDbg}
+        defaults={FOREST_DEFAULTS}
+        groups={FOREST_DBG_GROUPS}
+        title="forest backdrop · debug"
+        anchor="left"
+        colors={forestColors}
+        colorDefaults={FOREST_COLORS}
+        colorKeys={FOREST_COLOR_KEYS}
+      />
     {/if}
 
     <footer class="mono">
@@ -300,8 +330,14 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* stay clear of the timebar at the bottom */
-    max-height: calc(100vh - 170px);
+    /* extend to the bottom of the viewport (18px top + 18px bottom margin); the
+       centered timebar is horizontally clear of this left column on desktop */
+    max-height: calc(100vh - 36px);
+  }
+
+  /* deforestation legend is denser — give it ~20% more width */
+  .rail.wide {
+    width: 398px;
   }
 
   header {
@@ -407,7 +443,8 @@
 
   /* ---------- small screens: stack, keep it usable ---------- */
   @media (max-width: 900px) {
-    .rail {
+    .rail,
+    .rail.wide {
       width: calc(100vw - 36px);
       max-height: calc(100vh - 150px);
     }

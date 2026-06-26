@@ -1,0 +1,18 @@
+{
+  "tiers": [[20, 30], [15, 20], [10, 15]],
+  "current": 1,
+  "batchSize": 18,
+  "history": [
+    {"batch": 4, "run": "wf_3070d784", "band": [20, 30], "events": 18, "confirmed": 5, "dropped": 13, "tokens": 930000, "note": "pre-optimization template (no triage, opus VERIFY)"},
+    {"batch": 5, "run": "wf_8fcdfaf6", "band": [20, 30], "events": 18, "confirmed": 2, "dropped": 16, "tokens": 1184570, "note": "TRIAGE EXPERIMENT FAILED: triageSkipped=0, cost ROSE (12/18 AB combat rows have snippet presence so haiku triage never says 'no'). Triage removed after this batch. Confirmed: Operacion Berlin/Surata (14985), Quebrada Riecito ambush (2866) — both AB, disputed figures."},
+    {"batch": 6, "run": "wf_835ed4ba", "band": [20, 30], "events": 18, "confirmed": 2, "dropped": 16, "tokens": 643593, "note": "fixed template (no triage, early-bail FIND, cheap VERIFY). Confirmed: Tibu massacre/AUC (290773), Bajo del Oso/FARC banana workers (289775)."},
+    {"batch": 7, "run": "wf_f64622d4", "band": [20, 30], "events": 18, "confirmed": 1, "dropped": 17, "tokens": 632288, "note": "Confirmed: Buga/Alaska massacre AUC Bloque Calima (291406) — date error (2023->enero 2024) fixed before queue. Thin-coverage slice (Orito 2005, Ataco 1963)."},
+    {"batch": 8, "run": "wf_7efc28cc", "band": [20, 30], "events": 18, "confirmed": 0, "unverified": 2, "dropped": 11, "tokens": 536694, "note": "SESSION LIMIT hit mid-run. 2 unverified queued (Remedios/Canaveral 439433 strong; Puerto Guzman 732572 weak/all-tertiary combat). 5 FINDs left re-runnable; retried in batch 9."},
+    {"batch": 9, "run": "wf_10877909", "band": [20, 30], "events": 18, "confirmed": 2, "dropped": 16, "tokens": 592221, "note": "Confirmed: Los Kunas massacre/FARC banana workers (289771); Operation Sodoma/death of Mono Jojoy (28809) — AB combat, flagged for owner editorial fit."},
+    {"batch": 10, "run": "wf_7c651d3a", "band": [20, 30], "events": 18, "confirmed": 1, "dropped": 17, "tokens": 522388, "note": "Confirmed: Yolombo massacre/AUC Bloque Metro Doble Cero (439527)."},
+    {"batch": 11, "run": "wf_e8f03826", "band": [20, 30], "events": 18, "confirmed": 2, "dropped": 16, "tokens": 555320, "note": "Confirmed: 2019 General Santander Police Cadet School bombing/ELN (532770, unverified alias dropped); El Nilo/Caloto massacre Nasa indigenous (289370)."},
+    {"batch": 12, "run": "wf_0e34bb1b", "band": [20, 30], "events": 18, "confirmed": 2, "dropped": 16, "tokens": 530853, "note": "Confirmed: El Tarra massacre/AUC Catatumbo (290736); La Caucana massacre/FARC (397096, framing flagged for owner)."}
+  ],
+  "note": "Fixed template (no triage, early-bail FIND, cheap VERIFY) holds ~0.55M/batch. Promotion still owner-gated; loop accumulates candidates only.",
+  "resume": "python pipeline/gen_band.py <LO> <HI> ; python pipeline/make_batch.py <N> ; Workflow(scriptPath=annotation-batch-<N>.js). Tier ladder [20,30)->[15,20)->[10,15). [20,30) ~done at batch 13."
+}

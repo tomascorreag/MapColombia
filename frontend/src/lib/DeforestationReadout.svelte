@@ -97,7 +97,7 @@
     {/if}
 
     <p class="note mono src">{deforestation.meta.render_source.citation}</p>
-    <p class="note mono src dim">{deforestation.meta.definition_caveat}</p>
+    <p class="note mono src dim">{t('def_cav_definition')}</p>
   </aside>
 {/if}
 

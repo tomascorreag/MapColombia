@@ -2225,5 +2225,1166 @@
       "Minor precision: sources identify the 2005 sentencing court as the 'Juzgado Sexto Penal del Circuito Especializado de Bogota'; the draft writes 'Juzgado Penal del Circuito Especializado de Bogota' (drops 'Sexto'). Not wrong, but could be made exact.",
       "Wikipedia (es) is listed as a source; it is fine as tertiary corroboration but should not be relied on for any figure not also backed by the primary JEP/Comision sources (its casualty counts differ: 23 dead / 67 wounded)."
     ]
+  },
+  {
+    "key": "surata-14985",
+    "idCaso": 14985,
+    "modality": "AB",
+    "municipioDane": 68780,
+    "date": "2000-11-26",
+    "victims": 27,
+    "responsibleHint": "agente del Estado",
+    "disputedFigures": true,
+    "disputeNote": "The CNMH records 27 victims for this specific case (the opening engagement, November 26, 2000). Totals for the broader Operation Berlin vary significantly by source: the Army reported 46 combatant deaths; the Victims Unit estimated approximately 100; other accounts reach 94. The figure of 27 (CNMH) has not been independently cited by other sources for this specific date; broader operation counts are not directly comparable.",
+    "title": {
+      "es": "Operación Berlín — combate inicial en Filo Turbay, Suratá",
+      "en": "Operation Berlin — opening engagement at Filo Turbay, Suratá"
+    },
+    "narrative": {
+      "es": "El 26 de noviembre de 2000, el Ejército Nacional de Colombia —mediante la Quinta Brigada, al mando del brigadier general Martín Orlando Carreño Sandoval— inició la Operación Berlín con un combate en el corregimiento Turbay (Filo Turbay), municipio de Suratá, Santander, contra la columna móvil Arturo Ruiz de las FARC-EP. El CNMH SIEVCAC registra 27 víctimas para este caso; el total de la operación, que se extendió hasta enero de 2001, es objeto de disputa entre fuentes: el Ejército reportó 46 guerrilleros muertos y la Unidad para las Víctimas estimó cerca de 100, entre ellos al menos 74 menores de edad reclutados forzosamente por las FARC. Testimonios recogidos por la Fundación Benposta, Human Rights Watch y la Unidad de Búsqueda de Personas Dadas por Desaparecidas documentan ejecuciones de combatientes que intentaron rendirse y la presencia masiva de niños y niñas entre los caídos. La JEP recibió un informe formal sobre el caso en el marco del Caso 007 sobre reclutamiento de menores, y la Comisión de la Verdad lo identificó como uno de los episodios emblemáticos de crímenes de guerra contra la niñez. Los corregimientos de Mohán y Turbay fueron inscritos en el Registro Único de Víctimas como sujetos de reparación colectiva mediante Resolución n.° 2014-424217.",
+      "en": "On November 26, 2000, the Colombian National Army — through the Fifth Brigade, commanded by Brigadier General Martín Orlando Carreño Sandoval — launched Operation Berlin with an engagement at the Turbay settlement (Filo Turbay), municipality of Suratá, Santander, targeting the FARC-EP's Arturo Ruiz mobile column. The CNMH SIEVCAC registry records 27 victims for this specific case; total casualties for the broader operation, which extended through January 2001, are disputed: the Army reported 46 guerrilla deaths while the Victims Unit estimated approximately 100, at least 74 of them minors forcibly recruited by the FARC. Testimonies gathered by the Benposta Foundation, Human Rights Watch, and the Search Unit for Disappeared Persons document the extrajudicial execution of fighters who attempted to surrender and the large proportion of children among those killed. The Special Jurisdiction for Peace (JEP) received a formal report under Case 007 on child recruitment, and Colombia's Truth Commission identified the operation as an emblematic episode of war crimes against children. The corregimientos of Mohán and Turbay were officially registered as collective reparation subjects under Resolution 2014-424217."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Jurisdicción Especial para la Paz (JEP)",
+        "title": "La JEP recibió informe sobre la Operación Berlín",
+        "url": "https://www.jep.gov.co/Sala-de-Prensa/Paginas/La-JEP-recibi%C3%B3-informe-sobre-la-Operaci%C3%B3n-Berl%C3%ADn.aspx"
+      },
+      {
+        "type": "primary",
+        "publisher": "Unidad de Búsqueda de Personas Dadas por Desaparecidas (UBPD)",
+        "title": "Unidad de Búsqueda interviene cementerio municipal de Bucaramanga y recupera 12 cuerpos que corresponderían a personas desaparecidas tras la Operación Berlín",
+        "url": "https://unidadbusqueda.gov.co/actualidad/operacion-berlin-farc-bucaramanga-2022/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Comisión de la Verdad Colombia",
+        "title": "Operación Berlín: la niñez que peleó la guerra en Colombia",
+        "url": "https://web.comisiondelaverdad.co/actualidad/noticias/operacion-berlin-la-ninez-que-peleo-la-guerra-en-colombia"
+      },
+      {
+        "type": "scholarship",
+        "publisher": "Redalyc / Universidad Pontificia Bolivariana",
+        "title": "Narrativas de las víctimas sobre la Operación Berlín",
+        "url": "https://www.redalyc.org/journal/110/11076003004/html/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "Operación Berlín: Detalles de una operación militar en la que habría crímenes de guerra contra niños",
+        "url": "https://www.elespectador.com/investigacion/operacion-berlin-detalles-de-una-operacion-militar-en-la-que-habria-crimenes-de-guerra-contra-ninos/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "En busca de los desaparecidos de la Operación Berlín",
+        "url": "https://www.elespectador.com/colombia-20/jep-y-desaparecidos/en-busca-de-los-desaparecidos-de-la-operacion-berlin/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Operación Berlín (Colombia)",
+        "url": "https://es.wikipedia.org/wiki/Operaci%C3%B3n_Berl%C3%ADn_(Colombia)"
+      }
+    ],
+    "_verifyIssues": [
+      "The Comisión de la Verdad noticia URL (web.comisiondelaverdad.co/.../operacion-berlin-la-ninez-que-peleo-la-guerra-en-colombia) returned ECONNREFUSED on direct fetch. Search confirms that documentary is genuinely a Comisión de la Verdad production, so the link is plausibly transient/geofenced rather than fabricated — but it should be re-checked, and consider linking the verified sibling URL .../noticias/documental-operacion-berlin-reconocimiento-internacional as a fallback.",
+      "HRW attribution is slightly loose: HRW's relevant work ('Aprenderás a no llorar' / 'You'll Learn Not to Cry') is a general FARC child-recruitment report, not a Berlín-specific execution dossier. The draft phrasing 'testimonios recogidos por... Human Rights Watch [que documentan] ejecuciones de combatientes que intentaron rendirse' risks implying HRW documented the Berlín surrender-executions specifically. Tighten to attribute the execution testimonies to JEP/Benposta and cite HRW only for the recruitment context.",
+      "Add specificity to Resolution 2014-424217: sources give it as Resolution No. 2014-424217 of 26 March 2014 (Unidad para las Víctimas). Including the date strengthens the citation.",
+      "Minor casualty-framing nuance worth noting: Army figure is '46 muertos / 20 menores' while the ~74-minors and ~100-dead figures come from Victims Unit/JEP estimates; some sources give totals as '94 dead incl. 74 minors.' The draft's range is within sourced bounds, but the exact ~100 vs 94 spread could be footnoted as itself disputed."
+    ]
+  },
+  {
+    "key": "puerto-rico-2866",
+    "idCaso": 2866,
+    "modality": "AB",
+    "municipioDane": 18592,
+    "date": "1987-06-14",
+    "victims": 27,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "BAPP records 26 soldiers killed and 44 wounded; Wikipedia (es) and Semana (July 1987) report 27 military deaths (1 captain, 1 NCO, 25 soldiers) plus 1 civilian contractor. The CNMH registry figure of 27 total victims aligns with the 27-military count from Wikipedia/Semana. The 2-day date discrepancy (CNMH: June 14; all narrative sources: June 16) is unresolved.",
+    "title": {
+      "es": "Emboscada de la Quebrada Riecito",
+      "en": "Quebrada Riecito Ambush"
+    },
+    "narrative": {
+      "es": "El 16 de junio de 1987 —el CNMH registra el 14 de junio— los Frentes 14 y 15 del Bloque Sur de las FARC-EP tendieron una emboscada a una columna de dos camiones del Batallón Cazadores que se desplazaba por la vía entre Puerto Rico y San Vicente del Caguán, en el norte del Caquetá, a la altura de la Quebrada Riecito, vereda La Lusitania. Con minas Claymore, bombas artesanales en cantinas de leche y fuego de aproximadamente 140 combatientes apostados en los barrancos de la vía, la guerrilla atacó los vehículos militares que transportaban 83 soldados bajo el mando del capitán Luis Moreno Buitrago. El CNMH registra 27 víctimas en el caso; fuentes institucionales como BAPP consignan 26 soldados muertos y 44 heridos, mientras la Wikipedia en español y la revista Semana (edición 268, julio de 1987) citan 27 militares fallecidos —incluyendo un capitán, un suboficial y 25 soldados— más un contratista civil. El campo 'presunto responsable' del registro SIEVCAC codifica 'Agente del Estado / Ejército Nacional', lo que en la metodología de Acciones Bélicas del CNMH identifica al actor estatal participante en la confrontación, no al perpetrador del ataque; todas las fuentes narrativas atribuyen la acción ofensiva a las FARC-EP. El evento constituyó el mayor golpe a la Fuerza Pública desde la fundación de las FARC-EP y marcó el inicio del colapso del cese bilateral al fuego acordado en La Uribe en 1984.",
+      "en": "On 16 June 1987 — the CNMH record dates the event 14 June — FARC-EP Fronts 14 and 15 of the Southern Bloc ambushed a two-truck convoy of the Cazadores Battalion travelling the road from Puerto Rico to San Vicente del Caguán in northern Caquetá, at the Quebrada Riecito stream crossing in the La Lusitania hamlet. Using Claymore mines, improvised bombs concealed in milk cans, and rifle fire from approximately 140 guerrillas entrenched on the ravine slopes, the attack struck vehicles carrying 83 soldiers under Captain Luis Moreno Buitrago. The CNMH registry records 27 victims for this case; the institutional BAPP database cites 26 soldiers killed and 44 wounded, while the Spanish Wikipedia article and Semana magazine (edition 268, July 1987) report 27 military dead — including one captain, one non-commissioned officer, and 25 soldiers — plus one civilian contractor. The SIEVCAC 'presunto responsable' field is coded 'Agente del Estado / Ejército Nacional', which under the CNMH's Acciones Bélicas methodology identifies the state armed actor involved in the confrontation, not the attacking party; all narrative sources attribute the offensive action to the FARC-EP. The event was the single largest blow to the Colombian armed forces since the FARC's founding and effectively began the collapse of the bilateral ceasefire established at La Uribe in 1984."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "BAPP — Biblioteca Abierta del Proceso de Paz colombiano",
+        "title": "Las FARC-EP realizan una emboscada a miembros del Ejército Nacional en la Quebrada Riecito, municipio de Puerto Rico (Caquetá)",
+        "url": "https://bapp.com.co/hitos/las-farc-ep-realizan-una-emboscada-a-miembros-del-ejercito-nacional-en-la-quebrada-riecito-municipio-de-puerto-rico-caqueta-son-asesinados-26-soldados-y-resultan-heridos-otros-44-con-este-evento/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia en español",
+        "title": "Emboscada de La Quebrada Riecito",
+        "url": "https://es.wikipedia.org/wiki/Emboscada_de_La_Quebrada_Riecito"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Semana",
+        "title": "Vientos de Guerra (edición 268, 20 julio 1987)",
+        "url": "https://www.semana.com/nacion/articulo/vientos-de-guerra/9147-3/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "ACORE — Asociación Colombiana de Oficiales en Retiro de las Fuerzas Militares",
+        "title": "La historia de una disidencia guerrillera en Caquetá",
+        "url": "https://www.acore.org.co/12573/la-historia-una-disidencia-guerrillera-caqueta/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "FUNDELT",
+        "title": "Bloque Sur de las Farc asesinó a 26 soldados en 1987 en el Caquetá",
+        "url": "https://www.fundelt.com/excelencia-liderazgo-transformacion/bloque-sur-de-las-farc-asesino-a-26-soldados-en-1987-en-el-caqueta/"
+      }
+    ],
+    "_verifyIssues": [
+      "Victim arithmetic across sources is slightly inconsistent and could be reconciled in a footnote: the narrative says Wikipedia/Semana cite '27 military dead (1 captain + 1 NCO + 25 soldiers)' PLUS 'un contratista civil', which sums to 28, not 27. The fetched Semana text actually breaks the 27 down as 24 soldiers + 1 officer + 1 NCO + (1 civilian) = 27. The 'plus one civilian contractor' phrasing risks implying 28 dead. Recommend aligning the breakdown to total exactly 27 (the coded count) or stating the civilian is already included.",
+      "Wounded count varies by source (BAPP/draft cite 44; Wikipedia and Semana cite 42). The draft only surfaces the 44 figure (via BAPP); noting the 42 alternative would be more complete, though this is non-fatal since wounded are not the coded victim metric.",
+      "Semana 'edicion 268' is asserted but the fetched article page does not itself display an edition number; the URL is valid and dated July 1987, so this is a low-risk citation-precision item, not a fabrication.",
+      "Wikipedia is the single source for several granular details (La Lusitania vereda, exact 83-soldier figure, weapon inventory); it is a tertiary source. The facts are corroborated in aggregate by the other four sources, but consider whether a more authoritative primary citation exists for the per-detail claims if owner review demands it."
+    ]
+  },
+  {
+    "key": "tibu-290773",
+    "idCaso": 290773,
+    "modality": "MA",
+    "municipioDane": 54810,
+    "date": "2000-04-06",
+    "victims": 25,
+    "responsibleHint": "AUC",
+    "disputedFigures": true,
+    "disputeNote": "Sources diverge on the killed count: Rutas del Conflicto and Unidad para las Víctimas cite 20 killed + 5 wounded (= 25 total, consistent with CNMH's Total_Victimas_Caso of 25); Amnesty International (April 2000) reports 21 killed. The CNMH figure of 25 appears to represent total victims (killed and wounded combined).",
+    "title": {
+      "es": "Masacre de Tibú, abril de 2000",
+      "en": "Tibú Massacre, April 2000"
+    },
+    "narrative": {
+      "es": "El 6 de abril de 2000, integrantes del Bloque Catatumbo de las Autodefensas Unidas de Colombia (AUC) asesinaron a civiles en los barrios La Unión, Once de Febrero y El Triunfo del municipio de Tibú, Norte de Santander. La Unidad para las Víctimas y Rutas del Conflicto documentan 20 personas asesinadas y cinco heridas; el Centro Nacional de Memoria Histórica registra 25 víctimas totales del caso. Amnistía Internacional cifra en 21 los muertos e identificó a 18 de ellos por nombre, señalando que la mayoría eran desplazados internos que habían buscado refugio en la cabecera municipal. Los paramilitares, al mando de Salvatore Mancuso, Jorge Iván Laverde Zapata (alias 'El Iguano') y Armando Alberto Pérez Betancourt (alias 'Camilo'), seleccionaron a las víctimas acusándolas de ser colaboradores de la guerrilla. El segundo Juzgado Penal del Circuito de Cúcuta condenó a 'Camilo' como autor material; Mancuso y 'El Iguano' reconocieron responsabilidad intelectual en el proceso de Justicia y Paz. La comunidad urbana de Tibú fue reconocida el 12 de marzo de 2014 como Sujeto de Reparación Colectiva.",
+      "en": "On April 6, 2000, members of the Catatumbo Bloc of the Autodefensas Unidas de Colombia (AUC) killed civilians in the La Unión, Once de Febrero, and El Triunfo neighborhoods of Tibú municipality, Norte de Santander. The Unidad para las Víctimas and Rutas del Conflicto document 20 people killed and five wounded; the CNMH registry records 25 total victims for this case. Amnesty International reported 21 dead and named 18 of the victims, noting that most were internally displaced persons who had sought shelter in the town. The paramilitaries, under the command of Salvatore Mancuso, Jorge Iván Laverde Zapata (alias 'El Iguano'), and Armando Alberto Pérez Betancourt (alias 'Camilo'), selected their victims on accusations of guerrilla collaboration. The Second Criminal Court of Cúcuta convicted 'Camilo' as the material author; Mancuso and 'El Iguano' acknowledged intellectual responsibility in the Justice and Peace process. The urban community of Tibú was officially recognized on March 12, 2014 as a Collective Reparation Subject."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Tibú, abril de 2000",
+        "url": "https://rutasdelconflicto.com/masacres/tibu-abril-2000"
+      },
+      {
+        "type": "primary",
+        "publisher": "Amnesty International",
+        "title": "Colombia: Fear for safety of the civilian population of El Tarra and Tibú, Norte de Santander (AMR 23/017/2000)",
+        "url": "https://www.amnesty.org/en/documents/amr23/017/2000/en/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Unidad para las Víctimas (Colombia)",
+        "title": "La resiliencia de la comunidad de Tibú, 20 años después de la masacre",
+        "url": "https://www.unidadvictimas.gov.co/noticias/56364-2/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Anexo: Masacres atribuidas a las AUC",
+        "url": "https://es.wikipedia.org/wiki/Anexo:Masacres_atribuidas_a_las_AUC"
+      }
+    ],
+    "_verifyIssues": [
+      "Minor: 'Once de Febrero' barrio is sourced from Unidad para las Víctimas while Rutas lists only two barrios — both are cited so the claim holds, but the attribution is implicit.",
+      "Minor: the '5 wounded' figure appears only in the Rutas page in the fetched content, yet the narrative jointly attributes '20 killed and five wounded' to both Unidad and Rutas, slightly over-crediting Unidad for the wounded count.",
+      "Minor: the claim that Mancuso and 'El Iguano' acknowledged intellectual responsibility in Justice and Peace is consistent with the Rutas command-structure narrative but is not verbatim stated as a self-acknowledgment in the fetched sources; consider softening to 'were attributed intellectual responsibility' unless a direct Justice-and-Peace citation is added."
+    ]
+  },
+  {
+    "key": "apartado-289775",
+    "idCaso": 289775,
+    "modality": "MA",
+    "municipioDane": 5045,
+    "date": "1995-09-20",
+    "victims": 24,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "The CNMH registry records 25 victims for this event; Rutas del Conflicto, Human Rights Watch (1998), and Señal Memoria all document 24 persons killed. The discrepancy of one victim is unresolved across available sources.",
+    "title": {
+      "es": "Masacre de Bajo del Oso",
+      "en": "Bajo del Oso Massacre"
+    },
+    "narrative": {
+      "es": "El 20 de septiembre de 1995, a las 5:30 de la mañana, miembros del Frente Quinto de las FARC abordaron un bus que transportaba jornaleros hacia la finca bananera Rancho Amelia, en la vereda Bajo del Oso, a un kilómetro del casco urbano de Apartadó (Antioquia). Los guerrilleros ordenaron al conductor avanzar hasta un camino apartado, donde obligaron a los trabajadores a descender, formarse en tres filas, tenderse boca abajo, y les ataron las manos y vendaron los ojos antes de fusilarlos; algunos cuerpos fueron degollados con machetes. El registro del CNMH (IdCaso 289775) consigna 25 víctimas; Rutas del Conflicto, Human Rights Watch y Señal Memoria documentan 24 personas asesinadas. Entre las víctimas había una mujer embarazada y varios afiliados al Sindicato Nacional de Trabajadores de la Industria Agropecuaria (Sintrainagro), así como personas vinculadas al movimiento político Esperanza, Paz y Libertad. Alexander Puerta es el único sobreviviente conocido. La masacre fue ordenada por Luis Carlos Úsuga, alias 'Jacobo Arango', comandante del Frente Quinto; Elda Neyis Mosquera García, alias 'Karina', también fue señalada como responsable y fue postulada al proceso de Justicia y Paz.",
+      "en": "On September 20, 1995, at approximately 5:30 a.m., members of the Fifth Front of the FARC boarded a bus transporting farmworkers to the Rancho Amelia banana plantation in the Bajo del Oso hamlet, one kilometer from the urban center of Apartadó, Antioquia. The guerrillas ordered the driver to proceed to a secluded path where they forced the workers to disembark, form three lines, and lie face down; the workers' hands were bound and their eyes covered before they were executed by gunfire, with several bodies subsequently mutilated with machetes. The CNMH registry (IdCaso 289775) records 25 victims; Rutas del Conflicto, Human Rights Watch, and Señal Memoria each document 24 persons killed. Victims included a pregnant woman and multiple members of Sintrainagro, the national agricultural workers' union, as well as individuals affiliated with the Esperanza, Paz y Libertad political movement. Alexander Puerta is the sole known survivor. The attack was directed by Luis Carlos Úsuga, alias 'Jacobo Arango', commander of the Fifth Front; Elda Neyis Mosquera García, alias 'Karina', was also implicated and was postulated to the Justice and Peace process."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Bajo del Oso",
+        "url": "https://rutasdelconflicto.com/masacres/del-oso"
+      },
+      {
+        "type": "primary",
+        "publisher": "Human Rights Watch",
+        "title": "Guerrilla Violations of International Humanitarian Law — Colombia: Human Rights Concerns 1998",
+        "url": "https://www.hrw.org/legacy/reports98/colombia/Colom989-05.htm"
+      },
+      {
+        "type": "primary",
+        "publisher": "Señal Memoria / RTVC",
+        "title": "Masacres de la Guerrilla: el endurecimiento del conflicto colombiano",
+        "url": "https://www.senalmemoria.co/articulos/masacres-guerrillas-colombia"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "FUNDELT",
+        "title": "Masacre perpetrada por Farc-UP en la vereda Bajo del Oso, Apartadó (Antioquia) en septiembre de 1995",
+        "url": "https://www.fundelt.com/excelencia-liderazgo-transformacion/masacre-perpetrada-por-farc-up-en-la-vereda-bajo-del-oso-apartado-antioquia-en-septiembre-de-1995/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Colombiano",
+        "title": "Masacres de El Salado, El Aro, Mapiripán, Bajo del Oso ¿por qué ocurrían?",
+        "url": "https://www.elcolombiano.com/opinion/columnistas/masacres-de-el-salado-el-aro-mapiripan-bajo-del-oso-por-que-ocurrian-JB12468616"
+      }
+    ],
+    "_verifyIssues": [
+      "Omission (non-fatal): the narrative names Usuga 'Jacobo Arango' and Karina as responsible but omits Freddy Montalvo de la Rosa alias 'Papujo', the Fifth Front co-leader actually tried and sentenced to 28 years (Oct 1998) per FUNDELT/Rutas. Consider adding him as the convicted perpetrator for completeness.",
+      "Framing nuance: the FUNDELT tertiary source frames the perpetrator as 'FARC-UP' and Karina's testimony ties the EPL/Esperanza Paz y Libertad extermination to clearing an electoral path for the UP. The draft's plain 'FARC Fifth Front' framing is the more conservative and source-supported choice; no change required, but the UP-rivalry motive is the documented context if the narrative wants it.",
+      "Title 'Frente Quinto' (es) vs 'Fifth Front' (en) is consistent with sources; the coded perpetrator field says only 'GUERRILLA / FARC' which the narrative correctly specializes to the Fifth Front without contradiction."
+    ]
+  },
+  {
+    "key": "guadalajara-de-buga-291406",
+    "idCaso": 291406,
+    "modality": "MA",
+    "municipioDane": 76111,
+    "date": "2001-10-10",
+    "victims": 24,
+    "responsibleHint": "AUC",
+    "disputedFigures": true,
+    "disputeNote": "CNMH codes 24 victims (morgue arrivals). Rutas del Conflicto names 27 victims. Vidas Silenciadas reports 24 confirmed at morgue with ICRC searching for at least 6 more bodies as of October 12, 2001. The discrepancy likely reflects the multi-site nature of the operation and the timing of body recovery.",
+    "title": {
+      "es": "Masacre de Buga (Alaska)",
+      "en": "Buga (Alaska) Massacre"
+    },
+    "narrative": {
+      "es": "El 10 de octubre de 2001, un grupo de entre 20 y 30 hombres armados pertenecientes al Bloque Calima de las Autodefensas Unidas de Colombia (AUC) recorrió durante aproximadamente seis horas las veredas La Magdalena, Alaska, Tres Esquinas y La Habana, en la zona rural de Guadalajara de Buga, Valle del Cauca. En La Magdalena asesinaron a ocho personas; en Alaska reunieron a un grupo de campesinos frente al salón comunal y los fusilaron; en La Habana detuvieron una chiva con cerca de 45 pasajeros, obligaron a los hombres a bajar y a correr, y los dispararon por la espalda. El registro del CNMH consigna 24 víctimas, cifra que corresponde a los cuerpos recibidos en la morgue de Buga ese día; Rutas del Conflicto identifica 27 víctimas y el CICR buscaba al menos seis cuerpos adicionales en zonas rurales al 12 de octubre. Los paramilitares acusaron a las víctimas de ser colaboradores de la guerrilla; gran parte de los muertos tenía vínculos con el Instituto Mayor Campesino (IMCA), centro educativo de orientación jesuita con labor social en la región. En enero de 2024, el Tribunal Superior de Buga condenó al coronel retirado Jorge Alberto Amor Páez a 31 años y 11 meses de prisión por homicidio en persona protegida, al haber incumplido su deber de proteger a la población civil pese a las advertencias previas de la comunidad.",
+      "en": "On October 10, 2001, a group of 20 to 30 armed men from the Bloque Calima of the Autodefensas Unidas de Colombia (AUC) conducted an approximately six-hour operation through the rural hamlets of La Magdalena, Alaska, Tres Esquinas, and La Habana in the municipality of Guadalajara de Buga, Valle del Cauca. In La Magdalena, eight people were killed; in Alaska, a group of peasants was gathered in front of the community hall and shot by rifle bursts; on the La Habana road, the paramilitaries stopped a bus carrying about 45 passengers, forced the men off and ordered them to run, then shot them from behind. The CNMH registry records 24 victims, corresponding to the bodies received at the Buga morgue that day; Rutas del Conflicto identifies 27 victims by name, and the ICRC was searching for at least six additional bodies in surrounding rural areas as of October 12. The perpetrators accused the victims of collaborating with guerrillas; many of those killed had ties to the Instituto Mayor Campesino (IMCA), a Jesuit-oriented social education center active in the region. In January 2024, the Superior Court of Buga convicted retired Colonel Jorge Alberto Amor Páez to 31 years and 11 months in prison for homicide against protected persons, finding that he had failed his duty to protect the civilian population despite prior community warnings about paramilitary patrols."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Buga",
+        "url": "https://rutasdelconflicto.com/masacres/buga"
+      },
+      {
+        "type": "primary",
+        "publisher": "Colectivo de Abogados José Alvear Restrepo (CAJAR)",
+        "title": "Report reveals role of security forces in paramilitary massacres in southwestern Colombia",
+        "url": "https://www.colectivodeabogados.org/report-reveals-role-of-security-forces-in-paramilitary-massacres-in-southwestern-colombia/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Asamblea Departamental del Valle del Cauca",
+        "title": "Constancia 17 años de masacre de campesinos de Alaska, Buga, Valle del Cauca",
+        "url": "https://asamblea.valledelcauca.gov.co/publicaciones/43348/constancia-aaos-de-masacre-de-campesinos-de-alaska-buga-valle-del-cauca-suscrita-por-juan-carlos-rengifo-arboleda-diputado/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Condenan a excoronel del Ejército a 31 años de cárcel por masacre paramilitar en Buga",
+        "url": "https://www.eltiempo.com/justicia/investigacion/ejercito-condenan-a-excoronel-por-masacre-paramilitar-en-buga-842384"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Vidas Silenciadas",
+        "title": "Masacre de Buga, Valle del Cauca (octubre de 2001)",
+        "url": "https://vidassilenciadas.online/masacre-de-buga-valle-del-cauca-octubre-de-2001/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Unidad para las Víctimas",
+        "title": "Nota sobre la Masacre de Buga (2001)",
+        "url": "https://www.unidadvictimas.gov.co/wp-content/uploads/2019/10/notao-28masacre-de-buga.pdf"
+      }
+    ],
+    "_verifyIssues": [
+      "Date inaccuracy in the Spanish narrative: it says 'En 2023, el Tribunal Superior de Buga condeno al coronel...'. Multiple sources (El Tiempo 842384, El Pais, El Espectador, CAJAR, Infobae) date the Tribunal Superior de Buga conviction to January 2024 (the appellate tribunal overturned a lower-court absolution). The English narrative avoids the year ('In a subsequent judicial process'), so they are inconsistent. Fix the Spanish 'En 2023' to 'En enero de 2024' (or 'En 2024') to match the cited sources.",
+      "The Alaska episode in the narrative says paramilitaries 'reunieron a un grupo de campesinos frente al salon comunal y los fusilaron' but omits the specific source detail that 14 men were selected and lined up. Not an error (faithful and conservative), but adding 'seleccionaron a 14 hombres' would more precisely match Rutas del Conflicto.",
+      "Sources for the 2024 Amor Paez conviction are tagged tertiary (El Tiempo). Optionally add the CAJAR conviction page (colectivodeabogados.org/cajar-resalta-la-importancia-de-la-condena...) as a primary source for the verdict, since CAJAR represented the victims and is already cited for the security-force role."
+    ]
+  },
+  {
+    "key": "puerto-guzman-732572",
+    "idCaso": 732572,
+    "modality": "AB",
+    "municipioDane": 86571,
+    "date": "2022-11-19",
+    "victims": 23,
+    "responsibleHint": "FARC disidencia",
+    "disputedFigures": true,
+    "disputeNote": "La Defensoría del Pueblo confirmó oficialmente 18 muertos; el Frente Carolina Ramírez reclamó 23 en su comunicado; el CNMH registra 23. La discrepancia refleja conteos independientes de fuentes distintas sobre el mismo evento.",
+    "title": {
+      "es": "Combates entre disidencias en Puerto Guzmán, Putumayo",
+      "en": "Armed clash between FARC dissident factions in Puerto Guzmán, Putumayo"
+    },
+    "narrative": {
+      "es": "El 19 de noviembre de 2022, en las veredas Los Pinos y Las Delicias del corregimiento de José María, municipio de Puerto Guzmán (Putumayo), se registró un enfrentamiento armado entre el Frente Carolina Ramírez y los Comandos de la Frontera, ambas estructuras derivadas de las disidencias de las FARC. La Defensoría del Pueblo confirmó oficialmente 18 personas muertas; el Frente Carolina Ramírez reclamó en comunicado propio 23 bajas en cuatro horas de combate, cifra que coincide con el registro del CNMH (Total_Victimas_Caso: 23). El Ministro de Defensa Iván Velásquez señaló que estos combates buscaban asegurar control territorial de cara a eventuales diálogos de paz, mientras la Gobernación de Putumayo confirmó que la disputa involucraba a dos grupos armados ilegales que operan en esa zona. Los combates desplazaron a más de 15 familias de tres veredas aledañas. La Fiscalía desplegó investigadores al área para examinar las muertes.",
+      "en": "On November 19, 2022, in the rural settlements of Los Pinos and Las Delicias, corregimiento of José María, municipality of Puerto Guzmán (Putumayo), an armed confrontation occurred between the Carolina Ramírez Front and the Comandos de la Frontera, both structures derived from FARC dissidents. The Defensoría del Pueblo (Ombudsman's Office) officially confirmed 18 deaths; the Carolina Ramírez Front claimed in its own communiqué that 23 people were killed in four hours of fighting — the figure recorded by the CNMH (Total_Victimas_Caso: 23). Defense Minister Iván Velásquez stated that such fighting aimed to secure territorial control ahead of potential peace dialogues, and the Putumayo Governor confirmed that the clash involved two illegal armed groups operating in that sector. The fighting displaced more than 15 families from surrounding rural areas. The Prosecutor's Office deployed investigators to the scene."
+    },
+    "sources": [
+      {
+        "type": "tertiary",
+        "publisher": "Infobae",
+        "title": "Disidencias de las Farc confirmaron combates con los Comandos de Frontera en el Putumayo: aseguran que son 23 los muertos",
+        "url": "https://www.infobae.com/america/colombia/2022/11/21/disidencias-de-las-farc-confirmaron-combates-con-los-comandos-de-frontera-en-el-putumayo-aseguran-que-son-23-los-muertos/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Semana",
+        "title": "El infierno en el Putumayo: enfrentamientos entre grupos armados ilegales dejan 18 muertos, desplazamiento y terror en pobladores",
+        "url": "https://www.semana.com/nacion/articulo/enfrentamientos-entre-grupos-armados-dejan-18-muertos-en-puerto-guzman-putumayo/202215/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El País (Cali)",
+        "title": "18 personas murieron en combates entre grupos armados en Putumayo: Defensoría",
+        "url": "https://www.elpais.com.co/colombia/al-menos-18-personas-murieron-en-combates-entre-grupos-armados-en-putumayo-defensoria.html"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Colombiano",
+        "title": "Disidencias quieren mostrarse fuertes para negociar: MinDefensa tras muerte de 23 personas en Putumayo",
+        "url": "https://www.elcolombiano.com/colombia/enfrentamientos-entre-disidencias-en-putumayo-18-muertos-GD19299935"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Cambio Colombia",
+        "title": "Enfrentamientos entre disidencias de las Farc dejan más de 20 muertos en Putumayo",
+        "url": "https://cambiocolombia.com/poder/enfrentamientos-entre-disidencias-de-las-farc-dejan-mas-de-20-muertos-en-putumayo"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "InSight Crime",
+        "title": "Ex-FARC Civil War in Putumayo Tests Colombia Government's Resolve",
+        "url": "https://insightcrime.org/news/ex-farc-civil-war-in-putumayo-tests-colombia-governments-resolve/"
+      }
+    ],
+    "_unverified": true
+  },
+  {
+    "key": "remedios-439433",
+    "idCaso": 439433,
+    "modality": "MA",
+    "municipioDane": 5604,
+    "date": "1983-08-04",
+    "victims": 22,
+    "responsibleHint": "agente del Estado / paramilitar",
+    "disputedFigures": true,
+    "disputeNote": "The CNMH SIEVCAC registry records 22 victims. The CNMH report 'Silenciar la Democracia' and Rutas del Conflicto identify at least 20 by name, while noting the true toll is unknown because bodies were thrown in rivers or mutilated. The difference (22 vs. ≥20 identified) likely reflects additional victims confirmed through later investigation rather than a contradictory claim.",
+    "title": {
+      "es": "Masacre de Cañaveral y Altos de Manila",
+      "en": "Cañaveral and Altos de Manila Massacre"
+    },
+    "narrative": {
+      "es": "Entre el 4 y el 12 de agosto de 1983, un grupo armado conformado por miembros activos del Batallón de Infantería N.° 42 'Batalla de Boyacá' (conocido como Batallón Bomboná, con guarnición en Segovia) y civiles al servicio de Fidel Castaño Gil perpetró una masacre en las veredas Cañaveral y Altos de Manila del municipio de Remedios, Antioquia. Los perpetradores llegaron con listas de nombres, detuvieron a personas acusadas de pertenecer a la guerrilla, y las ejecutaron mediante armas blancas, objetos contundentes y asfixia; varios cuerpos fueron arrojados a los ríos Manila, Támar y Mulatos o mutilados, lo que impidió establecer el total exacto de víctimas. El CNMH registra 22 víctimas para este caso; Rutas del Conflicto y el informe 'Silenciar la Democracia' del CNMH identificaron al menos 20 personas (17 hombres y 3 mujeres, cuatro de ellas menores de edad). Entre las víctimas se contaban integrantes del Partido Comunista (PC) y del Movimiento Obrero Independiente y Revolucionario (MOIR), incluyendo a Jesús Emilio Zea Palacio, Jesús Restrepo Montaño, Julio César Vélez Ríos y Efraín Higuita Gallo. La masacre fue parte de una campaña sistemática de exterminio de la base social y política de la izquierda en el nordeste antioqueño documentada entre 1982 y 1997, y es analizada en profundidad en el informe del CNMH 'Silenciar la Democracia: Las masacres de Remedios y Segovia 1982-1997'.",
+      "en": "Between August 4 and 12, 1983, an armed group composed of active members of the 42nd Infantry Battalion 'Batalla de Boyacá' (Bomboná Battalion, garrisoned in Segovia) and civilians working for Fidel Castaño Gil perpetrated a massacre in the veredas of Cañaveral and Altos de Manila in the municipality of Remedios, Antioquia. Operating with prepared lists, the perpetrators detained individuals accused of guerrilla ties and killed them with bladed weapons, blunt objects, and asphyxiation; several bodies were thrown into the Manila, Támar, and Mulatos rivers or mutilated, making a definitive total impossible to establish. The CNMH registry records 22 victims for this case; the CNMH report 'Silenciar la Democracia' and Rutas del Conflicto identified at least 20 people by name (17 men and 3 women, four of them minors). Victims included members of the Communist Party (PC) and the Independent Revolutionary Labor Movement (MOIR), among them Jesús Emilio Zea Palacio, Jesús Restrepo Montaño, Julio César Vélez Ríos, and Efraín Higuita Gallo. The massacre formed part of a systematic campaign documented between 1982 and 1997 to eliminate the social and political base of the left in northeastern Antioquia, analyzed in depth in the CNMH report 'Silenciar la Democracia: Las masacres de Remedios y Segovia 1982-1997'."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Cañaveral y Altos de Manila",
+        "url": "https://rutasdelconflicto.com/masacres/canaveral-altos-manila"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+        "title": "Silenciar la Democracia: Las masacres de Remedios y Segovia 1982-1997 (PDF)",
+        "url": "https://centrodememoriahistorica.gov.co/wp-content/uploads/2020/01/Silenciar-la-Democracia-Las-Masacres-de-Remedios-y-Segovia-1982-1997.pdf"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+        "title": "Silenciar la Democracia. Las Masacres de Remedios y Segovia — página del informe",
+        "url": "https://centrodememoriahistorica.gov.co/silenciar-la-democracia-las-masacres-de-remedios-y-segovia/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "ReliefWeb / CNMH",
+        "title": "Silenciar la Democracia: Las masacres de Remedios y Segovia 1982-1997",
+        "url": "https://reliefweb.int/report/colombia/silenciar-la-democracia-las-masacres-de-remedios-y-segovia-1982-1997"
+      }
+    ],
+    "_unverified": true
+  },
+  {
+    "key": "carepa-289771",
+    "idCaso": 289771,
+    "modality": "MA",
+    "municipioDane": 5147,
+    "date": "1995-08-29",
+    "victims": 22,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "Victim counts diverge across sources: CNMH registry records 22; El Tiempo (contemporaneous press) reported 19; Rutas del Conflicto documents 16; HRW (1998) cited 15. The CNMH figure of 22 is used as the authoritative registry count; the others likely reflect counting at different stages of the incident or with different scope criteria.",
+    "title": {
+      "es": "Masacre de Los Kunas (Carepa, 1995)",
+      "en": "Los Kunas Massacre (Carepa, 1995)"
+    },
+    "narrative": {
+      "es": "El 29 de agosto de 1995, aproximadamente 30 combatientes del Frente Quinto de las FARC llegaron a la finca Los Kunas, en el corregimiento de Zungo, municipio de Carepa (Antioquia), cuando los trabajadores bananeros se disponían a iniciar su jornada laboral. Los guerrilleros identificaron a las víctimas mediante una lista, separándolas de los demás trabajadores con el llamado '¡Los de Esperanza y Comandos Populares, al frente!'. Las víctimas fueron amarradas y ejecutadas en las instalaciones de la finca. El Centro Nacional de Memoria Histórica registra 22 víctimas para este caso; Rutas del Conflicto documenta 16 muertos, Human Rights Watch reportó 15 y El Tiempo informó de 19 al día siguiente, diferencias que reflejan distintos momentos y metodologías de registro. La masacre fue atribuida a los líderes del Frente Quinto Luis Carlos Úsuga Higuita y Freddy Montalvo de la Rosa, alias 'Papujo', quien fue condenado a 28 años de prisión en 1998.",
+      "en": "On August 29, 1995, approximately 30 fighters of the FARC's Fifth Front arrived at the Los Kunas banana farm in the Zungo district of Carepa, Antioquia, as plantation workers were beginning their shift. Guerrilla members identified victims from a prepared list, separating them from coworkers by calling out members of the Esperanza, Paz y Libertad movement and the Comandos Populares. The victims were bound and executed on the farm's grounds. The CNMH registry records 22 victims for this case; Rutas del Conflicto documents 16 deaths, Human Rights Watch reported 15, and El Tiempo reported 19 in contemporaneous coverage — differences reflecting varying registration moments and methodologies. Responsibility was attributed to Fifth Front commanders Luis Carlos Úsuga Higuita and Freddy Montalvo de la Rosa, alias 'Papujo', who was sentenced to 28 years in prison in October 1998."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Los Kunas",
+        "url": "https://rutasdelconflicto.com/masacres/los-kunas"
+      },
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Seis semanas de dolor en Urabá",
+        "url": "https://rutasdelconflicto.com/especiales/uraba.html"
+      },
+      {
+        "type": "primary",
+        "publisher": "Human Rights Watch",
+        "title": "Colombia's Killer Networks — Guerrilla Violations of International Humanitarian Law",
+        "url": "https://www.hrw.org/legacy/reports98/colombia/Colom989-05.htm"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Así fue la masacre de Los Kunas",
+        "url": "https://www.eltiempo.com/archivo/documento/MAM-472024"
+      }
+    ],
+    "_verifyIssues": [
+      "English narrative paraphrases the selection shout as 'calling out members of the Esperanza, Paz y Libertad movement and the Comandos Populares' and drops the quotation marks, whereas the Spanish preserves the verbatim quote. Keeping the quoted phrase in English would give parity.",
+      "Usuga Higuita's alias 'Jacobo Arango' (per the Rutas Uraba special) is omitted; optional enrichment, not an error.",
+      "Optional context: the event sits within a documented August-1995 Uraba massacre cluster (El Aracatazo on Aug 12, Bajo el Oso on Sep 20); a one-line note could aid the reader but is not required."
+    ]
+  },
+  {
+    "key": "la-macarena-28809",
+    "idCaso": 28809,
+    "modality": "AB",
+    "municipioDane": 50350,
+    "date": "2010-09-22",
+    "victims": 22,
+    "responsibleHint": "agente del Estado",
+    "disputedFigures": true,
+    "disputeNote": "CNMH-SIEVCAC records 22 victims; Comisión de la Verdad states 21 (Mono Jojoy + 20 guerrilleros); Wikipedia ES and initial military press releases cited 20 FARC killed. The discrepancy likely reflects different counting methodologies (whether the 2 military fatalities are included, and whether all identified bodies were counted).",
+    "title": {
+      "es": "Operación Sodoma — muerte de Mono Jojoy, La Macarena",
+      "en": "Operation Sodoma — death of Mono Jojoy, La Macarena"
+    },
+    "narrative": {
+      "es": "El 22 de septiembre de 2010, las Fuerzas Militares de Colombia ejecutaron la Operación Sodoma en la vereda La Escalera, Serranía de La Macarena, municipio de La Macarena (Meta), contra el campamento central de las FARC-EP. La operación combinó tres oleadas de bombardeo aéreo de la Fuerza Aérea Colombiana con un asalto terrestre de aproximadamente 800 efectivos del Ejército, infantes de marina de la Armada Nacional y la Policía Nacional, transportados en más de 30 helicópteros. En el operativo fue abatido Víctor Julio Suárez Rojas, alias 'Mono Jojoy', comandante militar de las FARC-EP y jefe del Bloque Oriental. El CNMH-SIEVCAC registra 22 víctimas para este caso; la Comisión de la Verdad documenta 21 muertos (Mono Jojoy más 20 guerrilleros), y fuentes militares oficiales reportaron inicialmente 20 guerrilleros caídos. Las Fuerzas Militares reportaron entre dos y cinco soldados heridos y la pérdida de una perra antiexplosivos ('Sasha').",
+      "en": "On September 22, 2010, Colombia's Armed Forces carried out Operation Sodoma in the La Escalera rural area of the Serranía de La Macarena, municipality of La Macarena (Meta), targeting the FARC-EP's central encampment. The operation combined three waves of air bombardment by the Colombian Air Force with a ground assault by approximately 800 troops from the Army, Armada Nacional marine infantry, and National Police, transported in over 30 helicopters. Víctor Julio Suárez Rojas, alias 'Mono Jojoy' — military commander of the FARC-EP and head of the Eastern Bloc — was killed in the operation. The CNMH-SIEVCAC registry records 22 victims for this case; the Comisión de la Verdad documents 21 dead (Mono Jojoy plus 20 guerrillas), while official military sources initially reported 20 guerrilla combatants killed. Colombian forces reported between two and five soldiers wounded and the loss of an explosives-detection dog ('Sasha')."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Comisión de la Verdad (Colombia)",
+        "title": "La Operación Sodoma",
+        "url": "https://www.comisiondelaverdad.co/la-operacion-sodoma"
+      },
+      {
+        "type": "primary",
+        "publisher": "Fuerza Aérea Colombiana",
+        "title": "Golpe estratégico al corazón de las Farc",
+        "url": "https://www.fac.mil.co/es/noticias/golpe-estrategico-al-corazon-de-las-farc"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Operación Sodoma",
+        "url": "https://es.wikipedia.org/wiki/Operaci%C3%B3n_Sodoma"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Revista Semana",
+        "title": "Así fue la operación 'Sodoma' que dio muerte a 'Jojoy'",
+        "url": "https://www.semana.com/nacion/articulo/asi-fue-la-operacion-sodoma-que-dio-muerte-a-jojoy/122357/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Así fue Sodoma, el operativo militar en el que murió el Mono Jojoy",
+        "url": "https://www.eltiempo.com/justicia/conflicto-y-narcotrafico/asi-fue-sodoma-el-operativo-militar-en-el-que-murio-el-mono-jojoy-271638"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Así se planeó y ejecutó la Operación 'Sodoma'",
+        "url": "https://www.eltiempo.com/archivo/documento/CMS-7960880"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Noticias RCN",
+        "title": "Operación Sodoma: 10 años después del operativo que puso fin a la leyenda del 'Mono Jojoy'",
+        "url": "https://www.noticiasrcn.com/colombia/operacion-sodoma-10-anos-despues-del-operativo-que-puso-fin-a-la-leyenda-del-mono-jojoy-363202"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Infobae Colombia",
+        "title": "Así murió el Mono Jojoy: detalles del operativo que acabó con la vida del comandante de las FARC",
+        "url": "https://www.infobae.com/colombia/2023/09/15/asi-murio-el-mono-jojoy-los-detalles-del-operativo-que-acabo-con-la-vida-del-comandante-de-las-farc/"
+      }
+    ],
+    "_verifyIssues": [
+      "'Between two and five soldiers wounded' understates the consistently reported figure of five wounded; tighten to 'five wounded'.",
+      "Sources (Wikipedia citing Semana) report two soldiers KILLED in addition to wounded; the draft mentions only wounded soldiers and omits the reported soldier deaths — add or note this.",
+      "Semana places the camp ~26 km from La Julia/La Uribe inspection; the operation straddles the La Macarena/Uribe area. Coded municipality (La Macarena) is supported by CdV/FAC, but a curator note on the Uribe-adjacency would improve precision.",
+      "The narrative's specific casualty framing leans on tertiary press for some figures (helicopter count, wave count); these are corroborated across multiple outlets but are not in the two cited primary sources — consider adding the Comisión de la Verdad/scholarship as the anchor for the death toll."
+    ]
+  },
+  {
+    "key": "yolombo-439527",
+    "idCaso": 439527,
+    "modality": "MA",
+    "municipioDane": 5890,
+    "date": "1999-08-31",
+    "victims": 21,
+    "responsibleHint": "AUC / Bloque Metro",
+    "disputedFigures": true,
+    "disputeNote": "CNMH registers 21 victims. The AUC's own communiqué attributed 16 deaths to paramilitary action and 5 to alleged guerrilla retaliation. Wikipedia's annex lists 19. The CNMH figure of 21 is used as the authoritative count.",
+    "title": {
+      "es": "Masacre de Yolombó (agosto-septiembre 1999)",
+      "en": "Yolombó Massacre (August–September 1999)"
+    },
+    "narrative": {
+      "es": "Entre el 31 de agosto y el 1 de septiembre de 1999, más de doscientos paramilitares del Bloque Metro de las Autodefensas Unidas de Colombia incursionaron en varias veredas del municipio de Yolombó, Antioquia — entre ellas Altos de Café, Platanillo, San Nicolás, Brazuelo y Pantanillo. El CNMH registra 21 víctimas campesinas; en su propio comunicado, el grupo armado atribuyó 16 muertes a sus acciones y cinco a una supuesta retaliación guerrillera, cifra que no coincide con el registro oficial. Los paramilitares sacaron a las víctimas a la fuerza de sus hogares, las torturaron y las ejecutaron en carreteras veredales; un informante encapuchado señalaba a los pobladores. La operación fue ordenada por Carlos Mauricio García Fernández, alias 'Doble Cero', jefe del Bloque Metro y exmilitar, bajo el pretexto de que guerrilleros de las FARC y el ELN se refugiaban en la zona. Los cuerpos fueron hallados en una fosa común el 2 de septiembre; entre las víctimas había una mujer de 19 años y un anciano de 70. En 2011, dos exintegrantes del Bloque Metro aceptaron cargos ante el Juzgado Primero Penal del Circuito Especializado de Antioquia en el marco de Justicia y Paz; en julio de 2019, Gabriel Muñoz Ramírez, alias 'Castañeda', fue condenado a 43 años de prisión por estos hechos.",
+      "en": "Between August 31 and September 1, 1999, more than two hundred paramilitaries from the Metro Bloc of the Autodefensas Unidas de Colombia (AUC) raided several rural districts of Yolombó, Antioquia — including Altos de Café, Platanillo, San Nicolás, Brazuelo, and Pantanillo. The CNMH registry records 21 peasant victims; the armed group's own communiqué attributed 16 deaths to its own actions and five to alleged guerrilla retaliation, a figure that does not match the official registry. Paramilitaries forcibly removed victims from their homes, tortured them, and executed them along rural roads, guided by a hooded informant who identified residents. The operation was ordered by Carlos Mauricio García Fernández, alias 'Doble Cero', Metro Bloc commander and former military officer, on the pretext that FARC and ELN guerrillas were sheltering in the area. The bodies were found in a common grave on September 2; among the victims were a 19-year-old woman and a 70-year-old man. In 2011, two former Metro Bloc members accepted charges before the First Criminal Court of the Specialized Circuit of Antioquia under the Justice and Peace framework; in July 2019, Gabriel Muñoz Ramírez, alias 'Castañeda', was sentenced to 43 years in prison for these acts."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Yolombó 1999",
+        "url": "https://rutasdelconflicto.com/masacres/yolombo-1999"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Colombiano",
+        "title": "Condenan a 43 años a paramilitar por masacre de Yolombó Antioquia",
+        "url": "https://www.elcolombiano.com/antioquia/seguridad/condenan-a-43-anos-a-paramilitar-por-masacre-de-yolombo-antioquia-GL11298835"
+      },
+      {
+        "type": "primary",
+        "publisher": "OHCHR Colombia (ONU-DH)",
+        "title": "El Bloque Metro llevó el terror a Yolombó",
+        "url": "https://www.hchr.org.co/noticias/el-bloque-metro-llevo-el-terror-a-yolombo/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Anexo: Masacres atribuidas a las AUC",
+        "url": "https://es.wikipedia.org/wiki/Anexo:Masacres_atribuidas_a_las_AUC"
+      }
+    ],
+    "_verifyIssues": [
+      "The OHCHR URL https://www.hchr.org.co/noticias/el-bloque-metro-llevo-el-terror-a-yolombo/ returned a TLS 'unable to verify the first certificate' error on direct WebFetch; its content was corroborated via search-index snapshots instead. Confirm the cert/URL resolves in a normal browser before publishing, since it is one of three load-bearing primary sources.",
+      "The El Colombiano 43-year article and the OHCHR page both support the 16-vs-5 communique claim, but the draft does not explicitly anchor which source carries it. Consider attributing that sentence inline for traceability.",
+      "Wikipedia 'Anexo: Masacres atribuidas a las AUC' (tertiary) is a weak source; it is additive, not load-bearing, but could be dropped or replaced with the CNMH Basta Ya report for stronger backing."
+    ]
+  },
+  {
+    "key": "bogota-d-c-532770",
+    "idCaso": 532770,
+    "modality": "AT",
+    "municipioDane": 11001,
+    "date": "2019-01-17",
+    "victims": 20,
+    "responsibleHint": "ELN",
+    "disputedFigures": true,
+    "disputeNote": "CNMH records 20 victims; press and judicial sources report 21–22 fatalities, with the discrepancy arising from whether the perpetrator (Rojas Rodríguez) is counted among the dead. The narrative uses the CNMH figure of 20 as the registry's authoritative count.",
+    "title": {
+      "es": "Atentado a la Escuela de Cadetes de Policía General Santander",
+      "en": "General Santander Police Cadet School bombing"
+    },
+    "narrative": {
+      "es": "El 17 de enero de 2019, un hombre armado con explosivos ingresó en una camioneta Nissan Patrol cargada con aproximadamente 80 kilogramos de pentolita a las instalaciones de la Escuela de Cadetes de Policía General Santander, en el sur de Bogotá, y detonó el vehículo. El CNMH registra 20 víctimas en el caso; las fuentes de prensa y judiciales reportan entre 21 y 22 muertos según si se contabiliza al atacante, además de 68 heridos. El autor material fue identificado por la Fiscalía General de la Nación como José Aldemar Rojas Rodríguez, miembro del ELN con experticia en explosivos. El gobierno colombiano atribuyó el atentado al Ejército de Liberación Nacional (ELN), responsabilidad que la propia organización reconoció públicamente. La Comisión de la Verdad emitió un comunicado condenando el ataque y señalando que la violencia contra la población civil contradice cualquier proyecto de paz. El atentado marcó el fin de las negociaciones de paz entre el gobierno y el ELN y derivó en múltiples procesos judiciales, con condenas a participantes en la financiación y logística de la operación.",
+      "en": "On January 17, 2019, an armed individual drove a Nissan Patrol truck loaded with approximately 80 kilograms of pentolite into the General Santander Police Cadet School in southern Bogotá and detonated the vehicle. The CNMH registry records 20 victims for this case; press and judicial sources report between 21 and 22 fatalities depending on whether the perpetrator is included, plus 68 wounded. The material perpetrator was identified by the Fiscalía General de la Nación as José Aldemar Rojas Rodríguez, an ELN member and explosives expert. The Colombian government attributed the attack to the Ejército de Liberación Nacional (ELN), responsibility the organization publicly acknowledged. The Comisión de la Verdad issued a statement condemning the attack and noting that violence against the population contradicts any peace project. The bombing ended peace negotiations between the government and the ELN and led to multiple criminal proceedings, with convictions handed down for participants in the financing and logistics of the operation."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Comisión de la Verdad Colombia",
+        "title": "Comunicado sobre el atentado contra la Policía Nacional en la Escuela General Santander",
+        "url": "https://web.comisiondelaverdad.co/actualidad/comunicados-y-declaraciones/comunicado-sobre-el-atentado-contra-la-policia-nacional-en-la-escuela-cadetes-general-santander"
+      },
+      {
+        "type": "primary",
+        "publisher": "Misión de Verificación de la ONU en Colombia",
+        "title": "Comunicado de Prensa del Consejo de Seguridad sobre el atentado en Bogotá",
+        "url": "https://colombia.unmissions.org/comunicado-de-prensa-del-consejo-de-seguridad-sobre-el-atentado-en-bogot%C3%A1"
+      },
+      {
+        "type": "primary",
+        "publisher": "Bogota.gov.co / Fiscalía General de la Nación",
+        "title": "46 años de condena a hombre por atentado a Escuela General Santander",
+        "url": "https://bogota.gov.co/mi-ciudad/seguridad/46-anos-de-condena-hombre-por-atentado-escuela-general-santander"
+      },
+      {
+        "type": "primary",
+        "publisher": "Procuraduría General de la Nación",
+        "title": "Procuraduría abrió investigación contra dos generales por atentado contra la Escuela de Cadetes Francisco de Paula Santander",
+        "url": "https://apps.procuraduria.gov.co/portal/Procuraduria-abrio-investigacion-contra-dos-generales-por-atentado-contra-la-Escuela-de-Cadetes--Francisco-de-Paula-Santander.news"
+      },
+      {
+        "type": "scholarship",
+        "publisher": "Combating Terrorism Center at West Point",
+        "title": "The ELN's Attack on the National Police Academy in Bogotá and Its Implications",
+        "url": "https://ctc.westpoint.edu/elns-attack-national-police-academy-bogota-implications/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (español)",
+        "title": "Atentado de Bogotá de 2019",
+        "url": "https://es.wikipedia.org/wiki/Atentado_de_Bogot%C3%A1_de_2019"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (English)",
+        "title": "2019 Bogotá car bombing",
+        "url": "https://en.wikipedia.org/wiki/2019_Bogot%C3%A1_car_bombing"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "ELN admite ser responsable del atentado a Escuela de Cadetes General Santander",
+        "url": "https://www.eltiempo.com/justicia/delitos/eln-admite-ser-responsable-del-atentado-a-escuela-de-cadetes-general-santander-316910"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Semana",
+        "title": "Por atentado a la Escuela General Santander, Fiscalía anuncia capturas",
+        "url": "https://www.semana.com/nacion/articulo/por-atentado-a-la-escuela-general-santander-fiscalia-anuncia-capturas/683441/"
+      }
+    ],
+    "_verifyIssues": [
+      "Alias 'Mocho'/'Kiko' for Jose Aldemar Rojas Rodriguez was not confirmed in the fetched sources (West Point CTC names him without that alias). Verify the alias against a cited source or drop it.",
+      "Two primary-source WebFetch calls failed transiently (ECONNREFUSED on Comision de la Verdad; 404 then OK on UN Mission). Both URLs were confirmed live and on-topic via web search, but the Comision de la Verdad communique could not be directly fetched at review time - recommend a re-fetch to confirm content before publishing.",
+      "The Comision de la Verdad statement (per search snippet) referenced 'nine young people dead and 54 wounded' in one rendering, while other passages cite 22 dead / 54-73 wounded. Casualty figures vary across sources; the draft's 'disputedFigures' handling covers this, but ensure the Comision de la Verdad citation is not mischaracterized."
+    ]
+  },
+  {
+    "key": "caloto-289370",
+    "idCaso": 289370,
+    "modality": "MA",
+    "municipioDane": 19142,
+    "date": "1991-12-16",
+    "victims": 20,
+    "responsibleHint": "paramilitar",
+    "disputedFigures": true,
+    "disputeNote": "The CNMH registry records 20 victims. Rutas del Conflicto records 21. The Comisión de la Verdad and CAJAR cite approximately 20. The one-victim discrepancy likely reflects whether a victim who died later from wounds is counted; no source disputes the scale or nature of the event.",
+    "title": {
+      "es": "Masacre de El Nilo (Masacre de Caloto)",
+      "en": "El Nilo Massacre (Caloto Massacre)"
+    },
+    "narrative": {
+      "es": "El 16 de diciembre de 1991, un grupo armado irrumpió en la hacienda El Nilo, en el corregimiento El Palo del municipio de Caloto (Cauca), donde miembros de la comunidad indígena Nasa del resguardo de Huellas se habían asentado en el marco de sus procesos de recuperación territorial. El CNMH registra 20 víctimas fatales; Rutas del Conflicto y otras fuentes mencionan 21. Los atacantes, en número indeterminado, llegaron entre las 9:00 y las 9:30 de la noche, reunieron a los presentes, incendiaron sus ranchos y ejecutaron a las víctimas en el suelo. El registro del CNMH clasifica al perpetrador como grupo armado no identificado; sin embargo, investigaciones judiciales y la Comisión Interamericana de Derechos Humanos (CIDH) atribuyeron la autoría material a paramilitares dirigidos por Fidel Castaño y a miembros de la Policía Nacional (entre ellos el mayor Jorge Enrique Durán Argüelles y el capitán Fabio Alejandro Castañeda Mateus), con participación de terratenientes de la región. En 1995 el Estado colombiano reconoció su responsabilidad ante la CIDH; pese a ello, los autores intelectuales permanecen sin condena. El caso es referencia central en la jurisprudencia sobre impunidad frente a crímenes contra pueblos indígenas en Colombia.",
+      "en": "On December 16, 1991, an armed group stormed the El Nilo hacienda in the El Palo corregimiento of Caloto municipality (Cauca), where members of the Nasa indigenous community of the Huellas reservation had settled as part of their land-recovery efforts. The CNMH registry records 20 victims; Rutas del Conflicto and other sources cite 21. Arriving between 9:00 and 9:30 p.m., the attackers gathered those present, set fire to their dwellings, and executed the victims on the ground. The CNMH record classifies the perpetrator as an unidentified armed group; however, judicial investigations and the Inter-American Commission on Human Rights (IACHR) attributed material authorship to paramilitaries led by Fidel Castaño and to members of the National Police — including Major Jorge Enrique Durán Argüelles and Captain Fabio Alejandro Castañeda Mateus — acting alongside regional landowners. In 1995 the Colombian State formally acknowledged its responsibility before the IACHR; nonetheless, the intellectual authors have never been convicted. The case stands as a landmark reference in jurisprudence on impunity for crimes against indigenous peoples in Colombia."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de El Nilo",
+        "url": "https://rutasdelconflicto.com/masacres/el-nilo"
+      },
+      {
+        "type": "primary",
+        "publisher": "Comisión de la Verdad",
+        "title": "Pueblo Nasa: la Masacre del Nilo o Masacre de Caloto",
+        "url": "https://www.comisiondelaverdad.co/pueblo-nasa-la-masacre-del-nilo-o-masacre-de-caloto"
+      },
+      {
+        "type": "primary",
+        "publisher": "Colectivo de Abogados José Alvear Restrepo (CAJAR)",
+        "title": "17 Cosas que no sabía sobre la Masacre de Caloto y la actuación del CAJAR",
+        "url": "https://www.colectivodeabogados.org/17-cosas-que-no-sabia-sobre-la-masacre-de-caloto-y-la-actuacion-del-cajar/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Consejo Regional Indígena del Cauca (CRIC)",
+        "title": "Masacre del Nilo, crónica de la impunidad",
+        "url": "https://www.cric-colombia.org/portal/masacre-del-nilo-cronica-de-la-impunidad/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Arco Iris",
+        "title": "La masacre de Caloto: crónica de una vergonzosa impunidad",
+        "url": "https://arcoiris.com.co/2014/12/la-masacre-de-caloto-cronica-de-una-vergonzosa-impunidad/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "Caloto: una masacre impune",
+        "url": "https://www.elespectador.com/judicial/caloto-una-masacre-impune-article-512267/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Masacre de El Nilo",
+        "url": "https://es.wikipedia.org/wiki/Masacre_de_El_Nilo"
+      }
+    ],
+    "_verifyIssues": [
+      "Minor corroboration gap: the narrative detail 'incendiaron sus ranchos' (burned their dwellings) is supported by the Rutas del Conflicto / broader record but the CRIC page I fetched did not explicitly mention burned structures (it emphasizes firearms and bladed weapons). Detail is plausible and within the canonical Rutas account; consider confirming against the full Rutas text or softening if not directly cited.",
+      "The precise attack window '9:00 a 9:30 de la noche' was not explicitly confirmed in the fetched summaries (CRIC only says 'night of December 16'); it likely traces to Rutas del Conflicto but was not directly verified in this pass. Low-risk but worth a final spot-check against the Rutas article body."
+    ]
+  },
+  {
+    "key": "el-tarra-290736",
+    "idCaso": 290736,
+    "modality": "MA",
+    "municipioDane": 54250,
+    "date": "2000-02-16",
+    "victims": 20,
+    "responsibleHint": "AUC",
+    "disputedFigures": false,
+    "disputeNote": null,
+    "title": {
+      "es": "Masacre de El Tarra (febrero de 2000)",
+      "en": "El Tarra Massacre (February 2000)"
+    },
+    "narrative": {
+      "es": "El 16 de febrero de 2000, paramilitares del Bloque Catatumbo de las Autodefensas Unidas de Colombia (AUC), bajo el mando operativo de Armando Alberto Pérez Betancur, alias 'Camilo', asesinaron a 20 personas en el municipio de El Tarra, Norte de Santander, según el Registro Único de Víctimas del CNMH. Tras los asesinatos, los perpetradores desmembraron los cuerpos y los arrojaron al río Catatumbo. Los paramilitares amenazaron luego a los habitantes del corregimiento de Filo Gringo, dentro del mismo municipio, ordenándoles abandonar sus tierras en pocas horas; la mayoría de la población huyó y sus viviendas fueron incendiadas. El desplazamiento afectó a 117 familias del área urbana y 22 veredas, donde vivían aproximadamente 5.000 personas. En 2007, el Consejo de Estado condenó al Estado colombiano a pagar 13.000 millones de pesos a las familias desplazadas. En noviembre de 2024, la Sala de Justicia y Paz del Tribunal Superior de Barranquilla condenó a Salvatore Mancuso, máximo jefe del Bloque Catatumbo, por su responsabilidad en más de mil crímenes cometidos en Norte de Santander entre 1999 y 2004, incluyendo las masacres perpetradas en El Tarra.",
+      "en": "On February 16, 2000, paramilitaries of the Bloque Catatumbo of the Autodefensas Unidas de Colombia (AUC), under the operational command of Armando Alberto Pérez Betancur, alias 'Camilo', killed 20 people in the municipality of El Tarra, Norte de Santander, according to the CNMH's Unified Victim Registry. After the killings, the perpetrators dismembered the bodies and threw them into the Catatumbo River. The paramilitaries then threatened residents of the Filo Gringo settlement within the same municipality, ordering them to abandon their land within hours; most of the population fled and their homes were burned. The displacement affected 117 families from the urban area and 22 rural communities, where approximately 5,000 people normally lived. In 2007, the Colombian Council of State sentenced the Colombian State to pay 13 billion pesos to the displaced families. In November 2024, the Justicia y Paz Chamber of the Superior Court of Barranquilla convicted Salvatore Mancuso, supreme commander of the Bloque Catatumbo, for his responsibility in more than a thousand crimes committed in Norte de Santander between 1999 and 2004, including the massacres perpetrated in El Tarra."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Tarra, febrero de 2000",
+        "url": "https://rutasdelconflicto.com/masacres/tarra-febrero-2000"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica",
+        "title": "El Tarra: Una guerra que no cesa",
+        "url": "https://centrodememoriahistorica.gov.co/el-tarra-una-guerra-que-no-cesa/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Paramilitares cercan El Tarra",
+        "url": "https://www.eltiempo.com/archivo/documento/MAM-1305335"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Infobae Colombia",
+        "title": "Condenaron a Salvatore Mancuso y otros 45 exintegrantes de las Autodefensas por crímenes cometidos en Norte de Santander",
+        "url": "https://www.infobae.com/colombia/2024/11/27/condenaron-a-salvatore-mancuso-y-otros-45-exintegrantes-de-las-autodefensas-por-crimenes-cometidos-en-norte-de-santander/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Anexo: Masacres atribuidas a las AUC",
+        "url": "https://es.wikipedia.org/wiki/Anexo:Masacres_atribuidas_a_las_AUC"
+      }
+    ],
+    "_verifyIssues": [
+      "El Tiempo URL MAM-1305335 is dated Feb 29 2000 and covers the Filo Gringo burning/displacement aftermath, not the Feb 16 massacre itself — the source is legitimately related to the episode but does not directly corroborate the massacre date or victim count.",
+      "The specific attribution of 'Camilo' as operational commander of the Feb 16 massacre (as opposed to the broader Catatumbo campaign) is sourced solely to Rutas del Conflicto; the CNMH source names only Mancuso and the Bloque Catatumbo without naming Camilo in connection with this specific date.",
+      "The Council of State ruling benefited 538 named residents; the narrative says only 'familias desplazadas' without that precision — technically accurate but underdescribed."
+    ]
+  },
+  {
+    "key": "taraza-397096",
+    "idCaso": 397096,
+    "modality": "AP",
+    "municipioDane": 5790,
+    "date": "2001-04-15",
+    "victims": 20,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "CNMH records 20 victims; Rutas del Conflicto documents 19 deaths; El Tiempo's contemporaneous report (April 2001) counted at least 12 in the corregimiento and surrounding rural areas. The divergence likely reflects different scope (corregimiento vs. broader municipal area) and timing of reporting.",
+    "title": {
+      "es": "Masacre de La Caucana",
+      "en": "La Caucana Massacre"
+    },
+    "narrative": {
+      "es": "El 15 de abril de 2001, Domingo de Resurrección, cerca de 800 guerrilleros de los frentes 5, 18 y 36 del Bloque José María Córdoba de las FARC tomaron el corregimiento de La Caucana, en el municipio de Tarazá (Antioquia), acusando a sus habitantes de colaborar con grupos paramilitares. El CNMH registra 20 víctimas para este caso; Rutas del Conflicto documenta 19 personas muertas, mientras que El Tiempo reportó en su momento al menos 12 muertos directamente en el casco urbano y veredas aledañas. Los atacantes quemaron viviendas, establecimientos comerciales y vehículos, y saquearon el puesto de salud sustrayendo equipos médicos y mulas de carga. El ataque provocó el desplazamiento forzado de numerosas familias hacia Montelíbano (Córdoba) y otras zonas del municipio. Hasta la fecha, ningún actor del conflicto ha sido condenado por estos hechos.",
+      "en": "On April 15, 2001, Easter Sunday, approximately 800 guerrillas from FARC Fronts 5, 18, and 36 of the Bloque José María Córdoba occupied the corregimiento of La Caucana in the municipality of Tarazá, Antioquia, accusing residents of collaborating with paramilitary groups. The CNMH registry records 20 victims for this case; Rutas del Conflicto documents 19 deaths, while El Tiempo reported at least 12 killed in and around the settlement at the time. Attackers burned homes, commercial establishments, and vehicles, and looted the local health post, stealing medical equipment and pack animals. The attack triggered the forced displacement of numerous families toward Montelíbano (Córdoba) and other parts of the municipality. To date, no armed actor has been convicted for these acts."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de La Caucana",
+        "url": "https://rutasdelconflicto.com/masacres/la-caucana"
+      },
+      {
+        "type": "primary",
+        "publisher": "Unidad para las Víctimas (Colombia)",
+        "title": "Conmemoración: 15 de abril de 2001, corregimiento de La Caucana, Tarazá, Antioquia",
+        "url": "https://www.facebook.com/unidadvictimas/posts/el-15-de-abril-de-2001-el-corregimiento-de-la-caucana-en-taraz%C3%A1-antioquia-vivi%C3%B3-/1387896863384049/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Sangre y fuego en La Caucana",
+        "url": "https://www.eltiempo.com/archivo/documento/MAM-550996"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Anexo: Masacres atribuidas a las FARC-EP",
+        "url": "https://es.wikipedia.org/wiki/Anexo:Masacres_atribuidas_a_las_FARC-EP"
+      }
+    ],
+    "_verifyIssues": [
+      "Mild over-characterization: the narrative says FARC accused residents of 'colaborar con grupos paramilitares'. The cited sources frame the event as FARC-AUC combat over coca territory; the explicit 'accusing residents of collaborating' framing is not directly supported and reads stronger than the sources warrant. Consider softening or sourcing it.",
+      "Framing: Rutas describes the 19 resident deaths in the context of an armed clash between FARC and a paramilitary group, not purely a one-sided massacre. The draft's massacre framing is defensible (and matches CNMH/Unidad coding) but slightly flattens that combat context.",
+      "El Tiempo dates the event April 17, 2001 (not the coded/Rutas April 15). The draft only cites El Tiempo for the '12 killed' figure and does not surface this date discrepancy; harmless as written but worth a note since the same source disagrees on the date."
+    ]
+  },
+  {
+    "key": "puerto-leguizamo-330494",
+    "idCaso": 330494,
+    "modality": "SE",
+    "municipioDane": 86573,
+    "date": "1996-08-30",
+    "victims": 20,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "CNMH SIEVCAC (IdCaso 330494) records 20 kidnapping victims. Multiple independent primary and tertiary sources (Museo de Memoria de Colombia, Wikipedia, CGFM) report 60–80 soldiers kidnapped during the Las Delicias attack. The divergence likely reflects CNMH event segmentation rather than a factual disagreement about the overall operation.",
+    "title": {
+      "es": "Secuestro en la toma a la base militar de Las Delicias",
+      "en": "Kidnapping at the Las Delicias military base attack"
+    },
+    "narrative": {
+      "es": "El 30 de agosto de 1996, aproximadamente 450 guerrilleros del Bloque Sur de las FARC-EP atacaron la base militar de Las Delicias, ubicada en la zona rural de Puerto Leguízamo, Putumayo. Durante el asalto nocturno fueron asesinados 27 soldados y un número de efectivos fue retenido como rehenes; el CNMH SIEVCAC registra 20 víctimas de secuestro en este caso. Fuentes independientes —entre ellas el Museo de Memoria de Colombia y la Wikipedia— reportan entre 60 y 80 soldados secuestrados en total, cifra que puede reflejar una segmentación distinta del evento en los registros. Los militares permanecieron en cautiverio aproximadamente diez meses, en condiciones de desnutrición y enfermedad, hasta su liberación el 15 de junio de 1997 en Cartagena del Chairá, Caquetá, tras la desmilitarización de 13.661 km² acordada con el gobierno de Ernesto Samper. El evento es investigado por la JEP en el Macrocaso 01 sobre toma de rehenes y privaciones graves de la libertad cometidas por las FARC-EP.",
+      "en": "On August 30, 1996, approximately 450 guerrillas of the FARC-EP's Southern Bloc attacked the Las Delicias military base in a rural area of Puerto Leguízamo, Putumayo. During the nighttime assault, 27 soldiers were killed and a number of personnel were taken hostage; the CNMH SIEVCAC registry records 20 kidnapping victims for this case entry. Independent sources — including the Museo de Memoria de Colombia and Wikipedia — report between 60 and 80 soldiers kidnapped in total, a figure that may reflect different partitioning of the event across registry records. The captives were held for approximately ten months under conditions of malnutrition and disease before being released on June 15, 1997, in Cartagena del Chairá, Caquetá, following the demilitarization of 13,661 km² negotiated with President Ernesto Samper's government. The event is under investigation by the JEP in Macro Case 01 on hostage-taking and serious deprivations of liberty committed by the FARC-EP."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Jurisdicción Especial para la Paz (JEP)",
+        "title": "Caso 01: Toma de rehenes, graves privaciones de la libertad y otros crímenes concurrentes cometidos por las Farc-EP",
+        "url": "https://www.jep.gov.co/macrocasos/caso01.html"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+        "title": "Recuerdos de selva — Línea de tiempo del secuestro",
+        "url": "https://centrodememoriahistorica.gov.co/micrositios/recuerdos-de-selva/linea-tiempo.html"
+      },
+      {
+        "type": "primary",
+        "publisher": "Museo de Memoria de Colombia",
+        "title": "Las Delicias (1996)",
+        "url": "https://museodememoria.gov.co/bga/delicias.html"
+      },
+      {
+        "type": "primary",
+        "publisher": "Consejo de Estado de Colombia",
+        "title": "BASE MILITAR LAS DELICIAS — Lesiones y secuestro (Acción de reparación directa)",
+        "url": "https://www.consejodeestado.gov.co/documentos/didh/despacho%20Hernan%20Andrade%20(E)/Caso%20Homicidio%20y%20lesiones%20a%20fuerza%20p%C3%BAblica%20en%20condiciones%20de%20indefensi%C3%B3n%20y%20abandono%20estatal,%20Tao%20Tovar.pdf"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Wikipedia (es)",
+        "title": "Toma de la base militar de Las Delicias",
+        "url": "https://es.wikipedia.org/wiki/Toma_de_la_base_militar_de_Las_Delicias"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Comando General de las Fuerzas Militares de Colombia",
+        "title": "26 años de la masacre de Las Delicias en Putumayo",
+        "url": "https://www.cgfm.mil.co/es/multimedia/noticias/26-anos-de-la-masacre-de-las-delicias-en-putumayo"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "Sobrevivientes del secuestro de Las Delicias reabren sus cicatrices para encontrar justicia",
+        "url": "https://www.elespectador.com/justicia-inclusiva/sobrevivientes-del-secuestro-de-las-delicias-reabren-sus-cicatrices-para-encontrar-justicia/"
+      }
+    ],
+    "_verifyIssues": [
+      "The JEP Caso 01 landing page (caso01.html) describes the macrocase scope (FARC hostage-taking) but does not name Las Delicias specifically. The draft's claim that the event 'es investigado por la JEP en el Macrocaso 01' is accurate as case-scope framing, and soldiers from Las Delicias did testify before Caso 01 per press reporting (El Tiempo), but the cited JEP URL itself is general rather than event-specific. Consider adding the El Tiempo testimony piece as the event-specific JEP corroboration.",
+      "Demilitarization area figure varies across sources (CNMH/draft: 13.661 km2; one press account: 13,162 km2; El Tiempo headline: ~14,000 km2). The draft's number is correctly sourced to CNMH, but given the spread, consider noting it is the CNMH figure or that estimates vary.",
+      "Minor date nuance: the attack is dated Aug 30, 1996 (matching coded record), but some sources frame it as Aug 30-31 (17-hour combat into the next day) and the CNMH page header reads Aug 31. Not an error in the draft, just a known source discrepancy worth being aware of."
+    ]
+  },
+  {
+    "key": "calima-291361",
+    "idCaso": 291361,
+    "modality": "MA",
+    "municipioDane": 76126,
+    "date": "2001-08-22",
+    "victims": 19,
+    "responsibleHint": "AUC",
+    "disputedFigures": false,
+    "disputeNote": null,
+    "title": {
+      "es": "Masacre de Calima el Darién",
+      "en": "Calima el Darién Massacre"
+    },
+    "narrative": {
+      "es": "El 22 de agosto de 2001, aproximadamente 150 paramilitares del Bloque Calima de las AUC llegaron a la región de Río Bravo, en el municipio de Calima el Darién, Valle del Cauca. Con una lista en mano, reunieron a pobladores en la vereda El Palmar y los obligaron a caminar seis kilómetros hasta la vereda El Pital, donde los asesinaron de un disparo en la cabeza. El registro del CNMH consigna 19 víctimas campesinas; entre ellas figuraban el presidente de la Junta de Acción Comunal y un miembro de la Sociedad San Vicente de Paúl. Al día siguiente, según el CINEP, los paramilitares instalaron un campamento en la vereda La Cristalina, donde permanecieron hasta el 24 de agosto y se llevaron a varias personas, incluyendo mujeres con sus esposos. Como consecuencia de la masacre, cerca de 50 familias de las veredas La Playita y La Cristalina se desplazaron hacia la cabecera municipal.",
+      "en": "On August 22, 2001, approximately 150 paramilitaries of the Bloque Calima of the AUC arrived in the Río Bravo region of the municipality of Calima el Darién, Valle del Cauca. With a list in hand, they gathered residents at the El Palmar village and forced them to walk six kilometers to El Pital, where they were shot in the head. The CNMH registry records 19 peasant victims; among them were the president of the Community Action Board and a member of the Saint Vincent de Paul Society. According to CINEP, the following day the paramilitaries set up camp in the La Cristalina village, remaining until August 24 and taking additional people, including women and their spouses. The massacre caused nearly 50 families from the La Playita and La Cristalina villages to flee to the municipal seat."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Calima (Darién)",
+        "url": "https://rutasdelconflicto.com/masacres/calima-darien"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+        "title": "El Bloque Calima cometió 119 masacres entre 1999 y 2004",
+        "url": "https://centrodememoriahistorica.gov.co/el-bloque-calima-cometio-119-masacres-entre-1999-y-2004/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Jurisdicción Especial para la Paz (JEP)",
+        "title": "Bloque Calima de las AUC: Depredación paramilitar y narcotráfico en el suroccidente colombiano",
+        "url": "https://www.jep.gov.co/Sala-de-Prensa/Documents/bloque-calima-auc.pdf"
+      }
+    ],
+    "_verifyIssues": [
+      "CNMH citation (centrodememoriahistorica.gov.co/el-bloque-calima-cometio-119-masacres-entre-1999-y-2004/) resolves to a press-release landing page with no event-specific content — it supports general Bloque Calima attribution but not the narrative's specific claims. Preferred citation: the dedicated CNMH Bloque Calima report page (centrodememoriahistorica.gov.co/bloque-calima-de-las-auc/) or the CNMH book directly.",
+      "JEP PDF URL is real but too large to fetch and verify at claim level — cannot confirm it contains this specific event's details vs. only aggregate figures.",
+      "CINEP is credited for the La Cristalina camp detail via Rutas del Conflicto, not via a direct CINEP URL (e.g., a Noche y Niebla issue). A direct CINEP citation would strengthen the source chain.",
+      "Draft does not name the six identified victims listed on Rutas del Conflicto (Fernando Aranzales, Raúl Aranzales, Arceliano Martínez, Erasmo Vivas Murcillo, Arturo Cifuentes Ríos, Gilberto Papamija Quisoboni) — omission is not an error but an opportunity to add documented detail."
+    ]
+  },
+  {
+    "key": "san-carlos-510583",
+    "idCaso": 510583,
+    "modality": "MA",
+    "municipioDane": 5649,
+    "date": "2003-01-16",
+    "victims": 19,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "The CNMH SIEVCAC registry records 19 victims. Rutas del Conflicto documents 18 killed. El Tiempo's contemporaneous press report named 17 victims across the three veredas. The divergence likely reflects evolving information; 19 is the authoritative registry figure.",
+    "title": {
+      "es": "Masacre de Dos Quebradas (San Carlos)",
+      "en": "Dos Quebradas Massacre (San Carlos)"
+    },
+    "narrative": {
+      "es": "En la noche del 16 de enero de 2003, integrantes del Frente Noveno de las FARC ingresaron a las veredas Dosquebradas, La Tupiada y Dinamarca del municipio de San Carlos, Antioquia, y asesinaron a un grupo de campesinos. El Centro Nacional de Memoria Histórica (CNMH) registra 19 víctimas fatales en el caso; Rutas del Conflicto documenta 18 y El Tiempo reportó 17 víctimas identificadas en su cobertura contemporánea. Entre las víctimas se contaron siete menores de edad y una mujer embarazada. Según Rutas del Conflicto, los guerrilleros preguntaron por las casas con teléfono antes de ejecutar a sus ocupantes, y asesinaron a jóvenes que habían rechazado unirse a sus filas tras un partido de fútbol. La masacre causó el desplazamiento de más de 800 personas hacia el casco urbano. Días después, el Frente Noveno reconoció públicamente su autoría, alegando que las muertes fueron represalia contra presuntos colaboradores paramilitares por una masacre cometida en el Chocó. Tulio Murillo Ávila, alias 'Chamizo', ex comandante del Frente Noveno, fue condenado a 40 años de prisión por estos hechos.",
+      "en": "On the night of January 16, 2003, members of the FARC's Ninth Front entered the rural communities of Dosquebradas, La Tupiada, and Dinamarca in the municipality of San Carlos, Antioquia, and killed a group of peasant farmers. The National Center for Historical Memory (CNMH) registry records 19 fatal victims for this case; Rutas del Conflicto documents 18, and El Tiempo reported 17 identified victims in its contemporaneous coverage. Among the dead were seven minors and a pregnant woman. According to Rutas del Conflicto, guerrillas asked which homes had telephones before killing their occupants, and executed young men who had refused to join their ranks after finishing a soccer match. The massacre caused the displacement of more than 800 people to the urban center. Days later, the Ninth Front publicly acknowledged responsibility, claiming the killings were retaliation against alleged paramilitary collaborators for a massacre committed in Chocó. Tulio Murillo Ávila, alias 'Chamizo,' former Ninth Front commander, was sentenced to 40 years in prison for these acts."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Dos Quebradas",
+        "url": "https://rutasdelconflicto.com/masacres/dos-quebradas"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica",
+        "title": "San Carlos. Memorias del éxodo en la guerra",
+        "url": "https://centrodememoriahistorica.gov.co/san-carlos-memorias-del-exodo-en-la-guerra/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica",
+        "title": "Las 33 masacres que devastaron a San Carlos",
+        "url": "https://centrodememoriahistorica.gov.co/las-33-masacres-que-devastaron-a-san-carlos/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "San Carlos: el horror en 33 masacres",
+        "url": "https://www.elespectador.com/judicial/san-carlos-el-horror-en-33-masacres-article-642376/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Noche de terror en San Carlos",
+        "url": "https://www.eltiempo.com/archivo/documento/MAM-971070"
+      }
+    ],
+    "_verifyIssues": [
+      "El Tiempo mischaracterized: the draft says El Tiempo 'reported 17 identified victims,' but the El Tiempo article (MAM-971070) reports 17 as the total death count (11 Dosquebradas + 3 La Tupiala + 3 Dinamarca) by a group 'aún no identificado' - it is the death toll, not a count of 'identified' victims, and El Tiempo did NOT attribute the act to FARC. Reword to 'El Tiempo's contemporaneous coverage reported 17 killed (attributed to an as-yet unidentified group at the time)' to avoid implying El Tiempo confirmed 17 identified bodies or FARC authorship.",
+      "The two CNMH sources cited (san-carlos-memorias-del-exodo / las-33-masacres) are real and authoritative for San Carlos broadly but do NOT individually document the Dos Quebradas massacre's specifics (date, scale, Frente Noveno). They are context, not corroboration; the 'las 33 masacres' page references FARC frente IX only for a different 2004 Samaná massacre. Consider relabeling these as contextual/secondary rather than implying they substantiate the event details.",
+      "Title disclaims nothing about the 'Dos Quebradas' spelling variant; sources use both 'Dos Quebradas' and 'Dosquebradas' (one word) - cosmetic only."
+    ]
+  },
+  {
+    "key": "mapiripan-439504",
+    "idCaso": 439504,
+    "modality": "MA",
+    "municipioDane": 50325,
+    "date": "1998-05-04",
+    "victims": 19,
+    "responsibleHint": "AUC",
+    "disputedFigures": true,
+    "disputeNote": "Sources diverge on the toll: the CNMH registry and the 2014 court conviction record 19 victims; Rutas del Conflicto reports 27 (7 en route + 20 in the settlement); other sources cite 18 or 35, with some figures including disappeared persons or deaths on the Guaviare River. The 19 figure from CNMH and the judicial record is used as the principal count.",
+    "title": {
+      "es": "Masacre de Caño Jabón (Puerto Alvira)",
+      "en": "Caño Jabón (Puerto Alvira) Massacre"
+    },
+    "narrative": {
+      "es": "El 4 de mayo de 1998, un grupo de aproximadamente 200 hombres de las Autodefensas Unidas de Colombia (AUC) atacó la inspección de Puerto Alvira, conocida como Caño Jabón, en el municipio de Mapiripán, Meta. Los paramilitares partieron de Punta Hermosa y asesinaron campesinos durante el trayecto y en el casco urbano; una niña de seis años, Anyi Carolina Ducuara Vieda, murió baleada mientras huía en una lancha por el río Guaviare. El CNMH registra 19 víctimas fatales; otras fuentes reportan cifras distintas (18 a 27 o más), incluyendo víctimas desaparecidas. Los perpetradores quemaron parte del pueblo y forzaron el desplazamiento de más de la mitad de sus habitantes. En 2012, el jefe paramilitar Salvatore Mancuso fue condenado a 24 años por estos hechos en el marco de Justicia y Paz; en 2014, el Tribunal Penal Especializado de Villavicencio condenó a Adonilson García Orozco, alias 'Viejo Peye', a 40 años de prisión por homicidio agravado, desaparición forzada, desplazamiento forzado y terrorismo, entre otros delitos.",
+      "en": "On May 4, 1998, approximately 200 members of the Autodefensas Unidas de Colombia (AUC) attacked the settlement of Puerto Alvira, known locally as Caño Jabón, in the municipality of Mapiripán, Meta. The paramilitaries departed from Punta Hermosa, killing peasants along their route and in the village center; a six-year-old girl, Anyi Carolina Ducuara Vieda, was shot while fleeing by boat on the Guaviare River. The CNMH registry records 19 victims; other sources report divergent figures ranging from 18 to 27 or more, including disappeared persons. The perpetrators burned part of the settlement and forcibly displaced more than half its population. In 2012, AUC leader Salvatore Mancuso was sentenced to 24 years under the Justice and Peace framework for these acts; in 2014, the Fourth Specialized Criminal Court of Villavicencio sentenced Adonilson García Orozco, alias 'Viejo Peye', to 40 years for aggravated homicide, forced disappearance, forced displacement, and terrorism, among other charges."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Caño Jabón",
+        "url": "https://rutasdelconflicto.com/masacres/cano-jabon"
+      },
+      {
+        "type": "primary",
+        "publisher": "colombia.com / EFE",
+        "title": "Condenan paramilitar a 40 años de cárcel por masacre de 19 campesinos",
+        "url": "https://www.colombia.com/actualidad/nacionales/sdi/81641/condenan-paramilitar-a-40-anos-de-carcel-por-masacre-de-19-campesinos"
+      },
+      {
+        "type": "primary",
+        "publisher": "El Colombiano",
+        "title": "Condenan a 'Viejo Peye' a 40 años de cárcel por masacre de 19 campesinos",
+        "url": "https://www.elcolombiano.com/historico/condenan_a_viejo_peye_a_40_anos_de_carcel_por_masacre_de_19_campesinos-DWEC_282188"
+      },
+      {
+        "type": "primary",
+        "publisher": "Jurisdicción Especial para la Paz (JEP)",
+        "title": "Caso 08: Crímenes cometidos por miembros de la fuerza pública, u otros agentes del Estado, en asociación con grupos paramilitares — referencia a masacres en Mapiripán y Caño Jabón",
+        "url": "https://www.jep.gov.co/macrocasos/caso08.html"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Humanidad Vigente",
+        "title": "Las víctimas de Puerto Alvira, 20 años luchando por la verdad",
+        "url": "https://humanidadvigente.net/las-victimas-puerto-alvira-20-anos-luchando-la-verdad/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "'Pirata' y la masacre de Puerto Alvira",
+        "url": "https://www.elespectador.com/judicial/pirata-y-la-masacre-de-puerto-alvira-article-218457/"
+      }
+    ],
+    "_verifyIssues": [
+      "Minor framing: Mancuso's 24-year sentence was issued by the ordinary Fourth Specialized Criminal Court of Villavicencio as co-author of homicidio agravado/terrorismo/concierto para delinquir. Saying it was 'en el marco de Justicia y Paz' is defensible (it derives from his JyP confessions) but slightly loose; consider noting it was the specialized criminal jurisdiction. Non-fatal.",
+      "Optional precision: the draft says Mancuso was condemned 'en 2012'; the charge acceptance hearing was Sept 2011. The 2012 sentencing date is consistent with Equipo Nizkor but worth double-checking the exact ruling date against the primary record before publishing."
+    ]
+  },
+  {
+    "key": "san-carlos-291872",
+    "idCaso": 291872,
+    "modality": "MA",
+    "municipioDane": 5649,
+    "date": "2003-01-16",
+    "victims": 19,
+    "responsibleHint": "FARC",
+    "disputedFigures": true,
+    "disputeNote": "Victim count varies across sources: CNMH-SIEVCAC coded record = 19; Rutas del Conflicto and El Espectador = 18; El Tiempo contemporaneous report (Jan 2003) = 17. Discrepancy likely reflects the multi-hamlet attack unfolding over hours and evolving body counts in early reporting. The CNMH registry figure of 19 is used as the authoritative total.",
+    "title": {
+      "es": "Masacre de Dos Quebradas (San Carlos, enero 2003)",
+      "en": "Dos Quebradas Massacre (San Carlos, January 2003)"
+    },
+    "narrative": {
+      "es": "En la noche del 16 de enero de 2003, integrantes del Frente Noveno de las FARC recorrieron las veredas Dosquebradas, La Tupiada y Dinamarca del municipio de San Carlos, Antioquia, y asesinaron a un número de campesinos que las fuentes registran entre 17 y 19 personas —el CNMH-SIEVCAC consigna 19 víctimas, mientras Rutas del Conflicto y El Espectador indican 18 y El Tiempo reportó 17 en la cobertura inmediata. Entre las víctimas se encontraban siete menores de edad y una mujer embarazada. Los atacantes quemaron viviendas que tenían teléfono, afirmando que sus habitantes eran colaboradores paramilitares; días después, el Frente Noveno reconoció públicamente su responsabilidad y justificó el crimen como represalia por una masacre cometida por las AUC en El Chocó. El hecho generó el desplazamiento de más de 700 personas hacia el casco urbano de San Carlos. Tulio Murillo Ávila, alias 'Chamizo', exjefe del grupo, fue condenado a 40 años de prisión por estos hechos.",
+      "en": "On the night of January 16, 2003, members of the Ninth Front of the FARC moved through the rural hamlets of Dosquebradas, La Tupiada, and Dinamarca in the municipality of San Carlos, Antioquia, killing a number of peasants recorded variously as 17 to 19 — the CNMH-SIEVCAC registry records 19 victims, while Rutas del Conflicto and El Espectador report 18 and the contemporaneous El Tiempo account reported 17. Seven of the victims were minors and one was a pregnant woman. The attackers burned homes that had telephones, telling residents they were paramilitary collaborators; days later, the Ninth Front publicly acknowledged responsibility, framing the killings as retaliation for an AUC massacre in El Chocó. The attack displaced more than 700 people to the municipal seat of San Carlos. Tulio Murillo Ávila, alias 'Chamizo', former commander of the unit, was sentenced to 40 years in prison for these acts."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de Dos Quebradas",
+        "url": "https://rutasdelconflicto.com/masacres/dos-quebradas"
+      },
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica",
+        "title": "Las 33 masacres que devastaron a San Carlos",
+        "url": "https://centrodememoriahistorica.gov.co/las-33-masacres-que-devastaron-a-san-carlos/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Espectador",
+        "title": "San Carlos: el horror en 33 masacres",
+        "url": "https://www.elespectador.com/judicial/san-carlos-el-horror-en-33-masacres-article-642376/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "Noche de terror en San Carlos",
+        "url": "https://www.eltiempo.com/archivo/documento/MAM-971070"
+      }
+    ],
+    "_verifyIssues": [
+      "Displacement figure: the draft says 'mas de 700 / more than 700', but the cited Rutas del Conflicto page states 800 displaced and a Rutas search-surfaced variant says 749. Both exceed 700 so it is not a contradiction, but citing the specific figure (800 or 749) would be more precise and could note the discrepancy between the two Rutas figures.",
+      "Source-type labels: El Tiempo and El Espectador are labeled 'tertiary', but El Tiempo MAM-971070 is contemporaneous on-the-ground press reporting (effectively a primary press account) - a minor mislabel, not material to the verdict.",
+      "The CNMH 'Las 33 masacres' page does not name the Dos Quebradas massacre or give per-event detail (it is aggregate context for San Carlos). It is on-topic and not fabricated, but it does not independently corroborate the event-specific claims; Rutas del Conflicto carries that load."
+    ]
+  },
+  {
+    "key": "chigorodo-289763",
+    "idCaso": 289763,
+    "modality": "MA",
+    "municipioDane": 5172,
+    "date": "1995-08-12",
+    "victims": 19,
+    "responsibleHint": "paramilitar",
+    "disputedFigures": true,
+    "disputeNote": "CNMH registry (IdCaso 289763) and Unidad para las Víctimas record 19 deaths; CNMH's own public commemoration page, Rutas del Conflicto, Semana, and El Tiempo all state 18 killed (and 2 wounded). HH's Justice and Peace admission also references 18. The one-victim discrepancy likely reflects whether a surviving wounded person later died, or a counting difference between immediate and final tallies.",
+    "title": {
+      "es": "Masacre de El Aracatazo",
+      "en": "El Aracatazo Massacre"
+    },
+    "narrative": {
+      "es": "El 12 de agosto de 1995, aproximadamente 15 hombres armados del Bloque Bananero de las Autodefensas Campesinas de Córdoba y Urabá (ACCU) irrumpieron en la discoteca El Aracatazo, ubicada en el barrio El Bosque de Chigorodó, Antioquia, durante una celebración popular. Los paramilitares obligaron a los presentes a tenderse en el suelo, los acusaron de colaborar con la guerrilla y abrieron fuego. El Registro Único de Víctimas y el CNMH registran 19 víctimas mortales; la mayoría de fuentes primarias consultadas —incluyendo publicaciones del propio CNMH y el relato judicial de Éver Veloza García, alias «HH»— señalan 18 personas asesinadas y 2 heridas. Las víctimas eran en su mayoría trabajadores de plantaciones bananeras; varios pertenecían al sindicato Sintrainagro o al Partido Comunista Colombiano. La operación fue ordenada por Carlos Castaño Gil y ejecutada bajo el mando de «HH», quien reconoció su responsabilidad ante el mecanismo de Justicia y Paz; Dalson López Simanca, alias «Mono Pecoso», fue condenado a 40 años de prisión por los hechos. La masacre se inscribe en una ola de violencia paramilitar en Urabá que dejó más de 60 muertos entre agosto y septiembre de 1995, y contó con presunta participación o aquiescencia de miembros del Ejército Nacional.",
+      "en": "On August 12, 1995, approximately 15 armed members of the Bloque Bananero of the Autodefensas Campesinas de Córdoba y Urabá (ACCU) entered the El Aracatazo nightclub in the El Bosque neighborhood of Chigorodó, Antioquia, during a community celebration. The paramilitaries forced those present to lie on the floor, accused them of collaborating with guerrillas, and opened fire. The CNMH registry records 19 victims; most primary sources consulted — including CNMH's own public content and the judicial testimony of Éver Veloza García, alias 'HH' — report 18 killed and 2 wounded. Victims were predominantly banana plantation workers, several of them members of the Sintrainagro union or the Colombian Communist Party. The attack was ordered by Carlos Castaño Gil and carried out under HH's command; HH acknowledged responsibility before the Justice and Peace tribunal, and Dalson López Simanca (alias 'Mono Pecoso') was sentenced to 40 years in prison. The massacre was part of a broader paramilitary campaign in Urabá that killed more than 60 people in August–September 1995, with alleged participation or acquiescence of members of the Colombian Army."
+    },
+    "sources": [
+      {
+        "type": "primary",
+        "publisher": "Centro Nacional de Memoria Histórica",
+        "title": "Se cumplen 30 años de la masacre de El Aracatazo en Chigorodó (Antioquia)",
+        "url": "https://centrodememoriahistorica.gov.co/se-cumplen-30-anos-de-la-masacre-de-el-aracatazo-en-chigorodo-antioquia/"
+      },
+      {
+        "type": "primary",
+        "publisher": "Rutas del Conflicto",
+        "title": "Masacre de El Aracatazo",
+        "url": "https://rutasdelconflicto.com/masacres/el-aracatazo"
+      },
+      {
+        "type": "primary",
+        "publisher": "Unidad para las Víctimas (Portal Histórico)",
+        "title": "En Chigorodó, conmemoran 22 años de masacre de El Aracatazo",
+        "url": "https://portalhistorico.unidadvictimas.gov.co/es/reparacion-colectiva/en-chigorodo-conmemoran-22-anos-de-masacre-de-el-aracatazo/37770"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "Semana",
+        "title": "'H.H' reconoce masacre de El Aracatazo",
+        "url": "https://www.semana.com/nacion/justicia/articulo/hh-reconoce-masacre-el-aracatazo/95758-3/"
+      },
+      {
+        "type": "tertiary",
+        "publisher": "El Tiempo",
+        "title": "A la cárcel tres militares por masacre del Aracatazo, en Antioquia",
+        "url": "https://www.eltiempo.com/archivo/documento/CMS-16159736"
+      }
+    ],
+    "_verifyIssues": [
+      "Minor naming note (non-fatal): HH's first name appears as both 'Ever' and 'Hebert' in official records. The draft uses 'Ever Veloza Garcia', which is a documented valid variant (Fiscalia and El Colombiano use 'Ever Veloza'; CNMH and Rutas use 'Hebert Veloza'). Both refer to the same person. A one-line curator note flagging the spelling variance would improve precision.",
+      "Optional precision (non-fatal): the on-the-ground execution is attributed by El Tiempo and Razon Publica to the Frente Arlex Hurtado with 'Mono Pecoso' leading the squad, under HH's overall command. The draft's 'bajo el mando de HH' is consistent but could name the dual operational command more explicitly."
+    ]
   }
 ]
