@@ -60,7 +60,13 @@
   // existing ?tier/?lang/?debug query-param pattern; no path routing needed).
   const isDeforestation =
     new URLSearchParams(location.search).get('section') === 'deforestation';
-  if (isDeforestation) app.tab = 'deforestation';
+  if (isDeforestation) {
+    app.tab = 'deforestation';
+    // open at the start of the Hansen window and auto-play (the welcome modal,
+    // which otherwise starts playback on close, is suppressed on this view)
+    app.defPos = 2001;
+    app.playing = true;
+  }
 
   // Hansen tree-cover-loss artifacts — only fetched when the deforestation view
   // is active, so violence visitors never pay for them. $state.raw (it holds an

@@ -163,13 +163,23 @@ function demote() {
 }
 
 // ---------------------------------------------------------------- governor
-// rAF-delta sampler active during memoria playback. Demotes ONE tier when the
-// median frame time over a ~90-frame window stays above DEMOTE_MS, then
-// re-arms (after a warm-up that absorbs the tendril-field rebuild hitch) in
-// case a second demotion is needed. Never promotes: flapping between tiers
+// rAF-delta sampler active during memoria/deforestation playback. Demotes ONE
+// tier when the median frame time over a verdict window stays above DEMOTE_MS,
+// then re-arms (after a warm-up that absorbs the tendril-field rebuild hitch)
+// in case a second demotion is needed. Never promotes: flapping between tiers
 // would rebuild the tendril fields repeatedly.
+//
+// A verdict closes on whichever comes first: WINDOW frames, OR MAX_VERDICT_MS
+// of wall-clock with at least MIN_FRAMES sampled. The time cap matters for the
+// weakest hardware — at ~5 fps a frame-only window of 90 takes ~18 s to reach
+// the FIRST demotion and ~40 s to bottom out at 'low', so the device that most
+// needs help waits longest. With the cap a slow device demotes in ~2.5 s; fast
+// devices still fill the 90-frame window (more samples = more robust against a
+// transient GC/tab-switch spike tipping a capable machine into a demotion).
 const DEMOTE_MS = 40; // median frame slower than this (<25 fps) = demote
-const WINDOW = 90; // frames per verdict (~1.5 s at 60 fps, ~4 s at 25)
+const WINDOW = 90; // frames per verdict (~1.5 s at 60 fps)
+const MAX_VERDICT_MS = 2500; // wall-clock cap so slow devices demote promptly
+const MIN_FRAMES = 24; // floor for a stable median on the time-capped path
 const WARMUP_MS = 3000;
 
 export function startFpsGovernor(): () => void {
@@ -178,15 +188,21 @@ export function startFpsGovernor(): () => void {
   let frames: number[] = [];
   let last = performance.now();
   let armedAt = last + WARMUP_MS;
+  let windowStart = armedAt; // wall-clock start of the current verdict window
 
   const loop = (now: number) => {
     const dt = now - last;
     last = now;
     if (now > armedAt) {
+      if (frames.length === 0) windowStart = now;
       frames.push(dt);
-      if (frames.length >= WINDOW) {
+      const ready =
+        frames.length >= WINDOW ||
+        (now - windowStart >= MAX_VERDICT_MS && frames.length >= MIN_FRAMES);
+      if (ready) {
         const median = frames.sort((a, b) => a - b)[frames.length >> 1];
         frames = [];
+        windowStart = now;
         if (median > DEMOTE_MS) {
           demote();
           if (perf.tier === 'low') return; // floor reached — stop sampling

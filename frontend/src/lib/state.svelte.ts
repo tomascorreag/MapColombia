@@ -62,7 +62,6 @@ class AppState {
   // sim-days per real second, and the body driving the political field
   mday = $state((Date.UTC(1960, 0, 1) - Date.UTC(1958, 0, 1)) / 86_400_000);
   mspeed = $state(180);
-  mbody = $state<Body>('camara');
 
   // deforestation view: continuous (float) scrub position in calendar years.
   // It drives the raster's smooth year-to-year crossfade and the gliding

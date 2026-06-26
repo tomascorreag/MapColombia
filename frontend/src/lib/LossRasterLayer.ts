@@ -67,13 +67,13 @@ export const FIRE_DEFAULTS = {
   fadeIn: 0.1,
   // burn-front cooling span (timeline-years): a cohort glows hot when the playhead
   // reaches it and cools to a deep ember over this many years behind the playhead
-  cool: 12,
+  cool: 8,
   // ignition spread in YEARS: each pixel's ignition is offset forward by jitter * noise
   // (noise 0..1). 0 = whole cohort lights at its year boundary; 1 = smeared across its own
   // year; >1 smears a cohort across MULTIPLE years so the annual front decorrelates instead
   // of sweeping as a synchronized wave. noiseScale sets the offset's spatial frequency, NOT
   // its amplitude — this knob is the amplitude.
-  jitter: 1,
+  jitter: 2,
   // spatial frequency of that burn noise (cycles across the raster; higher = finer)
   noiseScale: 2000,
   // Pre-age the 2001/2002 baseline cohorts. Hansen's first years absorb the pre-2001
