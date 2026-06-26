@@ -28,8 +28,8 @@ export const DEF_DBG_GROUPS: { title: string; params: DefDbgParam[] }[] = [
     params: [
       { key: 'fadeIn', label: 'dissolve-in yrs', min: 0.05, max: 2, step: 0.05 },
       { key: 'cool', label: 'cool span yrs', min: 1, max: 25, step: 0.5 },
-      { key: 'jitter', label: 'burn into yr', min: 0, max: 1, step: 0.05 },
-      { key: 'noiseScale', label: 'burn noise freq', min: 20, max: 600, step: 10 },
+      { key: 'jitter', label: 'ignite spread (yr)', min: 0, max: 10, step: 0.25 },
+      { key: 'noiseScale', label: 'burn noise freq', min: 20, max: 2000, step: 10 },
     ],
   },
   {

@@ -1,9 +1,10 @@
 """Build a Web-Mercator raster tile PYRAMID of Hansen tree-cover loss as PMTiles.
 
 Output (data/processed/frontend/):
-  - deforestation_lossyear.pmtiles : an XYZ/slippy PNG pyramid (zoom Z_MIN..Z_MAX)
-    in EPSG:3857. Each 256x256 tile uses the SAME RGBA packing as the legacy
-    single-texture deforestation_lossyear.png:
+  - deforestation_lossyear.pmtiles : an XYZ/slippy lossless-WebP pyramid (zoom
+    Z_MIN..Z_MAX) in EPSG:3857. Each 256x256 tile uses the SAME RGBA packing as the
+    legacy single-texture deforestation_lossyear.png (WebP is lossless -> the
+    categorical channels are bit-exact; ~2.3x smaller than PNG on this sparse data):
       R = earliest loss-year code (1..25 = 2001..2025; 0 = no loss)
       G = loss density (0..255)  -> drives display opacity
       B = PACKED codes: bits 0-2 WRI driver, 3-4 ag-kind, 5-6 legality, 7 coca-present
@@ -120,9 +121,16 @@ def collect_loss_pixels(packed_cell_flat, muni_lab_flat):
     return gx, gy, yr, pk
 
 
-def encode_png(rgba):
+def encode_tile(rgba):
+    """Encode a 256x256x4 tile as LOSSLESS WebP. ~2.3x smaller than PNG on this
+    sparse categorical raster (measured 0.43x), and lossless = bit-exact, so the
+    categorical R (year) / B (packed codes) channels are preserved (the integrity
+    contract). method=4 matches method=6 within 0.5% but is ~200x faster to encode.
+    The frontend decodes via createImageBitmap(Blob), which sniffs the format from
+    magic bytes — no client change needed when switching PNG -> WebP."""
     buf = io.BytesIO()
-    Image.fromarray(rgba, "RGBA").save(buf, format="PNG", optimize=False)
+    Image.fromarray(rgba, "RGBA").save(buf, format="WEBP", lossless=True,
+                                       quality=100, method=4)
     return buf.getvalue()
 
 
@@ -159,7 +167,7 @@ def build_finest(gx, gy, yr, pk):
         rgba = rgba.reshape(TILE, TILE, 4)
         xt = int(u % NTILES_MAX)
         yt = int(u // NTILES_MAX)
-        tiles[(Z_MAX, xt, yt)] = encode_png(rgba)
+        tiles[(Z_MAX, xt, yt)] = encode_tile(rgba)
     print(f"finest level z{Z_MAX}: {len(tiles):,} tiles")
     return tiles
 
@@ -200,7 +208,7 @@ def build_overviews(tiles):
         for parent, kids in groups.items():
             decoded = {q: np.asarray(Image.open(io.BytesIO(png)).convert("RGBA"))
                        for q, png in kids.items()}
-            tiles[parent] = encode_png(downsample_parent(decoded))
+            tiles[parent] = encode_tile(downsample_parent(decoded))
         print(f"overview z{z}: {len(groups):,} tiles")
 
 
@@ -211,8 +219,8 @@ def write_pmtiles(tiles, out_path):
         for (z, x, y) in sorted(tiles, key=lambda k: zxy_to_tileid(*k)):
             w.write_tile(zxy_to_tileid(z, x, y), tiles[(z, x, y)])
         header = {
-            "tile_type": TileType.PNG,
-            "tile_compression": Compression.NONE,   # PNG already compressed
+            "tile_type": TileType.WEBP,
+            "tile_compression": Compression.NONE,   # WebP already compressed
             "min_lon_e7": int(bd.WEST * e7),
             "min_lat_e7": int(bd.SOUTH * e7),
             "max_lon_e7": int(bd.EAST * e7),
@@ -223,7 +231,7 @@ def write_pmtiles(tiles, out_path):
         }
         metadata = {
             "name": "Hansen tree-cover loss (Colombia) — display pyramid",
-            "description": ("Web-mercator PNG pyramid. R=earliest loss year (1..25), "
+            "description": ("Web-mercator lossless-WebP pyramid. R=earliest loss year (1..25), "
                             "G=loss density, B=packed driver/ag-kind/legality/coca codes, "
                             "A=mask. Nearest filtering required. Visualization-only; "
                             "per-municipio hectares are counted from native 30 m pixels "

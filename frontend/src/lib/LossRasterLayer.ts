@@ -64,36 +64,39 @@ export const SPOT_DIM: Record<string, number> = {
 // (defDebug.svelte.ts) mutates copies of them live; production always reads these.
 export const FIRE_DEFAULTS = {
   // dissolve-in duration (timeline-years) as the playhead reaches each loss cohort
-  fadeIn: 0.4,
+  fadeIn: 0.1,
   // burn-front cooling span (timeline-years): a cohort glows hot when the playhead
   // reaches it and cools to a deep ember over this many years behind the playhead
   cool: 12,
-  // how far into its loss year a pixel can burn (0 = whole cohort at the year edge,
-  // 1 = spread across the full year), modulated by coherent noise for an organic front
-  jitter: 0.85,
+  // ignition spread in YEARS: each pixel's ignition is offset forward by jitter * noise
+  // (noise 0..1). 0 = whole cohort lights at its year boundary; 1 = smeared across its own
+  // year; >1 smears a cohort across MULTIPLE years so the annual front decorrelates instead
+  // of sweeping as a synchronized wave. noiseScale sets the offset's spatial frequency, NOT
+  // its amplitude — this knob is the amplitude.
+  jitter: 1,
   // spatial frequency of that burn noise (cycles across the raster; higher = finer)
-  noiseScale: 160,
+  noiseScale: 2000,
   // Pre-age the 2001/2002 baseline cohorts. Hansen's first years absorb the pre-2001
   // clearing backlog, so they should NOT ignite in unison. Each baseline pixel gets a
   // decorrelated noise age offset of up to baseAge * cool timeline-years — fractions land
   // past the cool span (already cold), the rest scatter across their lifecycle. 0 = off.
-  baseAge: 1.6,
+  baseAge: 1.5,
   // how strongly the long-cooled baseline desaturates toward grey (0 = stays ember warm,
   // 1 = fully grey at heat 0). Makes the oldest clearing read as established land.
-  baseGrey: 0.75,
+  baseGrey: 0.5,
 };
 export type FireKnobs = typeof FIRE_DEFAULTS;
 
 // Burn-front colour ramp: 4 stops keyed on heat (0 = long-cooled, 1 = at the front /
-// freshly cleared). Deep ember -> red -> orange -> hot near-white: every stop is a
-// visible warm tone (NO grey), so cooled loss still reads as cumulative extent. The
-// ?debug panel edits copies of these; production reads them verbatim. pos is the heat
-// position.
+// freshly cleared). Muted clay/grey -> red -> orange -> hot near-white: the cold end
+// reads as established/cooled land while the front glows, so cooled loss still shows as
+// cumulative extent without screaming. The ?debug panel edits copies of these;
+// production reads them verbatim. pos is the heat position.
 export const RAMP_DEFAULTS: { hex: string; pos: number }[] = [
-  { hex: '#7a1606', pos: 0.0 }, // deep ember (long cooled)
-  { hex: '#d11c0d', pos: 0.4 }, // red
-  { hex: '#ff8a1f', pos: 0.72 }, // orange
-  { hex: '#fff1c2', pos: 1.0 }, // hot near-white (at the front)
+  { hex: '#ab8c87', pos: 0.0 }, // muted clay/grey (long cooled, established land)
+  { hex: '#d11c0d', pos: 0.37 }, // red
+  { hex: '#ff8a1f', pos: 0.71 }, // orange
+  { hex: '#fff1c2', pos: 0.9 }, // hot near-white (at the front)
 ];
 // hex "#rrggbb" -> [r,g,b,pos] in 0..1 for a vec4 ramp uniform.
 export function rampStopToVec4(s: { hex: string; pos: number }): [number, number, number, number] {
@@ -229,11 +232,14 @@ const lossModule = {
     if (color.a < 0.5) discard;                          // outside the loss extent
     float ly = max(floor(color.r * 255.0 + 0.5), 1.0);   // loss year (1=2001 .. 25=2025)
     float density = color.g;
-    // Per-pixel burn moment WITHIN the loss year: smooth, geo-locked value noise offsets
-    // how far into the year each pixel ignites (jitter = how much of the year it can eat
-    // into, 0 = whole cohort lights at the year boundary, 1 = spread across the full
-    // year). Coherent noise -> the front gets an organic wavy edge, neighbours stay
-    // similar, so it does NOT strobe on pan. burnT replaces the hard (ly-1) year edge.
+    // Per-pixel burn moment: smooth, geo-locked value noise offsets WHEN each pixel ignites.
+    // jitter is the offset amplitude in YEARS (offset = jitter * noise, forward only): 0 =
+    // whole cohort lights at its year boundary; 1 = smeared across its own year; >1 smears a
+    // cohort across multiple years so the front decorrelates instead of arriving as one
+    // synchronized annual wave. noiseScale sets the offset's spatial FREQUENCY, not amplitude.
+    // Coherent noise -> neighbours stay similar, so it does NOT strobe on pan. burnT replaces
+    // the hard (ly-1) year edge. Forward-only: a pixel never appears BEFORE its recorded loss
+    // year (would be dishonest); it can lag, which is an accepted visualization smoothing.
     // Geo-locked noise input: map this tile's uv -> lng/lat -> country-relative uv, so the
     // burn field is identical across tiles and zoom levels (no seam, no swim on LOD swap).
     // With the default (full-country) tileBounds this reduces exactly to geometry.uv.
@@ -246,6 +252,13 @@ const lossModule = {
     // Deterministic in (burnT, maxYear) only — identical every frame at a given playhead.
     float reveal = smoothstep(burnT, burnT + max(loss.fadeIn, 0.05), loss.maxYear);
     if (reveal <= 0.0) discard;                          // not yet reached by the playhead
+    // Opacity from cumulative clearing density (gamma'd so stray pixels stay faint,
+    // concentrated clearing reads solid), faded in by the reveal. Computed and discarded
+    // HERE — before the fireRamp / baseline-noise colour work below — so invisible pixels
+    // (near-zero density, or mid-dissolve) skip the expensive shading (incl. the 2nd vnoise
+    // on 2001/2002). a is unchanged by that work, so the result is identical.
+    float a = clamp(pow(density, 0.6) * 0.95, 0.0, 0.95) * reveal;
+    if (a < 0.02) discard;
     // unpack the packed blue channel (codes; consumed only by the lens/filter branches)
     int packed = int(color.b * 255.0 + 0.5);
     float driverCode = float(packed & 7);
@@ -283,11 +296,6 @@ const lossModule = {
     if (ly < 2.5) {
       rgb = mix(rgb, vec3(0.46, 0.44, 0.42), (1.0 - heat) * loss.baseGrey);
     }
-    // Opacity by cumulative clearing density (gamma'd so stray pixels stay faint and
-    // concentrated clearing reads solid), faded in by the reveal.
-    float a = clamp(pow(density, 0.6) * 0.95, 0.0, 0.95) * reveal;
-    if (a < 0.02) discard;
-
     // spotlight: light one code within the active dimension; fade everything else.
     if (loss.spotDim > 0.5) {
       float code;

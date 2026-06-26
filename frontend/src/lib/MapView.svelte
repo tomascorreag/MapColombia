@@ -439,6 +439,10 @@
                 .bounds_lnglat,
               maxYear: app.defPos - 2000, // only used when sway > 0
               ...forestDbg,
+              // mid/low tier: single 3-octave fbm (~3 noise evals) instead of the
+              // 8-eval two-frequency blend — the backdrop is a full-viewport quad
+              // redrawn every scrub frame, the dominant fill-rate cost on weak GPUs.
+              cheap: P.dprCap < 2 ? 1 : 0,
               lowCol: hexToVec4(forestColors.lowCol),
               highCol: hexToVec4(forestColors.highCol),
               // smooth backdrop: canopy is continuous, linear filtering is fine
@@ -475,8 +479,17 @@
             // best-available (default): keep the coarse parent visible until the finer child
             // loads → never blank during a zoom. Conserving overviews keep brightness steady.
             refinementStrategy: 'best-available',
-            maxRequests: 8,
-            maxCacheSize: 400,
+            // tier-scaled VRAM/decode budget (perf.svelte.ts): 400/10 high → 128/6 low
+            maxRequests: P.tileRequests,
+            maxCacheSize: P.tileCache,
+            // deck creates the tile's GPU texture from the decoded ImageBitmap; once the
+            // tile is evicted the bitmap's native memory is ours to free. Without this the
+            // ImageBitmaps accumulate (GC is slow to reclaim native handles) and a long
+            // pan/zoom session creeps in memory. Fires only on real eviction (best-available
+            // keeps still-referenced parents loaded), so the texture is already independent.
+            onTileUnload: (tile: { data: ImageBitmap | null }) => {
+              if (tile.data && typeof tile.data.close === 'function') tile.data.close();
+            },
             // deck.gl ignores function-prop changes, so a new renderSubLayers closure does
             // NOT regenerate sublayers — the captured uniforms (maxYear/spotlight/filter)
             // would go stale and scrubbing would show no change. Drive regeneration via an
@@ -757,10 +770,13 @@
     if (mapReady) map?.setPixelRatio(dprCap);
   });
 
-  // While memoria playback runs, sample frame times and demote the tier if
-  // the device can't hold frame rate (one-way; persists across visits).
+  // While memoria OR deforestation playback runs, sample frame times and demote
+  // the tier if the device can't hold frame rate (one-way; persists across visits).
+  // The governor only measures rAF deltas, so it works for either scene; demoting
+  // drops dprCap + the loss-tile cache and switches the forest to cheap noise.
   $effect(() => {
-    if (!(app.playing && app.tab === 'memoria') || !mapReady) return;
+    if (!(app.playing && (app.tab === 'memoria' || app.tab === 'deforestation')) || !mapReady)
+      return;
     return startFpsGovernor();
   });
 

@@ -366,8 +366,17 @@ full-country texture, which could not reach 30 m (one GL texture caps ~115–230
   loads → no blank), conserving overviews (no brightness pop), and a **geo-locked** burn-front
   noise (`tileBounds` uniform maps per-tile uv → country-relative coords) so the noise does not
   seam across tiles or swim on LOD changes. Nearest filtering remains mandatory (packed B byte).
+- **Tile encoding (2026-06-26)**: tiles are **lossless WebP**, not PNG. Lossless = bit-exact, so
+  the categorical R=year / B=packed channels are preserved (integrity contract holds), while the
+  file drops from ~172 MB → ~89 MB (~2x) on this sparse raster. Measured per-tile WebP/PNG ratio
+  ≈ 0.43; `method=4` (vs the default `method=6`) matches size within 0.5% but encodes ~200× faster
+  (z12 in ~30 s, not ~100 min). The frontend decodes via `createImageBitmap(Blob)`, which sniffs the
+  format from magic bytes, so the switch needed **no client change**. PNG `optimize+level9` was only
+  ~5% and dropping the redundant alpha channel only ~1% under WebP — both rejected as not worth it.
 - **Integrity unchanged**: per-municipio / national hectares are still counted from native 30 m
   pixels in `build_deforestation.py`; the pyramid is display-only.
-- **Hosting (MVP)**: the ~170 MB `.pmtiles` is gitignored and served from `public/data` for dev.
-  Production move to Cloudflare R2 (range requests) + an upload script is a deferred follow-up;
-  so is forest-backdrop tiling and PNG size optimization.
+- **Hosting (MVP)**: the ~89 MB `.pmtiles` is gitignored and served from `public/data` for dev.
+  It is **range-requested**, so the client lazily fetches only viewport tiles — *unless* the host
+  lacks HTTP range support (the GH Pages PMTiles bug, protomaps/PMTiles#584), which forces a
+  whole-file download. Production move to Cloudflare R2 (range requests) + an upload script is the
+  fix and a deferred follow-up; so is forest-backdrop tiling.

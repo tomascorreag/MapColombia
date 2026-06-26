@@ -7,6 +7,11 @@
 // to localStorage so the next visit starts right. `?tier=low|mid|high`
 // forces a tier and disables the governor (testing / user escape hatch).
 //
+// The deforestation view follows the same tier: dprCap (shared overlay), the
+// loss-tile VRAM/decode budget (tileCache/tileRequests), and forest-backdrop
+// noise detail all scale down on lower tiers, and the governor now also samples
+// deforestation playback so a struggling device demotes there too.
+//
 // Display-only: tiers change visual density and resolution, never data.
 
 export type Tier = 'low' | 'mid' | 'high';
@@ -32,6 +37,12 @@ export interface TierParams {
   repickBuckets: number;
   /** panel backdrop blur (resamples the animating canvas every frame) */
   blur: boolean;
+  /** deforestation loss-raster tile cache size (tiles). Each 256² RGBA tile is
+   * ~256 KB of VRAM, so this bounds GPU memory: 400→~100 MB, 128→~32 MB. */
+  tileCache: number;
+  /** concurrent loss-tile fetch+decode budget (createImageBitmap is main-thread-ish;
+   * fewer parallel decodes = less scrub jank on weak CPUs) */
+  tileRequests: number;
 }
 
 export const PERF: Record<Tier, TierParams> = {
@@ -46,6 +57,8 @@ export const PERF: Record<Tier, TierParams> = {
     clickDepth: 48,
     repickBuckets: 1,
     blur: true,
+    tileCache: 400,
+    tileRequests: 10,
   },
   mid: {
     curves1: 30000,
@@ -58,6 +71,8 @@ export const PERF: Record<Tier, TierParams> = {
     clickDepth: 32,
     repickBuckets: 2,
     blur: true,
+    tileCache: 256,
+    tileRequests: 8,
   },
   low: {
     curves1: 10000,
@@ -70,6 +85,8 @@ export const PERF: Record<Tier, TierParams> = {
     clickDepth: 24,
     repickBuckets: 0,
     blur: false,
+    tileCache: 128,
+    tileRequests: 6,
   },
 };
 

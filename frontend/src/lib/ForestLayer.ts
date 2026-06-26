@@ -19,15 +19,15 @@ import type { BitmapLayerProps } from '@deck.gl/layers';
 // Jungle-green look knobs. These defaults ARE the shipped backdrop; the ?debug
 // panel mutates copies of them live (forestDebug.svelte.ts).
 export const FOREST_DEFAULTS = {
-  canopyPow: 0.8, // gamma on canopy% -> green depth (>1 darkens sparse cover)
+  canopyPow: 1, // gamma on canopy% -> green depth (>1 darkens sparse cover)
   noiseScale: 220, // foliage mottling spatial frequency (texture/geo space)
-  noiseScale2: 70, // second, coarser octave for large green patches
+  noiseScale2: 50, // second, coarser octave for large green patches
   noiseAmt: 0.3, // mottling strength (0 = flat green, 1 = strong light/dark) — kept
   // low so the backdrop stays a fairly uniform green with no muddy blur to offset
   // behind the sharp loss cells
   bright: 1.0, // overall brightness multiplier
-  alpha: 0.92, // backdrop opacity over the basemap
-  canopyAlpha: 0.55, // how much low canopy fades the backdrop (0 = uniform alpha)
+  alpha: 0.74, // backdrop opacity over the basemap
+  canopyAlpha: 0.8, // how much low canopy fades the backdrop (0 = uniform alpha)
   sway: 0, // timeline-driven drift of the noise field (0 = static; no wall-clock)
 };
 export type ForestKnobs = typeof FOREST_DEFAULTS;
@@ -60,6 +60,7 @@ const HIGH_VEC4 = hexToVec4(FOREST_COLORS.highCol);
 
 type ForestOpts = Partial<ForestKnobs> & {
   maxYear?: number;
+  cheap?: number;
   lowCol?: Vec4;
   highCol?: Vec4;
 };
@@ -75,6 +76,7 @@ layout(std140) uniform forestUniforms {
   float alpha;
   float canopyAlpha;
   float sway;
+  float cheap;       // 1 = mid/low tier: single 3-octave fbm instead of the 2-freq blend
   vec4 lowCol;       // rgb in .xyz (.w unused)
   vec4 highCol;
 } forest;
@@ -97,6 +99,14 @@ float fbm(vec2 p) {
   for (int i = 0; i < 4; i++) { s += amp * vnoise(p); p *= 2.0; amp *= 0.5; }
   return s;
 }
+// 3-octave single-call variant for the cheap (mid/low tier) path: ~3 noise evals vs the
+// 8 the full two-frequency blend costs. The backdrop is a full-viewport quad redrawn every
+// scrub frame, so this is the dominant fill-rate cost at the national view on weak GPUs.
+float fbm3(vec2 p) {
+  float s = 0.0, amp = 0.5;
+  for (int i = 0; i < 3; i++) { s += amp * vnoise(p); p *= 2.0; amp *= 0.5; }
+  return s;
+}
 `;
 
 const forestModule = {
@@ -109,8 +119,9 @@ const forestModule = {
     if (color.a < 0.5) discard;                         // outside Colombia land
     float canopy = pow(clamp(color.r, 0.0, 1.0), forest.canopyPow);
     vec2 uv = geometry.uv + forest.maxYear * forest.sway;
-    float mott = mix(fbm(uv * forest.noiseScale),
-                     fbm(uv * forest.noiseScale2 + 7.3), 0.5);
+    float mott = (forest.cheap > 0.5)
+      ? fbm3(uv * forest.noiseScale)
+      : mix(fbm(uv * forest.noiseScale), fbm(uv * forest.noiseScale2 + 7.3), 0.5);
     vec3 green = mix(forest.lowCol.xyz, forest.highCol.xyz, canopy);
     green *= forest.bright * (1.0 - forest.noiseAmt * (0.5 - mott));
     float a = forest.alpha * mix(1.0 - forest.canopyAlpha, 1.0, canopy);
@@ -127,6 +138,7 @@ const forestModule = {
     alpha: 'f32',
     canopyAlpha: 'f32',
     sway: 'f32',
+    cheap: 'f32',
     lowCol: 'vec4<f32>',
     highCol: 'vec4<f32>',
   },
@@ -140,6 +152,7 @@ const forestModule = {
     alpha: opts?.alpha ?? FOREST_DEFAULTS.alpha,
     canopyAlpha: opts?.canopyAlpha ?? FOREST_DEFAULTS.canopyAlpha,
     sway: opts?.sway ?? FOREST_DEFAULTS.sway,
+    cheap: opts?.cheap ?? 0,
     lowCol: opts?.lowCol ?? LOW_VEC4,
     highCol: opts?.highCol ?? HIGH_VEC4,
   }),
@@ -148,6 +161,7 @@ const forestModule = {
 export type ForestLayerProps = BitmapLayerProps &
   Partial<ForestKnobs> & {
     maxYear?: number;
+    cheap?: number;
     lowCol?: Vec4;
     highCol?: Vec4;
   };
@@ -165,6 +179,7 @@ export class ForestLayer extends BitmapLayer<ForestLayerProps> {
     alpha: { type: 'number', value: FOREST_DEFAULTS.alpha } as const,
     canopyAlpha: { type: 'number', value: FOREST_DEFAULTS.canopyAlpha } as const,
     sway: { type: 'number', value: FOREST_DEFAULTS.sway } as const,
+    cheap: { type: 'number', value: 0 } as const,
     lowCol: { type: 'array', value: LOW_VEC4 } as const,
     highCol: { type: 'array', value: HIGH_VEC4 } as const,
   };
@@ -187,6 +202,7 @@ export class ForestLayer extends BitmapLayer<ForestLayerProps> {
         alpha: p.alpha ?? FOREST_DEFAULTS.alpha,
         canopyAlpha: p.canopyAlpha ?? FOREST_DEFAULTS.canopyAlpha,
         sway: p.sway ?? FOREST_DEFAULTS.sway,
+        cheap: p.cheap ?? 0,
         lowCol: p.lowCol ?? LOW_VEC4,
         highCol: p.highCol ?? HIGH_VEC4,
       },
