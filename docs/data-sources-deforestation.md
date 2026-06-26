@@ -348,3 +348,26 @@ Mirror of `download_cnmh.py` / `audit_raw.py` discipline. None of this is done y
   This is an audit deliverable: the proxy geometries and the derivation rule must be pinned and
   cited before any percentage is shown. Treat with the same caution as `party_lr.py` (pending
   scholarly review before public citation).
+
+## Render: 30 m tile pyramid (2026-06-26)
+
+The loss raster is rendered from a Web-Mercator **PMTiles pyramid**
+(`deforestation_lossyear.pmtiles`, zoom 5..12, finest ~38 m/px ≈ native 30 m) via a deck.gl
+`TileLayer` that instantiates one `LossRasterLayer` per tile. This replaced the single
+full-country texture, which could not reach 30 m (one GL texture caps ~115–230 m).
+
+- **Build**: `pipeline/build_deforestation_tiles.py` (reuses `build_deforestation.py`'s loaders
+  and constants; adds the `pmtiles` pip dep). Streams native Hansen `lossyear` pixels into
+  z12 tiles (R=earliest year, B=packed driver/ag-kind/legality/coca, G=presence), then builds
+  z11..z5 overviews bottom-up with **categorical-safe** aggregation (R=earliest, B=packed of that
+  child) and **density-conserving** means (G=mean) so opacity is continuous across zoom and the
+  national view stays honest (scattered loss reads faint, never solid amber).
+- **Smoothness**: `refinementStrategy:'best-available'` (parent stays visible until the child
+  loads → no blank), conserving overviews (no brightness pop), and a **geo-locked** burn-front
+  noise (`tileBounds` uniform maps per-tile uv → country-relative coords) so the noise does not
+  seam across tiles or swim on LOD changes. Nearest filtering remains mandatory (packed B byte).
+- **Integrity unchanged**: per-municipio / national hectares are still counted from native 30 m
+  pixels in `build_deforestation.py`; the pyramid is display-only.
+- **Hosting (MVP)**: the ~170 MB `.pmtiles` is gitignored and served from `public/data` for dev.
+  Production move to Cloudflare R2 (range requests) + an upload script is a deferred follow-up;
+  so is forest-backdrop tiling and PNG size optimization.

@@ -17,7 +17,8 @@ page.on('console', (msg) => {
 page.on('pageerror', (err) => errors.push(String(err)));
 page.on('response', (r) => {
   const u = r.url();
-  if (/deforestation\.json|deforestation_lossyear\.png/.test(u) && !r.ok()) {
+  // .pmtiles is range-requested (206) — only flag hard failures (4xx/5xx)
+  if (/deforestation\.json|deforestation_lossyear\.pmtiles/.test(u) && r.status() >= 400) {
     bad.push(`${r.status()} ${u}`);
   }
 });
@@ -32,7 +33,7 @@ const shot = async (name) => {
 
 // ---- deforestation view ----
 await page.goto(`${BASE}/?section=deforestation`, { waitUntil: 'networkidle' });
-await page.waitForTimeout(4500); // style + tiles + deck first frame + texture decode
+await page.waitForTimeout(7000); // style + PMTiles range fetches + deck first frame + tile decode
 
 // header should read the deforestation title, not the violence one
 const h1 = (await page.locator('header h1').first().textContent())?.trim();
@@ -41,10 +42,12 @@ console.log('header h1:', h1);
 console.log('year readout:', yearReadout);
 await shot('defor-2024');
 
-// RENDER GATE: the loss raster must actually paint pixels. A 2nd-texture binding
-// failure (or any silent draw skip) leaves the map empty with NO console error —
-// console-error-only gating misses it. Composite all canvases and count amber loss
-// pixels across a grid; fail if the map is blank.
+// RENDER GATE: the loss raster must actually paint pixels. A failed tile draw (or the
+// old 2nd-texture binding bug) leaves the map empty with NO console error — console-error
+// gating misses it. Count LOSS-SPECIFIC pixels: warm tones (red noticeably > green) come
+// only from the loss layer — the jungle-green canopy backdrop is always green-dominant
+// (g > r), so this is immune to the recency/grey colouring AND to a forest-only false pass.
+// Sample the MAP area only (exclude the dark left panel) at a fine grid.
 const litCount = await page.evaluate(() => {
   const tmp = document.createElement('canvas');
   tmp.width = 1400;
@@ -59,16 +62,16 @@ const litCount = await page.evaluate(() => {
   }
   const img = ctx.getImageData(0, 0, tmp.width, tmp.height).data;
   let lit = 0;
-  for (let y = 0; y < tmp.height; y += 20) {
-    for (let x = 0; x < tmp.width; x += 20) {
+  for (let y = 0; y < tmp.height; y += 8) {
+    for (let x = 380; x < tmp.width; x += 8) {
       const i = (y * tmp.width + x) * 4;
-      if (img[i] > 70 && img[i] - img[i + 2] > 25) lit++; // amber: red ≫ blue
+      if (img[i] > 45 && img[i] - img[i + 1] > 10) lit++; // warm loss: red > green
     }
   }
   return lit;
 });
-console.log('loss raster lit pixels (sampled):', litCount);
-if (litCount < 50) bad.push(`loss raster appears EMPTY (only ${litCount} lit pixels)`);
+console.log('loss raster warm pixels (map area, sampled):', litCount);
+if (litCount < 40) bad.push(`loss raster appears EMPTY (only ${litCount} warm pixels)`);
 
 // scrub the year slider to an early year — cumulative loss should shrink
 const setYear = async (y) => {

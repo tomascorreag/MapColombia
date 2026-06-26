@@ -73,6 +73,14 @@ export const FIRE_DEFAULTS = {
   jitter: 0.85,
   // spatial frequency of that burn noise (cycles across the raster; higher = finer)
   noiseScale: 160,
+  // Pre-age the 2001/2002 baseline cohorts. Hansen's first years absorb the pre-2001
+  // clearing backlog, so they should NOT ignite in unison. Each baseline pixel gets a
+  // decorrelated noise age offset of up to baseAge * cool timeline-years — fractions land
+  // past the cool span (already cold), the rest scatter across their lifecycle. 0 = off.
+  baseAge: 1.6,
+  // how strongly the long-cooled baseline desaturates toward grey (0 = stays ember warm,
+  // 1 = fully grey at heat 0). Makes the oldest clearing read as established land.
+  baseGrey: 0.75,
 };
 export type FireKnobs = typeof FIRE_DEFAULTS;
 
@@ -106,11 +114,20 @@ type FireOpts = Partial<FireKnobs> & {
   spotYear?: number;
   filterDim?: number;
   filterMask?: number;
+  // this tile's lng/lat extent: (west, north, lngSpan = east-west, latSpan = south-north).
+  // Lets the burn-front noise key off GEOGRAPHY, not per-tile uv, so it is continuous
+  // across tile seams and zoom levels. Default = full-country bounds (single-texture look).
+  tileBounds?: Vec4;
   ramp0?: Vec4;
   ramp1?: Vec4;
   ramp2?: Vec4;
   ramp3?: Vec4;
 };
+
+// Full-country bbox (mirrors the pipeline WEST/NORTH/EAST/SOUTH). The noise is
+// normalised into this box so every tile samples the SAME geo-locked field — the
+// default tileBounds below makes a single full-country layer reproduce it identically.
+const COUNTRY_BOUNDS: Vec4 = [-80, 14, 14, -19]; // west, north, lngSpan, latSpan
 
 const uniformBlock = /* glsl */ `\
 layout(std140) uniform lossUniforms {
@@ -124,6 +141,11 @@ layout(std140) uniform lossUniforms {
   float cool;        // burn-front cooling span (timeline-years) behind the playhead
   float jitter;      // how far into the loss year a pixel can burn (0..1), noise-modulated
   float noiseScale;  // spatial frequency of the burn noise
+  float baseAge;     // 2001/2002 pre-age span as a multiple of cool (noise-offset age)
+  float baseGrey;    // 2001/2002 cooled-baseline grey blend (0..1)
+  // this tile's lng/lat extent (west, north, east-west, south-north). Used to turn the
+  // per-tile uv into a country-relative coordinate so the burn noise does not seam.
+  vec4 tileBounds;
   // recency colour ramp: 4 stops, rgb in .xyz and recency position in .w (ascending).
   vec4 ramp0;
   vec4 ramp1;
@@ -212,7 +234,13 @@ const lossModule = {
     // into, 0 = whole cohort lights at the year boundary, 1 = spread across the full
     // year). Coherent noise -> the front gets an organic wavy edge, neighbours stay
     // similar, so it does NOT strobe on pan. burnT replaces the hard (ly-1) year edge.
-    float burn  = vnoise(geometry.uv * loss.noiseScale);   // smooth 0..1
+    // Geo-locked noise input: map this tile's uv -> lng/lat -> country-relative uv, so the
+    // burn field is identical across tiles and zoom levels (no seam, no swim on LOD swap).
+    // With the default (full-country) tileBounds this reduces exactly to geometry.uv.
+    float _lng = loss.tileBounds.x + geometry.uv.x * loss.tileBounds.z;
+    float _lat = loss.tileBounds.y + geometry.uv.y * loss.tileBounds.w;
+    vec2 cuv = vec2((_lng - (-80.0)) / 14.0, (14.0 - _lat) / 19.0); // country-relative 0..1
+    float burn  = vnoise(cuv * loss.noiseScale);           // smooth 0..1
     float burnT = (ly - 1.0) + loss.jitter * burn;         // this pixel's ignition (years)
     // Reveal: the pixel dissolves in over fadeIn years once the playhead reaches burnT.
     // Deterministic in (burnT, maxYear) only — identical every frame at a given playhead.
@@ -240,8 +268,21 @@ const lossModule = {
     // randomness — so the front is calm under pan and smooth under scrub/play, and old
     // loss settles to a still-visible ember (never grey) so cumulative extent reads.
     float age  = loss.maxYear - burnT;                   // timeline-years behind the front
+    // Hansen's 2001/2002 cohorts absorb the pre-2001 clearing backlog — painting them as one
+    // synchronized fresh front is wrong. Pre-age each baseline pixel by decorrelated coherent
+    // noise: some land past the cool span (already cold/grey), others at random lifecycle
+    // points, so the first cohorts read as long-established rather than just-ignited.
+    if (ly < 2.5) {
+      float aNoise = vnoise(cuv * loss.noiseScale * 2.7 + vec2(31.7, 11.3)); // 0..1, decorrelated
+      age += aNoise * loss.baseAge * max(loss.cool, 0.001);
+    }
     float heat = 1.0 - clamp(age / max(loss.cool, 0.001), 0.0, 1.0);  // 1 fresh .. 0 cold
     vec3 rgb = fireRamp(heat);
+    // desaturate the long-cooled baseline toward grey so the oldest clearing reads as
+    // established land, not warm ember (scoped to 2001/2002 — newer cooled loss stays warm).
+    if (ly < 2.5) {
+      rgb = mix(rgb, vec3(0.46, 0.44, 0.42), (1.0 - heat) * loss.baseGrey);
+    }
     // Opacity by cumulative clearing density (gamma'd so stray pixels stay faint and
     // concentrated clearing reads solid), faded in by the reveal.
     float a = clamp(pow(density, 0.6) * 0.95, 0.0, 0.95) * reveal;
@@ -287,6 +328,9 @@ const lossModule = {
     cool: 'f32',
     jitter: 'f32',
     noiseScale: 'f32',
+    baseAge: 'f32',
+    baseGrey: 'f32',
+    tileBounds: 'vec4<f32>',
     ramp0: 'vec4<f32>',
     ramp1: 'vec4<f32>',
     ramp2: 'vec4<f32>',
@@ -303,6 +347,9 @@ const lossModule = {
     cool: opts?.cool ?? FIRE_DEFAULTS.cool,
     jitter: opts?.jitter ?? FIRE_DEFAULTS.jitter,
     noiseScale: opts?.noiseScale ?? FIRE_DEFAULTS.noiseScale,
+    baseAge: opts?.baseAge ?? FIRE_DEFAULTS.baseAge,
+    baseGrey: opts?.baseGrey ?? FIRE_DEFAULTS.baseGrey,
+    tileBounds: opts?.tileBounds ?? COUNTRY_BOUNDS,
     ramp0: opts?.ramp0 ?? RAMP_VEC4[0],
     ramp1: opts?.ramp1 ?? RAMP_VEC4[1],
     ramp2: opts?.ramp2 ?? RAMP_VEC4[2],
@@ -318,6 +365,7 @@ export type LossRasterLayerProps = BitmapLayerProps &
     spotYear?: number;
     filterDim?: number;
     filterMask?: number;
+    tileBounds?: Vec4;
     ramp0?: Vec4;
     ramp1?: Vec4;
     ramp2?: Vec4;
@@ -338,6 +386,9 @@ export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
     cool: { type: 'number', value: FIRE_DEFAULTS.cool } as const,
     jitter: { type: 'number', value: FIRE_DEFAULTS.jitter } as const,
     noiseScale: { type: 'number', value: FIRE_DEFAULTS.noiseScale } as const,
+    baseAge: { type: 'number', value: FIRE_DEFAULTS.baseAge } as const,
+    baseGrey: { type: 'number', value: FIRE_DEFAULTS.baseGrey } as const,
+    tileBounds: { type: 'array', value: COUNTRY_BOUNDS } as const,
     ramp0: { type: 'array', value: RAMP_VEC4[0] } as const,
     ramp1: { type: 'array', value: RAMP_VEC4[1] } as const,
     ramp2: { type: 'array', value: RAMP_VEC4[2] } as const,
@@ -363,6 +414,9 @@ export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
         cool: p.cool ?? FIRE_DEFAULTS.cool,
         jitter: p.jitter ?? FIRE_DEFAULTS.jitter,
         noiseScale: p.noiseScale ?? FIRE_DEFAULTS.noiseScale,
+        baseAge: p.baseAge ?? FIRE_DEFAULTS.baseAge,
+        baseGrey: p.baseGrey ?? FIRE_DEFAULTS.baseGrey,
+        tileBounds: p.tileBounds ?? COUNTRY_BOUNDS,
         ramp0: p.ramp0 ?? RAMP_VEC4[0],
         ramp1: p.ramp1 ?? RAMP_VEC4[1],
         ramp2: p.ramp2 ?? RAMP_VEC4[2],

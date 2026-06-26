@@ -26,12 +26,14 @@
   "dependencies": {
     "@deck.gl/core": "^9.3.3",
     "@deck.gl/extensions": "^9.3.3",
+    "@deck.gl/geo-layers": "^9.3.5",
     "@deck.gl/layers": "^9.3.3",
     "@deck.gl/mapbox": "^9.3.3",
     "@fontsource/archivo": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@fontsource/spectral": "^5.2.8",
     "d3-delaunay": "^6.0.4",
-    "maplibre-gl": "^5.24.0"
+    "maplibre-gl": "^5.24.0",
+    "pmtiles": "^4.4.1"
   }
 }

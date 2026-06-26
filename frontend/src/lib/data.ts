@@ -2,6 +2,8 @@
 // Artifacts are produced by pipeline/build_frontend_data.py; the buffer layout
 // is read from violence_meta.json (offset/dtype per column), never assumed.
 
+import { PMTiles } from 'pmtiles';
+
 export interface Munis {
   codes: number[];
   names: string[];
@@ -398,30 +400,29 @@ export interface DeforestationData {
   // Phase 2b — legality
   legality_classes: DeforestationLegality[];
   loss_by_legality: Record<string, number[]>; // legality code -> annual loss ha
-  // the lossyear texture; blue channel packs driver/ag-kind/legality/coca codes
-  image: ImageBitmap;
+  // the lossyear raster, as a Web-Mercator PNG pyramid (deck.gl TileLayer reads it
+  // via range requests). Each tile's blue channel packs driver/ag-kind/legality/coca.
+  lossTiles: PMTiles;
   // year-2000 canopy backdrop (R = canopy%, A = country mask); jungle-green layer.
   // Optional: absent if the build ran without treecover2000 tiles.
   forestImage: ImageBitmap | null;
 }
 
-// Companion to loadViolence: the small per-municipio/national JSON plus the
-// lossyear PNG decoded to an ImageBitmap for the deck.gl raster layer.
+// Companion to loadViolence: the small per-municipio/national JSON, the lossyear
+// pyramid as a PMTiles handle, and the (single-texture) canopy backdrop bitmap.
 export async function loadDeforestation(base = 'data'): Promise<DeforestationData> {
-  const [json, lossBlob, forestBlob] = await Promise.all([
-    loadJson<Omit<DeforestationData, 'image' | 'forestImage'>>(`${base}/deforestation.json`),
-    fetch(`${base}/deforestation_lossyear.png`).then((r) => {
-      if (!r.ok) throw new Error(`deforestation_lossyear.png ${r.status}`);
-      return r.blob();
-    }),
+  const [json, forestBlob] = await Promise.all([
+    loadJson<Omit<DeforestationData, 'lossTiles' | 'forestImage'>>(`${base}/deforestation.json`),
     // backdrop is optional — tolerate a 404 (build without treecover tiles)
     fetch(`${base}/deforestation_forest.png`)
       .then((r) => (r.ok ? r.blob() : null))
       .catch(() => null),
   ]);
-  const image = await createImageBitmap(lossBlob);
+  // PMTiles defers all tile fetches to getZxy(); construction is cheap (reads only
+  // the header lazily on first access via HTTP range requests).
+  const lossTiles = new PMTiles(`${base}/deforestation_lossyear.pmtiles`);
   const forestImage = forestBlob ? await createImageBitmap(forestBlob) : null;
-  return { ...json, image, forestImage };
+  return { ...json, lossTiles, forestImage };
 }
 
 const EPOCH_MS = Date.UTC(1958, 0, 1);

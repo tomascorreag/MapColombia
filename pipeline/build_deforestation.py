@@ -576,9 +576,12 @@ def write_json(muni_ha, national, national_by_driver, national_by_agkind,
                 "year_map": "calendar_year = 2000 + code",
                 "bounds_lnglat": [WEST, SOUTH, EAST, NORTH],
                 "crs": "EPSG:3857 (web mercator)",
-                "downsample_note": (f"downsampled from native 30 m to ~{CELL_DEG*111320:.0f} m "
-                                    "cells for display only; per-municipio areas are counted "
-                                    "from native 30 m pixels, not from this raster"),
+                "downsample_note": (f"this single PNG is a ~{CELL_DEG*111320:.0f} m coarse fallback; "
+                                    "the frontend renders the near-native pyramid "
+                                    "deforestation_lossyear.pmtiles (z5..z12, ~38 m/px at the finest "
+                                    "level, built by build_deforestation_tiles.py). Both are display "
+                                    "only — per-municipio areas are counted from native 30 m pixels, "
+                                    "not from any display raster"),
                 "excludes": "San Andres/Providencia/Malpelo islands (outside bbox)",
             },
             "forest_raster": {

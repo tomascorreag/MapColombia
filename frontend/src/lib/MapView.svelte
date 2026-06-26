@@ -4,6 +4,7 @@
   import 'maplibre-gl/dist/maplibre-gl.css';
   import { MapboxOverlay } from '@deck.gl/mapbox';
   import { GeoJsonLayer, LineLayer, ScatterplotLayer } from '@deck.gl/layers';
+  import { TileLayer } from '@deck.gl/geo-layers';
   import { DataFilterExtension, MaskExtension } from '@deck.gl/extensions';
   import type { PickingInfo, Layer } from '@deck.gl/core';
   import { TendrilExtension } from './TendrilExtension';
@@ -401,6 +402,27 @@
     app.defMuni = i;
   }
 
+  // Stable getTileData per PMTiles handle: deck.gl refetches every tile when the
+  // getTileData reference changes, so we cache one fetcher per handle (the handle is
+  // created once in loadDeforestation). Decodes each PMTiles PNG entry to an ImageBitmap.
+  let _lossFetch: { pmt: unknown; fn: (t: unknown) => Promise<ImageBitmap | null> } | null = null;
+  function lossTileFetcher(pmt: {
+    getZxy: (z: number, x: number, y: number, s?: AbortSignal) => Promise<{ data: ArrayBuffer } | undefined>;
+  }) {
+    if (!_lossFetch || _lossFetch.pmt !== pmt) {
+      _lossFetch = {
+        pmt,
+        fn: async (t: unknown) => {
+          const { index, signal } = t as { index: { x: number; y: number; z: number }; signal?: AbortSignal };
+          const r = await pmt.getZxy(index.z, index.x, index.y, signal);
+          if (!r || signal?.aborted) return null;
+          return createImageBitmap(new Blob([r.data]));
+        },
+      };
+    }
+    return _lossFetch.fn;
+  }
+
   function buildLayers(): Layer[] {
     const layers: Layer[] = [];
 
@@ -425,32 +447,64 @@
             } as never)
           );
         }
+        // Shared per-frame uniforms — captured by each tile's LossRasterLayer below.
+        const lossUniforms = {
+          maxYear: app.defPos - 2000, // float lossyear threshold → smooth crossfade
+          spotDim: app.defSpot.dim ? SPOT_DIM[app.defSpot.dim] : 0,
+          spotCode: app.defSpot.code,
+          spotYear: app.defSpotYear, // year mode restricts spotlight to one year; 0 = cumulative
+          filterDim: app.defFilter.dim,
+          filterMask: app.defFilter.mask,
+          ...defDbg, // recency-raster knobs (?debug panel tunes live)
+          ramp0: rampStopToVec4(defRamp[0]),
+          ramp1: rampStopToVec4(defRamp[1]),
+          ramp2: rampStopToVec4(defRamp[2]),
+          ramp3: rampStopToVec4(defRamp[3]),
+        };
         layers.push(
-          new LossRasterLayer({
+          new TileLayer({
             id: 'loss-raster',
-            image: deforestation.image,
-            bounds: deforestation.meta.display_raster.bounds_lnglat,
-            maxYear: app.defPos - 2000, // float lossyear threshold → smooth crossfade
-            // unified spotlight: which dimension+code the legend lens is hovering
-            spotDim: app.defSpot.dim ? SPOT_DIM[app.defSpot.dim] : 0,
-            spotCode: app.defSpot.code,
-            // year mode restricts the spotlight to one year's loss; 0 = cumulative
-            spotYear: app.defSpotYear,
-            // bucket visibility toggles (per active lens dimension)
-            filterDim: app.defFilter.dim,
-            filterMask: app.defFilter.mask,
-            // recency-raster knobs (defDbg defaults = shipped look; ?debug panel tunes live)
-            ...defDbg,
-            // recency colour ramp stops (hex+pos -> vec4 rgb+pos)
-            ramp0: rampStopToVec4(defRamp[0]),
-            ramp1: rampStopToVec4(defRamp[1]),
-            ramp2: rampStopToVec4(defRamp[2]),
-            ramp3: rampStopToVec4(defRamp[3]),
-            // Nearest: one exact colour per cell (R year / B codes never blended into a
-            // neighbour). The shader is spatially coherent (colour = f(year), no per-cell
-            // randomness) so this does not strobe when panning.
-            textureParameters: { minFilter: 'nearest', magFilter: 'nearest' },
-            pickable: false,
+            // PMTiles pyramid → only viewport tiles at the matching zoom are on the GPU,
+            // so the finest level reaches ~native 30 m. getTileData identity is kept stable
+            // (keyed on the PMTiles handle) so scrubbing/spotlight changes never refetch.
+            getTileData: lossTileFetcher(deforestation.lossTiles),
+            tileSize: 256,
+            minZoom: 5, // pyramid floor (overview fallback for the national view)
+            maxZoom: 12, // finest level ~38 m/px ≈ native 30 m
+            extent: deforestation.meta.display_raster.bounds_lnglat,
+            // best-available (default): keep the coarse parent visible until the finer child
+            // loads → never blank during a zoom. Conserving overviews keep brightness steady.
+            refinementStrategy: 'best-available',
+            maxRequests: 8,
+            maxCacheSize: 400,
+            // deck.gl ignores function-prop changes, so a new renderSubLayers closure does
+            // NOT regenerate sublayers — the captured uniforms (maxYear/spotlight/filter)
+            // would go stale and scrubbing would show no change. Drive regeneration via an
+            // updateTrigger over the dynamic uniforms (regenerates layers, no tile refetch;
+            // getTileData stays keyed on the handle so data is untouched).
+            updateTriggers: {
+              getTileData: deforestation.lossTiles,
+              renderSubLayers: JSON.stringify(lossUniforms),
+            },
+            renderSubLayers: (props: Record<string, unknown>) => {
+              const tile = props.tile as { boundingBox: [[number, number], [number, number]] };
+              const data = props.data as ImageBitmap | null;
+              if (!data) return null;
+              const [[w, s], [e, n]] = tile.boundingBox;
+              return new LossRasterLayer({
+                id: props.id as string,
+                image: data,
+                bounds: [w, s, e, n],
+                // (west, north, lngSpan, latSpan): geo-locks the burn-front noise so it is
+                // continuous across tile seams and LOD swaps (see LossRasterLayer shader).
+                tileBounds: [w, n, e - w, s - n],
+                ...lossUniforms,
+                // Nearest: R year / B packed codes must never blend into a neighbour. The
+                // shader is spatially coherent so this does not strobe on pan.
+                textureParameters: { minFilter: 'nearest', magFilter: 'nearest' },
+                pickable: false,
+              } as never);
+            },
           } as never)
         );
         // transparent municipio polygons: invisible fill, faint outline, but

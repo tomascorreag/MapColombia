@@ -32,6 +32,13 @@ export const DEF_DBG_GROUPS: { title: string; params: DefDbgParam[] }[] = [
       { key: 'noiseScale', label: 'burn noise freq', min: 20, max: 600, step: 10 },
     ],
   },
+  {
+    title: '2001/02 baseline',
+    params: [
+      { key: 'baseAge', label: 'pre-age x cool', min: 0, max: 3, step: 0.1 },
+      { key: 'baseGrey', label: 'grey blend', min: 0, max: 1, step: 0.05 },
+    ],
+  },
 ];
 
 // Recency colour-ramp stop labels: cold/ember end -> hot/fresh end (matches panel rows).
