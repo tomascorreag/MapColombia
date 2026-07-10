@@ -4548,5 +4548,958 @@
         }
       ]
     }
+  },
+  "riohacha-439600": {
+    "key": "riohacha-439600",
+    "seed": {
+      "modality": "MA",
+      "municipioDane": 44001,
+      "date": "2002-08-31",
+      "victims": 16,
+      "responsibleHint": "AUC"
+    },
+    "candidatesInMuniYear": 4,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 439600,
+    "coded": {
+      "date": "2002-08-31",
+      "victims": 18,
+      "responsible": "GRUPO PARAMILITAR",
+      "responsibleGroup": "AUTODEFENSAS UNIDAS DE COLOMBIA AUC",
+      "municipio": "RIOHACHA",
+      "departamento": "LA GUAJIRA"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "seed": 16,
+        "coded": 18,
+        "note": "source figure differs from CNMH-coded count; report coded value"
+      },
+      {
+        "field": "victims",
+        "note": "CNMH registry (case 439600) records 18 victims. Rutas del Conflicto, the CNMH report 'La tierra se quedó sin su canto', and multiple press sources consistently document 16 killed. An initial Semana contemporaneous report (September 1, 2002) cited 12 dead; the Fiscalía initially established at least 8 victims in its investigation. The discrepancy likely reflects victims whose remains were never recovered and different methodological thresholds across investigations."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "only 2 authoritative sources (need 3)",
+      "source figure differs from CNMH-coded count; report coded value; CNMH registry (case 439600) records 18 victims. Rutas del Conflicto, the CNMH report 'La tierra se quedó sin su canto', and multiple press sources consistently document 16 killed. An initial Semana contemporaneous report (September 1, 2002) cited 12 dead; the Fiscalía initially established at least 8 victims in its investigation. The discrepancy likely reflects victims whose remains were never recovered and different methodological thresholds across investigations."
+    ],
+    "payload": {
+      "title": {
+        "es": "Masacre de El Limón",
+        "en": "El Limón Massacre"
+      },
+      "narrative": {
+        "es": "Entre el 31 de agosto y el 3 de septiembre de 2002, aproximadamente 200 paramilitares del Bloque Norte de las Autodefensas Unidas de Colombia (AUC), pertenecientes al Frente Resistencia Tayrona y la Contrainsurgencia Wayúu, incursionaron en la vereda El Limón, corregimiento de Tomarrazón, zona rural del municipio de Riohacha, La Guajira. El CNMH (caso 439600) registra 18 víctimas fatales; el informe del CNMH 'La tierra se quedó sin su canto' y otras fuentes documentales registran 16 personas asesinadas, entre ellas seis menores de edad y dos adultos mayores de 70 años, la mayoría pertenecientes a la comunidad indígena Wiwa. Los paramilitares incendiaron 15 viviendas y lanzaron cilindros y cohetes contra la población civil; más de 150 habitantes fueron forzados a desplazarse y la vereda quedó despoblada. Excombatientes del grupo armado reconocieron responsabilidad en el marco de los procesos de Justicia y Paz; testimonios señalaron una posible complicidad de miembros del Batallón de Cartagena. El Tribunal Administrativo de La Guajira declaró la responsabilidad del Estado colombiano por omisión (fallos de diciembre de 2015 y marzo de 2016), y el 20 de julio de 2018 el Ministro de Justicia ofreció disculpas públicas a la comunidad Wiwa de El Limón.",
+        "en": "Between August 31 and September 3, 2002, approximately 200 paramilitaries from the AUC's Bloque Norte (Resistencia Tayrona and Contrainsurgencia Wayúu fronts) entered the settlement of El Limón in the rural area of Riohacha municipality, La Guajira. The CNMH registry (case 439600) records 18 victims; the CNMH report 'La tierra se quedó sin su canto' and other documentary sources document 16 people killed, including six minors and two adults over 70 years old, the majority members of the indigenous Wiwa community. The paramilitaries burned 15 homes and fired cylinders and rockets at the civilian population, forcibly displacing over 150 residents and leaving El Limón depopulated. Demobilized combatants acknowledged responsibility in Justice and Peace proceedings, with testimony indicating possible collusion with members of the Cartagena Battalion. The Administrative Court of La Guajira found the Colombian State responsible for failing to prevent the attack despite prior warnings (rulings of December 2015 and March 2016), and on July 20, 2018, Colombia's Justice Minister formally apologized to the Wiwa community of El Limón."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Masacre de El Limón, La Guajira",
+          "url": "https://rutasdelconflicto.com/masacres/el-limon-la-guajira"
+        },
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica",
+          "title": "La tierra se quedó sin su canto. Trayectoria e impactos del Bloque Norte (Tomo I)",
+          "url": "https://centrodememoriahistorica.gov.co/la-tierra-se-quedo-sin-canto-tomo-i/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Comisión Intereclesial de Justicia y Paz",
+          "title": "Masacre de El Limón",
+          "url": "https://www.justiciaypazcolombia.com/masacre-de-el-limon/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Heraldo",
+          "title": "Masacre de El Limón: cuando el territorio wiwa se tiñó de sangre",
+          "url": "https://elheraldo.co/la-guajira/masacre-de-el-limon-cuando-el-territorio-wiwa-se-tino-de-sangre-521500"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "El Estado pide perdón por las víctimas de El Limón",
+          "url": "https://www.eltiempo.com/colombia/otras-ciudades/el-estado-pide-perdon-por-las-victimas-de-el-limon-245822"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Colectivo de Abogados José Alvear Restrepo (CAJAR)",
+          "title": "Estado pidió perdón por masacre y desplazamiento de comunidad del pueblo Wiwa",
+          "url": "https://www.colectivodeabogados.org/estado-pidio-perdon-por-masacre-y-desplazamiento-de-comunidad-del-pueblo-wiwa/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Espectador",
+          "title": "Una masacre en el olvido",
+          "url": "https://www.elespectador.com/judicial/una-masacre-en-el-olvido-article-186153/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Semana",
+          "title": "Masacre en La Guajira deja 12 personas muertas",
+          "url": "https://www.semana.com/masacre-la-guajira-deja-12-personas-muertas/53867-3/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Heraldo",
+          "title": "Gobierno pide perdón por la masacre de El Limón en La Guajira",
+          "url": "https://elheraldo.co/la-guajira/gobierno-pide-perdon-por-la-masacre-de-el-limon-en-la-guajira-520506"
+        }
+      ]
+    }
+  },
+  "granada-815423": {
+    "key": "granada-815423",
+    "seed": {
+      "modality": "AB",
+      "municipioDane": 50313,
+      "date": "1968-04-04",
+      "victims": null,
+      "responsibleHint": "Ejército Nacional"
+    },
+    "candidatesInMuniYear": 1,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 815423,
+    "coded": {
+      "date": "1968-04-04",
+      "victims": 18,
+      "responsible": "AGENTE DEL ESTADO",
+      "responsibleGroup": "EJÉRCITO NACIONAL",
+      "municipio": "GRANADA",
+      "departamento": "META"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "note": "Sources disagree substantially on the death toll. CNMH SIEVCAC records 18 victims. Wikipedia (English) cites 15 (Aljure + wife + 13 guerrillas). SuRegión reports 4 deaths (Aljure, wife, and two daughters). El Tiempo archive reports Aljure + 9 guerrillas + 4 soldiers killed. The date is also disputed: CNMH records April 4, 1968; most press sources and Wikipedia give April 5, 1968."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "Sources disagree substantially on the death toll. CNMH SIEVCAC records 18 victims. Wikipedia (English) cites 15 (Aljure + wife + 13 guerrillas). SuRegión reports 4 deaths (Aljure, wife, and two daughters). El Tiempo archive reports Aljure + 9 guerrillas + 4 soldiers killed. The date is also disputed: CNMH records April 4, 1968; most press sources and Wikipedia give April 5, 1968."
+    ],
+    "payload": {
+      "title": {
+        "es": "Operación Bolívar – Combate de Rincón de Bolívar y muerte de Dumar Aljure (1968)",
+        "en": "Operation Bolívar – Combat at Rincón de Bolívar and death of Dumar Aljure (1968)"
+      },
+      "narrative": {
+        "es": "El 4 de abril de 1968, el Ejército Nacional colombiano (Séptima Brigada) y la Policía Nacional ejecutaron la Operación Bolívar contra la residencia de Dumar Aljure en Rincón de Bolívar, corregimiento del municipio de Granada, Meta. Dumar Aljure, comandante de la guerrilla liberal en los Llanos Orientales desde los años de La Violencia y última figura prominente del bandolerismo político de la región, murió en el combate junto con su esposa Ana Felisa y otros combatientes. El CNMH registra 18 víctimas para este caso (IdCaso 815423); fuentes de prensa contemporáneas reportaron entre 4 y 15 muertos, y la versión más citada señala la muerte de Aljure, su esposa y trece guerrilleros. La operación puso fin definitivo a la resistencia armada liberal organizada en el oriente colombiano y al bandolerismo político de la región.",
+        "en": "On April 4, 1968, the Colombian National Army (Seventh Brigade) and National Police carried out Operation Bolívar against the home of Dumar Aljure at Rincón de Bolívar, in the municipality of Granada, Meta. Dumar Aljure, commander of the liberal guerrilla in the Eastern Plains since the years of La Violencia and the last prominent figure of the region's political banditry, died in the engagement along with his wife Ana Felisa and other fighters. The CNMH registry records 18 victims for this case (IdCaso 815423); contemporary press accounts reported between 4 and 15 deaths, with the most frequently cited figure being Aljure, his wife, and thirteen guerrilla fighters. The operation definitively ended organized liberal armed resistance and political banditry in eastern Colombia."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+          "title": "El legado de Guadalupe Salcedo y Dumar Aljure: resistencia y lucha en los Llanos Orientales",
+          "url": "https://centrodememoriahistorica.gov.co/el-legado-de-guadalupe-salcedo-y-dumar-aljure-resistencia-y-lucha-en-los-llanos-orientales/"
+        },
+        {
+          "type": "scholarship",
+          "publisher": "RAND Corporation",
+          "title": "The Fall of Dumar Aljure, A Colombian Guerrilla and Bandit (Research Memorandum RM5750)",
+          "url": "https://www.rand.org/pubs/research_memoranda/RM5750.html"
+        },
+        {
+          "type": "scholarship",
+          "publisher": "Universidad Distrital Francisco José de Caldas",
+          "title": "El capitán Dumar Aljure: vida y muerte de un hombre rebelde – Orlando Villanueva Martínez (2013)",
+          "url": "https://searchworks.stanford.edu/view/10579090"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo (archivo)",
+          "title": "CAYÓ DUMAR ALJURE",
+          "url": "https://www.eltiempo.com/archivo/documento/MAM-952626"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Wikipedia (English)",
+          "title": "Dumar Aljure",
+          "url": "https://en.wikipedia.org/wiki/Dumar_Aljure"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "SuRegión",
+          "title": "Dumar Aljure: el valiente",
+          "url": "https://www.suregion.com/surelato/para-leer/dumar-aljure-el-valiente/"
+        }
+      ]
+    }
+  },
+  "pasto-353650": {
+    "key": "pasto-353650",
+    "seed": {
+      "modality": "SE",
+      "municipioDane": 52001,
+      "date": "1997-12-20",
+      "victims": 18,
+      "responsibleHint": "FARC"
+    },
+    "candidatesInMuniYear": 1,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 353650,
+    "coded": {
+      "date": "1997-12-20",
+      "victims": 18,
+      "responsible": "GUERRILLA",
+      "responsibleGroup": "FARC",
+      "municipio": "PASTO",
+      "departamento": "NARIÑO"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "note": "The CNMH registry records 18 kidnapped victims, consistent with Rutas del Conflicto, El Tiempo, and Wikipedia. The Centro de Memoria Histórica's 'Recuerdos de Selva' timeline gives 24 military kidnapped, and Semana reports 'más de 20.' The CNMH figure of 18 is treated as authoritative."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "The CNMH registry records 18 kidnapped victims, consistent with Rutas del Conflicto, El Tiempo, and Wikipedia. The Centro de Memoria Histórica's 'Recuerdos de Selva' timeline gives 24 military kidnapped, and Semana reports 'más de 20.' The CNMH figure of 18 is treated as authoritative."
+    ],
+    "payload": {
+      "title": {
+        "es": "Toma de Patascoy — secuestro de militares",
+        "en": "Patascoy attack — military kidnappings"
+      },
+      "narrative": {
+        "es": "En la madrugada del 21 de diciembre de 1997 (registrado por el CNMH el 20 de diciembre), entre 150 y 200 guerrilleros del Bloque Sur de las FARC-EP —pertenecientes a los frentes 2, 32 y 48 y bajo el mando de Joaquín Gómez— atacaron la estación de comunicaciones del Batallón Boyacá ubicada en el Cerro Patascoy, en la frontera entre Nariño y Putumayo, a aproximadamente 4.000 metros de altitud. La guarnición de 32 soldados fue superada en menos de quince minutos; diez uniformados murieron durante el combate y 18 fueron tomados como prisioneros, según el registro del CNMH y fuentes como Rutas del Conflicto y El Tiempo (el micrositio 'Recuerdos de Selva' del Centro de Memoria Histórica registra 24 secuestrados). Dieciséis de los 18 soldados fueron liberados el 28 de junio de 2001 en La Macarena (Meta), junto con 226 militares y policías. El cabo Libio José Martínez permaneció cautivo casi catorce años y murió el 26 de noviembre de 2011 durante un operativo militar. Un juzgado especializado de Pasto condenó a doce miembros del Secretariado de las FARC a 480 años de prisión —40 años cada uno— por los crímenes cometidos en esta operación. La JEP también identificó la Toma de Patascoy como uno de los casos de secuestro masivo atribuidos al Bloque Sur dentro de su investigación sobre los crímenes de las extintas FARC-EP.",
+        "en": "In the early hours of December 21, 1997 (registered by the CNMH on December 20), between 150 and 200 guerrillas of the FARC-EP Southern Bloc — fronts 2, 32, and 48 under the command of Joaquín Gómez — attacked the Batallón Boyacá communications station at Cerro Patascoy, on the Nariño-Putumayo border, at approximately 4,000 metres elevation. The 32-soldier garrison was overrun in under fifteen minutes; ten soldiers were killed in combat and 18 were taken prisoner, according to the CNMH registry and sources including Rutas del Conflicto and El Tiempo (the Centro de Memoria Histórica's 'Recuerdos de Selva' microsite records 24 kidnapped). Sixteen of the 18 soldiers were released on June 28, 2001, in La Macarena (Meta), alongside 226 other military and police personnel. Corporal Libio José Martínez remained in captivity for nearly fourteen years and died on November 26, 2011, during a military rescue operation. A specialised court in Pasto sentenced twelve members of the FARC Secretariat to a combined 480 years in prison — 40 years each — for crimes committed in this operation. The JEP also identified the Patascoy attack as one of the mass kidnapping cases attributable to the Southern Bloc in its investigation of crimes committed by the former FARC-EP."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Patascoy: la fría madrugada (primera entrega)",
+          "url": "https://rutasdelconflicto.com/notas/patascoy-la-fria-madrugada-primera-entrega"
+        },
+        {
+          "type": "primary",
+          "publisher": "JEP (Jurisdicción Especial para la Paz)",
+          "title": "La JEP finaliza la investigación por los secuestros de las extintas FARC-EP en Colombia",
+          "url": "https://www.jep.gov.co/Sala-de-Prensa/Paginas/-la-jep-finaliza-la-investigacion-por-los-secuestros-de-las-extintas-farc-ep-en-colombia.aspx"
+        },
+        {
+          "type": "primary",
+          "publisher": "Centro de Memoria Histórica",
+          "title": "Recuerdos de selva — Línea de tiempo",
+          "url": "https://centrodememoriahistorica.gov.co/micrositios/recuerdos-de-selva/linea-tiempo.html"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "Condena de 480 años para Secretariado de FARC",
+          "url": "https://www.eltiempo.com/archivo/documento/MAM-1591419"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Wikipedia (es)",
+          "title": "Toma de Patascoy",
+          "url": "https://es.wikipedia.org/wiki/Toma_de_Patascoy"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Semana",
+          "title": "Así fueron los secuestros más aterradores por los que terminaron condenados los miembros del antiguo Secretariado de las FARC",
+          "url": "https://www.semana.com/nacion/articulo/asi-fueron-los-secuestros-mas-aterradores-por-los-que-terminaron-condenados-los-miembros-del-antiguo-secretariado-de-las-farc/202513/"
+        }
+      ]
+    }
+  },
+  "granada-291016": {
+    "key": "granada-291016",
+    "seed": {
+      "modality": "MA",
+      "municipioDane": 5313,
+      "date": "2000-11-03",
+      "victims": 17,
+      "responsibleHint": "AUC"
+    },
+    "candidatesInMuniYear": 1,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 291016,
+    "coded": {
+      "date": "2000-11-03",
+      "victims": 17,
+      "responsible": "GRUPO PARAMILITAR",
+      "responsibleGroup": "AUTODEFENSAS UNIDAS DE COLOMBIA AUC",
+      "municipio": "GRANADA",
+      "departamento": "ANTIOQUIA"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "note": "Hacemos Memoria (CNMH-affiliated) records 19 killed; Rutas del Conflicto and the CNMH SIEVCAC registry record 17. The discrepancy likely reflects whether victims killed by the paramilitaries during their retreat were included in the official count."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "Hacemos Memoria (CNMH-affiliated) records 19 killed; Rutas del Conflicto and the CNMH SIEVCAC registry record 17. The discrepancy likely reflects whether victims killed by the paramilitaries during their retreat were included in the official count."
+    ],
+    "payload": {
+      "title": {
+        "es": "Masacre de Granada (3 de noviembre de 2000)",
+        "en": "Granada Massacre (November 3, 2000)"
+      },
+      "narrative": {
+        "es": "El 3 de noviembre de 2000, integrantes del Bloque Metro de las Autodefensas Unidas de Colombia (AUC), al mando de Carlos Mauricio García alias 'Doble Cero', ingresaron al casco urbano de Granada, Antioquia, y asesinaron a 17 personas según el registro del CNMH SIEVCAC; otras cuatro quedaron gravemente heridas. Entre las víctimas se hallaban seis mayores de 60 años, dos menores de edad y dos madres de familia; Hacemos Memoria registra 19 personas asesinadas y señala la participación de los bloques Metro y Cacique Nutibara, mientras que Rutas del Conflicto indica que el grupo pudo haber matado campesinos adicionales durante la retirada que no fueron contabilizados oficialmente. El Bloque Metro reconoció su responsabilidad en la masacre; bajo la Ley de Justicia y Paz, Jader Armando Cuesta Romero alias 'Medellín', exintegrante del grupo, fue condenado a 20 años de prisión, reducidos a un máximo de ocho. Este hecho fue una de las 13 masacres registradas en el municipio entre 1993 y 2004, período documentado por el Centro Nacional de Memoria Histórica en el informe 'Granada: Memorias de guerra, resistencia y reconstrucción' (2016).",
+        "en": "On November 3, 2000, members of the Bloque Metro of the Autodefensas Unidas de Colombia (AUC), commanded by Carlos Mauricio García alias 'Doble Cero', entered the urban center of Granada, Antioquia, and killed 17 people according to the CNMH SIEVCAC registry, leaving four others seriously wounded. Among the victims were six people over 60 years old, two minors, and two mothers of families; Hacemos Memoria records 19 killed and also names the Cacique Nutibara bloc alongside the Bloque Metro, while Rutas del Conflicto notes that the group may have killed additional rural workers during their retreat who were not officially counted. The Bloque Metro acknowledged responsibility; under Colombia's Justice and Peace Law, former member Jader Armando Cuesta Romero alias 'Medellín' was sentenced to 20 years in prison, reduced to a maximum of eight years. This massacre was one of 13 recorded in the municipality between 1993 and 2004, a period documented by the Centro Nacional de Memoria Histórica in the report 'Granada: Memorias de guerra, resistencia y reconstrucción' (2016)."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Masacre de Granada 2000",
+          "url": "https://rutasdelconflicto.com/masacres/granada-2000"
+        },
+        {
+          "type": "primary",
+          "publisher": "Hacemos Memoria / Centro Nacional de Memoria Histórica",
+          "title": "Granada: ¡Nunca más!",
+          "url": "https://hacemosmemoria.org/2017/09/22/granada-nunca-mas/"
+        },
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica",
+          "title": "Granada: Memorias de guerra, resistencia y reconstrucción (informe accesible)",
+          "url": "https://centrodememoriahistorica.gov.co/descargas/informes-accesibles/granada_accesible.pdf"
+        }
+      ]
+    }
+  },
+  "ituango-290134": {
+    "key": "ituango-290134",
+    "seed": {
+      "modality": "MA",
+      "municipioDane": 5361,
+      "date": "1997-10-25",
+      "victims": 17,
+      "responsibleHint": "paramilitar"
+    },
+    "candidatesInMuniYear": 2,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 290134,
+    "coded": {
+      "date": "1997-10-25",
+      "victims": 17,
+      "responsible": "AGENTE DEL ESTADO - GRUPO PARAMILITAR",
+      "responsibleGroup": "NO APLICA",
+      "municipio": "ITUANGO",
+      "departamento": "ANTIOQUIA"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "note": "Sources disagree on the death toll specific to El Aro: GIDH and the JEP (Case 08) document 15 named victims; Rutas del Conflicto and the CNMH registry give 17; the IACHR refers to 'more than 17 campesinos' killed at El Aro, with 19 total across both Ituango massacres (La Granja 1996 and El Aro 1997 combined). The CNMH figure of 17 is used as the registry figure."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "Sources disagree on the death toll specific to El Aro: GIDH and the JEP (Case 08) document 15 named victims; Rutas del Conflicto and the CNMH registry give 17; the IACHR refers to 'more than 17 campesinos' killed at El Aro, with 19 total across both Ituango massacres (La Granja 1996 and El Aro 1997 combined). The CNMH figure of 17 is used as the registry figure."
+    ],
+    "payload": {
+      "title": {
+        "es": "Masacre de El Aro",
+        "en": "El Aro Massacre"
+      },
+      "narrative": {
+        "es": "La Masacre de El Aro tuvo lugar en el corregimiento de El Aro, municipio de Ituango (Antioquia), entre el 22 y el 31 de octubre de 1997. El 25 de octubre —fecha registrada por el CNMH— paramilitares de las Autodefensas Campesinas de Córdoba y Urabá (ACCU), aproximadamente 150 hombres conocidos localmente como los 'Mochacabezas', reunieron a los habitantes en el parque central del poblado y ejecutaron a varios de ellos; el CNMH contabiliza 17 víctimas mortales, aunque el GIDH y la JEP documentan 15 personas identificadas y la CIDH refiere 'más de 17 campesinos'. Los perpetradores torturaron públicamente a sus víctimas, incendiaron 42 de las 60 casas del caserío, sustrajeron aproximadamente 1.200 cabezas de ganado y desplazaron forzadamente a más de 700 habitantes de la región. La Corte Interamericana de Derechos Humanos condenó al Estado colombiano en 2006 por la aquiescencia y colaboración de miembros de la Fuerza Pública con los grupos paramilitares durante la incursión. En 2025, la Jurisdicción Especial para la Paz reconoció a la comunidad de El Aro como víctima colectiva en el marco del Caso 08, que investiga los nexos entre el paramilitarismo y agentes del Estado.",
+        "en": "The El Aro Massacre took place in the corregimiento of El Aro, municipality of Ituango, Antioquia, between October 22 and 31, 1997. On October 25—the date recorded by the CNMH—members of the Autodefensas Campesinas de Córdoba y Urabá (ACCU), approximately 150 armed men known locally as the 'Mochacabezas,' assembled the village's inhabitants in the central square and executed several of them; the CNMH registers 17 victims, while GIDH and the JEP document 15 identified individuals and the IACHR refers to 'more than 17 campesinos.' The perpetrators publicly tortured victims, burned 42 of the village's 60 houses, stole approximately 1,200 head of cattle, and forcibly displaced more than 700 residents. The Inter-American Court of Human Rights condemned the Colombian State in 2006 for the acquiescence and direct collaboration of members of the Armed Forces with the paramilitary groups who carried out the attack. In 2025, the Special Jurisdiction for Peace recognized the El Aro community as a collective victim within Case 08, which investigates the criminal relationship between paramilitarism and state agents."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Corte Interamericana de Derechos Humanos",
+          "title": "Caso de las Masacres de Ituango vs. Colombia, Sentencia del 1 de julio de 2006 (Serie C No. 148)",
+          "url": "https://www.corteidh.or.cr/docs/casos/articulos/seriec_148_ing.pdf"
+        },
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Masacre de El Aro",
+          "url": "https://rutasdelconflicto.com/masacres/el-aro"
+        },
+        {
+          "type": "primary",
+          "publisher": "Grupo Interdisciplinario de Derechos Humanos (GIDH)",
+          "title": "Masacres de Ituango-El Aro",
+          "url": "https://gidh.org.co/index.php/es/pages/masacres-de-ituango/masacres-de-ituango-el-aro"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Infobae Colombia",
+          "title": "JEP reconoce a comunidad de El Aro como víctima colectiva en caso de masacre de 1997",
+          "url": "https://www.infobae.com/colombia/2025/03/14/jep-reconoce-a-comunidad-de-el-aro-como-victima-colectiva-en-caso-de-masacre-de-1997/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Wikipedia",
+          "title": "Masacre de El Aro",
+          "url": "https://es.wikipedia.org/wiki/Masacre_de_El_Aro"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Rutas del Conflicto",
+          "title": "25 años de la masacre del Aro",
+          "url": "https://rutasdelconflicto.com/notas/25-anos-la-masacre-del-aro"
+        }
+      ]
+    }
+  },
+  "bolivar-289272": {
+    "key": "bolivar-289272",
+    "seed": {
+      "modality": "MA",
+      "municipioDane": 19100,
+      "date": "1991-04-07",
+      "victims": 17,
+      "responsibleHint": "Ejército"
+    },
+    "candidatesInMuniYear": 1,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 289272,
+    "coded": {
+      "date": "1991-04-07",
+      "victims": 17,
+      "responsible": "GRUPO ARMADO NO IDENTIFICADO",
+      "responsibleGroup": "NO APLICA",
+      "municipio": "BOLIVAR",
+      "departamento": "CAUCA"
+    },
+    "conflicts": [
+      {
+        "field": "responsible",
+        "seed": "Ejército",
+        "coded": "GRUPO ARMADO NO IDENTIFICADO",
+        "note": "coded perpetrator differs from the stated perpetrator"
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "coded perpetrator differs from the stated perpetrator"
+    ],
+    "payload": {
+      "title": {
+        "es": "Masacre de Los Uvos",
+        "en": "Los Uvos Massacre"
+      },
+      "narrative": {
+        "es": "El 7 de abril de 1991, una patrulla del Pelotón Águila Dos del Batallón de Infantería No. 7 José Hilario López del Ejército Nacional interceptó un bus rural en el sector de Puente Fierro, en el camino entre los corregimientos de Los Uvos y Piedrasentada, en el sur del Cauca. Los militares, acompañados de dos informantes civiles, obligaron a los 17 pasajeros —14 hombres y 3 mujeres, campesinos que se dirigían al mercado— a tenderse en el suelo y los asesinaron. El CNMH registra 17 víctimas y clasifica el perpetrador como grupo armado no identificado; sin embargo, el testimonio de un soldado participante, los procesos penales abiertos por la Unidad de Derechos Humanos de la Fiscalía General (1995) y el fallo de la Comisión Interamericana de Derechos Humanos (Caso Colombia 11.020) señalan como responsables a miembros del Ejército Nacional. En 1993, el Tribunal Administrativo del Cauca condenó a la Nación a pagar reparaciones a los familiares; en 2002, el Consejo de Estado retiró al coronel César Augusto Saavedra Padilla de su cargo.",
+        "en": "On April 7, 1991, a patrol from the Eagle Two Platoon of Infantry Battalion No. 7 José Hilario López of the Colombian National Army stopped a rural bus at Puente Fierro bridge, on the road between Los Uvos and Piedrasentada in southern Cauca. Soldiers, accompanied by two civilian informants, forced the 17 passengers—14 men and 3 women, campesinos headed to market—to lie on the ground and shot them. The CNMH registry records 17 victims and classifies the perpetrator as an unidentified armed group; however, testimony from a participating soldier, criminal proceedings opened by the Attorney General's Human Rights Unit (1995), and the ruling of the Inter-American Commission on Human Rights (Case Colombia 11.020) all identified members of the National Army as responsible. In 1993, the Administrative Court of Cauca ordered the State to pay reparations to victims' families; in 2002, the Council of State removed Colonel César Augusto Saavedra Padilla from his command."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Masacre de Los Uvos",
+          "url": "https://rutasdelconflicto.com/masacres/los-uvos"
+        },
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica",
+          "title": "Las víctimas de la masacre de Los Uvos resisten al olvido",
+          "url": "https://centrodememoriahistorica.gov.co/las-victimas-de-la-masacre-de-los-uvos-resisten-al-olvido/"
+        },
+        {
+          "type": "primary",
+          "publisher": "Comisión Interamericana de Derechos Humanos / OEA (vía University of Minnesota Human Rights Library)",
+          "title": "Colombia 11.020 — Masacre de Los Uvos",
+          "url": "http://hrlibrary.umn.edu/cases/35-00.html"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "Condena a la Nación por Masacre de Los Uvos (1993)",
+          "url": "https://www.eltiempo.com/archivo/documento/MAM-254752"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "Masacre de Los Uvos, a juicio coronel del Ejército (1995)",
+          "url": "https://www.eltiempo.com/archivo/documento/MAM-477943"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Las2Orillas",
+          "title": "La masacre de 17 campesinos en los Uvos (Cauca) en 1991",
+          "url": "https://www.las2orillas.co/la-masacre-17-campesinos-los-uvos-cauca-1991/"
+        }
+      ]
+    }
+  },
+  "cimitarra-434756": {
+    "key": "cimitarra-434756",
+    "seed": {
+      "modality": "DF",
+      "municipioDane": 68190,
+      "date": "1987-10-06",
+      "victims": 17,
+      "responsibleHint": "paramilitar"
+    },
+    "candidatesInMuniYear": 14,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 434756,
+    "coded": {
+      "date": "1987-10-06",
+      "victims": 17,
+      "responsible": "GRUPO PARAMILITAR",
+      "responsibleGroup": "AUTODEFENSAS CAMPESINAS DEL MAGDALENA MEDIO",
+      "municipio": "CIMITARRA",
+      "departamento": "SANTANDER"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "note": "The CNMH registry records 17 victims for the October 6, 1987 event. The Inter-American Court case '19 Comerciantes vs. Colombia' (Serie C No. 109) documents 19 total, adding 2 merchants who disappeared on October 18, 1987, while searching for the first group. The difference reflects temporal scope of the same event, not a factual disagreement about the same individuals."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "The CNMH registry records 17 victims for the October 6, 1987 event. The Inter-American Court case '19 Comerciantes vs. Colombia' (Serie C No. 109) documents 19 total, adding 2 merchants who disappeared on October 18, 1987, while searching for the first group. The difference reflects temporal scope of the same event, not a factual disagreement about the same individuals."
+    ],
+    "payload": {
+      "title": {
+        "es": "Desaparición forzada de los 19 comerciantes del Magdalena Medio",
+        "en": "Forced disappearance of the 19 merchants of the Magdalena Medio"
+      },
+      "narrative": {
+        "es": "El 6 de octubre de 1987, 17 comerciantes que viajaban de Cúcuta a Medellín fueron detenidos y desaparecidos por un grupo paramilitar cerca de la finca 'El Diamante', en jurisdicción de Cimitarra, Santander, en la región del Magdalena Medio. El CNMH registra 17 víctimas para este evento; la Corte Interamericana de Derechos Humanos documentó un total de 19 en el expediente 'Caso 19 Comerciantes vs. Colombia', incluyendo a dos personas desaparecidas el 18 de octubre de 1987 mientras buscaban a los primeros. El grupo paramilitar —las Autodefensas Campesinas del Magdalena Medio, bajo mando de Henry Pérez— actuó con apoyo y colaboración de miembros de la Fuerza Pública de la región, según determinó la Corte IDH. Las víctimas fueron asesinadas, sus cuerpos descuartizados y arrojados al caño 'El Ermitaño', afluente del río Magdalena. El 5 de julio de 2004, la Corte IDH condenó al Estado colombiano por la desaparición forzada de los 19 comerciantes, en el primer fallo internacional que responsabilizó al Estado colombiano por actos de grupos paramilitares.",
+        "en": "On October 6, 1987, 17 merchants traveling from Cucuta to Medellin were detained and forcibly disappeared by a paramilitary group near the farm 'El Diamante', in the jurisdiction of Cimitarra, Santander, in the Magdalena Medio region. The CNMH registry records 17 victims for this event; the Inter-American Court of Human Rights documented 19 total in the case '19 Comerciantes vs. Colombia', adding two persons disappeared on October 18, 1987, while searching for the first group. The paramilitary group — the Autodefensas Campesinas del Magdalena Medio, under Henry Perez — acted with the support and collaboration of members of the Public Force in the region, as determined by the Inter-American Court. The victims were killed, their bodies dismembered and thrown into the Cano El Ermitano, a tributary of the Magdalena River. On July 5, 2004, the Inter-American Court condemned the Colombian State for the forced disappearances, marking the first international ruling holding the Colombian State responsible for acts by paramilitary groups."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Corte Interamericana de Derechos Humanos",
+          "title": "Caso 19 Comerciantes Vs. Colombia, Sentencia del 5 de julio de 2004 (Serie C No. 109)",
+          "url": "https://www.corteidh.or.cr/docs/casos/articulos/seriec_109_esp.pdf"
+        },
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica",
+          "title": "«19 comerciantes»: la historia de dolor y resistencia de las familias buscadoras",
+          "url": "https://centrodememoriahistorica.gov.co/19-comerciantes-la-historia-de-dolor-y-resistencia-de-las-familias-buscadoras/"
+        },
+        {
+          "type": "primary",
+          "publisher": "Comisión Interamericana de Derechos Humanos (via University of Minnesota Human Rights Library)",
+          "title": "Case 11.603 (Colombia) – Admissibility Report, IACHR Annual Report 1999",
+          "url": "http://hrlibrary.umn.edu/cases/112-99.html"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Comisión Colombiana de Juristas",
+          "title": "Luego de 33 años de la desaparición forzada de 19 comerciantes a manos de paramilitares con apoyo de agentes estatales, las víctimas denuncian incumplimiento de la sentencia de la Corte IDH",
+          "url": "https://www.coljuristas.org/sala_de_prensa/luego-de-33-annos-de-la-desaparicion-forzada-de-19-comerciantes-a-manos-de-paramilitares-con-apoyo-de-agentes-estatales-las-victimas-denuncian-incumplimiento-de-la-sentencia-de-la-corte-idh-que-las-favorecio"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Colectivo de Abogados José Alvear Restrepo (CAJAR)",
+          "title": "Desaparición forzada de 19 Comerciantes: 27 años de incertidumbre e impunidad",
+          "url": "https://www.colectivodeabogados.org/desaparicion-forzada-de-19-comerciantes-27-anos-de-incertidumbre-e-impunidad/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Espectador",
+          "title": "\"Nos sentimos defraudados\": familiares de las víctimas de la masacre de 19 comerciantes",
+          "url": "https://www.elespectador.com/colombia-20/paz-y-memoria/nos-sentimos-defraudados-familiares-de-las-victimas-de-la-masacre-de-19-comerciantes-article/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Vanguardia",
+          "title": "Caso de la desaparición forzada '19 comerciantes' sigue impune 28 años después",
+          "url": "https://www.vanguardia.com/colombia/2015/10/07/caso-de-la-desaparicion-forzada-19-comerciantes-sigue-impune-28-anos-despues/"
+        }
+      ]
+    }
+  },
+  "buenaventura-292195": {
+    "key": "buenaventura-292195",
+    "seed": {
+      "modality": "DF",
+      "municipioDane": 76109,
+      "date": "2005-04-18",
+      "victims": 12,
+      "responsibleHint": "paramilitar"
+    },
+    "candidatesInMuniYear": 49,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 292195,
+    "coded": {
+      "date": "2005-04-18",
+      "victims": 17,
+      "responsible": "AGENTE DEL ESTADO - GRUPO PARAMILITAR",
+      "responsibleGroup": "NO APLICA",
+      "municipio": "BUENAVENTURA",
+      "departamento": "VALLE DEL CAUCA"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "seed": 12,
+        "coded": 17,
+        "note": "source figure differs from CNMH-coded count; report coded value"
+      },
+      {
+        "field": "victims",
+        "note": "El CNMH SIEVCAC registra 17 víctimas de desaparición forzada en este caso. Las fuentes de prensa y de organizaciones comunitarias (PCN, OMCT) citan 12 jóvenes asesinados cuyos cuerpos fueron hallados y 12 personas desaparecidas sin restos localizados. La cifra de 17 del CNMH puede reflejar un universo ampliado de víctimas o criterios distintos de codificación de la modalidad de desaparición forzada respecto a las fuentes publicadas."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "source figure differs from CNMH-coded count; report coded value; El CNMH SIEVCAC registra 17 víctimas de desaparición forzada en este caso. Las fuentes de prensa y de organizaciones comunitarias (PCN, OMCT) citan 12 jóvenes asesinados cuyos cuerpos fueron hallados y 12 personas desaparecidas sin restos localizados. La cifra de 17 del CNMH puede reflejar un universo ampliado de víctimas o criterios distintos de codificación de la modalidad de desaparición forzada respecto a las fuentes publicadas."
+    ],
+    "payload": {
+      "title": {
+        "es": "Desaparición forzada de Los Matachines de Punta del Este, Buenaventura",
+        "en": "Forced Disappearance of the Matachines Youth, Punta del Este, Buenaventura"
+      },
+      "narrative": {
+        "es": "El 18 de abril de 2005, en Buenaventura (Valle del Cauca), paramilitares del Bloque Calima de las Autodefensas Unidas de Colombia engañaron a jóvenes afrodescendientes del barrio Punta del Este con la promesa de un partido de fútbol remunerado en el municipio de Dagua. El CNMH registra 17 víctimas de desaparición forzada en este caso; la PCN (Proceso de Comunidades Negras) y la OMCT documentaron contemporáneamente el hallazgo de 12 cuerpos con signos de tortura, quemaduras de ácido y ejecución en el estero de San Antonio, y reportaron la desaparición de 12 personas adicionales cuyos restos no fueron localizados. La Fiscalía identificó a nueve paramilitares del Bloque Calima como responsables, sin vincular a los mandos públicamente reconocidos Éver Veloza ('H.H.') ni Diego Murillo ('Don Berna'). El caso es conocido como la masacre de 'Los Matachines' y fue documentado por el CNMH en su informe 'Buenaventura: un puerto sin comunidad' (2015). Las familias de las víctimas mantienen desde entonces una conmemoración anual durante Semana Santa en Punta del Este como acto de resistencia y memoria.",
+        "en": "On April 18, 2005, in Buenaventura (Valle del Cauca), members of the Bloque Calima of the Autodefensas Unidas de Colombia lured young Afro-Colombian men from the Punta del Este neighborhood with the promise of a paid soccer match in the municipality of Dagua. The CNMH registry records 17 victims of forced disappearance in this case; the PCN (Black Communities Process) and the OMCT contemporaneously documented the recovery of 12 bodies bearing signs of torture, acid burns, and execution at the San Antonio estuary, and reported 12 additional individuals who remained disappeared without remains being located. The Fiscalía identified nine Bloque Calima paramilitaries as responsible, without linking the publicly recognized commanders Éver Veloza ('H.H.') or Diego Murillo ('Don Berna'). The case is widely known as the 'Los Matachines' massacre and was documented by the CNMH in its 2015 report 'Buenaventura: un puerto sin comunidad.' Victim families have since maintained an annual commemoration during Holy Week in Punta del Este as an act of resistance and memory."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+          "title": "Buenaventura: un puerto sin comunidad",
+          "url": "https://centrodememoriahistorica.gov.co/buenaventura-un-puerto-sin-comunidad-2/"
+        },
+        {
+          "type": "primary",
+          "publisher": "Centro Nacional de Memoria Histórica (CNMH)",
+          "title": "Efemérides CNMH — entrada 19 de abril de 2005, Buenaventura",
+          "url": "https://centrodememoriahistorica.gov.co/efemerides/"
+        },
+        {
+          "type": "primary",
+          "publisher": "Ministerio del Interior de Colombia",
+          "title": "MinInterior honró la memoria de los 12 jóvenes desaparecidos en la localidad de Punta del Este en Buenaventura, Valle del Cauca",
+          "url": "https://www.mininterior.gov.co/noticias/mininterior-honro-la-memoria-de-los-12-jovenes-desaparecidos-en-la-localidad-de-punta-del-este-en-buenaventura-valle-del-cauca/"
+        },
+        {
+          "type": "scholarship",
+          "publisher": "Universidad Nacional de Colombia",
+          "title": "La última noche de la violencia: El fútbol y la danza de los matachines en el barrio Punta del Este de Buenaventura, entre la guerra y la resistencia (tesis de maestría, Jorge Andrés Bautista Bulla, 2020)",
+          "url": "https://repositorio.unal.edu.co/handle/unal/78031"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Proceso de Comunidades Negras (PCN) / Prensa Rural",
+          "title": "La masacre de 12 jóvenes y la desaparición de 12 más en Buenaventura",
+          "url": "https://prensarural.org/pcn20050427.htm"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Proceso de Comunidades Negras (PCN) / Renacientes",
+          "title": "Masacre de 11 jóvenes en el barrio 'Punta del Este', el 19 de abril de 2005 en Buenaventura (Valle) — 4 años de impunidad",
+          "url": "https://renacientes.net/2009/04/22/masacre-de-11-jovenes-en-el-barrio-punta-del-este-el-19-de-abril-de-2005-en-buenaventura-valle-4-anos-de-impunidad/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "OMCT (World Organisation Against Torture)",
+          "title": "Colombia: Extrajudicial execution of 12 young men and forced disappearance of 12 others in Buenaventura",
+          "url": "https://www.omct.org/en/resources/urgent-interventions/colombia-extrajudicial-execution-of-12-young-men-and-forced-disappearance-of-12-others-in-buenaventura"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El País (Cali)",
+          "title": "Conmemoraron 12 años de la masacre del barrio Punta del Este en Buenaventura",
+          "url": "https://www.elpais.com.co/valle/conmemoraron-los-12-anos-de-la-masacre-punta-del-este-en-buenaventura.html"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Las2Orillas",
+          "title": "La fiesta de 'Los Matachines': recuerdo de la vil masacre de 12 muchachos de Buenaventura",
+          "url": "https://www.las2orillas.co/la-fiesta-de-los-matachines-recuerdo-de-la-vil-masacre-de-12-muchachos-de-buenaventura-2/"
+        }
+      ]
+    }
+  },
+  "falan-439574": {
+    "key": "falan-439574",
+    "seed": {
+      "modality": "MA",
+      "municipioDane": 73270,
+      "date": "2001-09-15",
+      "victims": 18,
+      "responsibleHint": "AUC"
+    },
+    "candidatesInMuniYear": 1,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 439574,
+    "coded": {
+      "date": "2001-09-15",
+      "victims": 16,
+      "responsible": "GRUPO PARAMILITAR",
+      "responsibleGroup": "AUTODEFENSAS UNIDAS DE COLOMBIA AUC",
+      "municipio": "FALAN",
+      "departamento": "TOLIMA"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "seed": 18,
+        "coded": 16,
+        "note": "source figure differs from CNMH-coded count; report coded value"
+      },
+      {
+        "field": "victims",
+        "note": "Sources give substantially different death tolls: Rutas del Conflicto reports 18 (including two minors); Verdad Abierta's judicial report counts 13; the JEP legal compilation cites 14; the Consejo de Estado civil case addressed 11 (likely only families who filed reparation claims); and the CNMH registry records 16. Differences likely reflect varying scope of specific legal proceedings versus total event casualties."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "source figure differs from CNMH-coded count; report coded value; Sources give substantially different death tolls: Rutas del Conflicto reports 18 (including two minors); Verdad Abierta's judicial report counts 13; the JEP legal compilation cites 14; the Consejo de Estado civil case addressed 11 (likely only families who filed reparation claims); and the CNMH registry records 16. Differences likely reflect varying scope of specific legal proceedings versus total event casualties."
+    ],
+    "payload": {
+      "title": {
+        "es": "Masacre de Frías, Falán",
+        "en": "Frías massacre, Falán"
+      },
+      "narrative": {
+        "es": "En la noche del 15 de septiembre de 2001, durante la celebración del Día del Amor y la Amistad, aproximadamente 20 hombres armados de las Autodefensas Campesinas del Magdalena Medio (ACMM), grupo paramilitar adscrito a las Autodefensas Unidas de Colombia (AUC) bajo el mando de Ramón Isaza, irrumpieron en el corregimiento de Frías, municipio de Falán, Tolima. Los atacantes dispararon de manera indiscriminada en establecimientos de billar y una cafetería; dos personas fueron abducidas al salir del pueblo y halladas posteriormente muertas con señales de tortura en la vía a Mariquita. El Registro Único de Víctimas del CNMH registra 16 víctimas fatales; Rutas del Conflicto documenta 18 personas asesinadas, incluyendo dos menores; la acusación penal reportada por Verdad Abierta contabilizó 13 víctimas; y la sentencia del Consejo de Estado abordó la reparación de familias de al menos 11 campesinos. El Consejo de Estado declaró los hechos un crimen de lesa humanidad y estableció la responsabilidad administrativa del Estado colombiano, con evidencia de coordinación entre el Frente Omar Isaza y miembros del Ejército Nacional, la Policía y autoridades municipales. Entre los responsables individualizados judicialmente se encuentran Álvaro Murillo Flórez (alias 'El Zorro'), Rubeiro Muñoz y Walter Ochoa Guisao (alias 'El Gurre').",
+        "en": "On the night of September 15, 2001—Colombia's Love and Friendship Day—approximately 20 armed members of the Autodefensas Campesinas del Magdalena Medio (ACMM), a paramilitary group affiliated with the Autodefensas Unidas de Colombia (AUC) under the command of Ramón Isaza, entered the corregimiento of Frías in the municipality of Falán, Tolima. The attackers fired indiscriminately inside billiards halls and a cafeteria; two residents were abducted as the group left and were later found dead on the road to Mariquita bearing signs of torture. The CNMH registry records 16 victims; Rutas del Conflicto documents 18 people killed, including two minors; criminal charges reported by Verdad Abierta counted 13 victims; and the Consejo de Estado reparation ruling addressed at least 11 identified campesinos. The Consejo de Estado classified the attack as a crime against humanity and established the Colombian State's administrative responsibility, with documented coordination between the Omar Isaza Front and members of the National Army, police, and municipal authorities. Individually prosecuted perpetrators include Álvaro Murillo Flórez (alias 'El Zorro'), Rubeiro Muñoz, and Walter Ochoa Guisao (alias 'El Gurre')."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Masacre de Falan",
+          "url": "https://rutasdelconflicto.com/masacres/falan"
+        },
+        {
+          "type": "primary",
+          "publisher": "Verdad Abierta",
+          "title": "Dictan medida contra dos paramilitares por masacre en Falán, Tolima",
+          "url": "https://verdadabierta.com/dictan-medida-contra-dos-paramilitares-por-masacre-en-falan-tolima/"
+        },
+        {
+          "type": "primary",
+          "publisher": "Consejo de Estado de Colombia",
+          "title": "Masacre de Frías (Tolima), acto de lesa humanidad",
+          "url": "https://www.consejodeestado.gov.co/news/masacre-de-frias-tolima-acto-de-lesa-humanidad/index.htm"
+        },
+        {
+          "type": "primary",
+          "publisher": "JEP — Consejo de Estado Sección Tercera, expediente 35413",
+          "title": "Masacre en el corregimiento de Frías, municipio de Falán (sentencia 35413 de 2016)",
+          "url": "https://jurinfo.jep.gov.co/normograma/compilacion/docs/73001-23-31-000-2003-01736-01(35413).htm"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Nuevo Día",
+          "title": "Masacre en Frías, Tolima, es de lesa humanidad: Consejo de Estado",
+          "url": "https://www.elnuevodia.com.co/actualidad/judicial/241042-masacre-en-frias-tolima-es-de-lesa-humanidad-consejo-de-estado"
+        }
+      ]
+    }
+  },
+  "pensilvania-34957": {
+    "key": "pensilvania-34957",
+    "seed": {
+      "modality": "AP",
+      "municipioDane": 17541,
+      "date": "2000-07-29",
+      "victims": 16,
+      "responsibleHint": "FARC"
+    },
+    "candidatesInMuniYear": 1,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 34957,
+    "coded": {
+      "date": "2000-07-29",
+      "victims": 16,
+      "responsible": "AGENTE DEL ESTADO",
+      "responsibleGroup": "POLICÍA NACIONAL",
+      "municipio": "PENSILVANIA",
+      "departamento": "CALDAS"
+    },
+    "conflicts": [
+      {
+        "field": "responsible",
+        "seed": "FARC",
+        "coded": "AGENTE DEL ESTADO",
+        "note": "coded perpetrator differs from the stated perpetrator"
+      },
+      {
+        "field": "victims",
+        "note": "Sources diverge on the death toll: Rutas del Conflicto reports 14 (12 police + 2 civilians); the Unidad para las Víctimas reports 16 (13 police); the Policía Nacional reports 18 uniformed dead plus 1 disappeared; Tintiando counts 13 police + 4 civilians + 1 disappeared. Additionally, the CNMH coded perpetrator 'AGENTE DEL ESTADO / POLICÍA NACIONAL' directly contradicts all corroborating sources, which unanimously attribute the attack to FARC Fronts 9 and 47 under alias 'Karina'; the coding appears to record the victims' institutional identity (police), not the aggressor."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "coded perpetrator differs from the stated perpetrator; Sources diverge on the death toll: Rutas del Conflicto reports 14 (12 police + 2 civilians); the Unidad para las Víctimas reports 16 (13 police); the Policía Nacional reports 18 uniformed dead plus 1 disappeared; Tintiando counts 13 police + 4 civilians + 1 disappeared. Additionally, the CNMH coded perpetrator 'AGENTE DEL ESTADO / POLICÍA NACIONAL' directly contradicts all corroborating sources, which unanimously attribute the attack to FARC Fronts 9 and 47 under alias 'Karina'; the coding appears to record the victims' institutional identity (police), not the aggressor."
+    ],
+    "payload": {
+      "title": {
+        "es": "Toma de Arboleda (Pensilvania, Caldas, 2000)",
+        "en": "FARC takeover of Arboleda (Pensilvania, Caldas, 2000)"
+      },
+      "narrative": {
+        "es": "En la mañana del 29 de julio de 2000, aproximadamente 300 integrantes de los frentes 9 y 47 de las FARC atacaron el corregimiento de Arboleda, en el municipio de Pensilvania, Caldas, en lo que se conoce como la toma más sangrienta del Eje Cafetero. Durante más de 20 horas, los guerrilleros utilizaron carros bomba y cilindros de gas cargados de explosivos, destruyendo cerca del 80 % del poblado, incluidas la estación de Policía, el centro de salud y la iglesia. El Centro Nacional de Memoria Histórica registra 16 víctimas en este caso; la Unidad para las Víctimas confirma igualmente 16 personas fallecidas, 13 de ellas agentes de la Policía Nacional, mientras Rutas del Conflicto contabiliza 14 (12 policías y 2 civiles) y la Policía Nacional reporta 18 uniformados muertos. La operación fue comandada por Elda Neyis Mosquera García, alias 'Karina', quien fue condenada en el marco de Justicia y Paz junto con los alias 'Santiago' y 'El Paisa'. El registro del CNMH clasifica el presunto responsable como 'Agente del Estado / Policía Nacional'; esta codificación contrasta con la atribución unánime de las fuentes consultadas a las FARC, y probablemente refleja la filiación institucional de las víctimas —agentes de policía— más que la identidad del agresor.",
+        "en": "On the morning of July 29, 2000, approximately 300 members of FARC's 9th and 47th Fronts attacked the corregimiento of Arboleda in the municipality of Pensilvania, Caldas, in what is described as the deadliest guerrilla action in the Coffee-Axis region. For more than 20 hours, guerrillas used car bombs and gas cylinders packed with explosives, destroying roughly 80 percent of the village, including the police station, health center, and church. The CNMH registry records 16 victims in this case; the Unidad para las Víctimas likewise confirms 16 fatalities, 13 of them National Police officers, while Rutas del Conflicto counts 14 (12 officers and 2 civilians) and the Policía Nacional reports 18 uniformed dead. The operation was commanded by Elda Neyis Mosquera García, alias 'Karina', who was convicted under the Justice and Peace process alongside aliases 'Santiago' and 'El Paisa'. The CNMH coded record lists the alleged perpetrator as 'Agente del Estado / Policía Nacional,' a classification that conflicts with all corroborating sources, which unanimously attribute the attack to the FARC; it likely reflects the institutional affiliation of the victims — police officers — rather than the identity of the aggressor."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Rutas del Conflicto",
+          "title": "Masacre de Arboleda 2000",
+          "url": "https://rutasdelconflicto.com/masacres/arboleda-2000"
+        },
+        {
+          "type": "primary",
+          "publisher": "Policía Nacional de Colombia",
+          "title": "25 años del ataque en Arboleda",
+          "url": "https://www.policia.gov.co/noticia/25-anos-del-ataque-en-arboleda"
+        },
+        {
+          "type": "primary",
+          "publisher": "Unidad para las Víctimas (Portal Histórico)",
+          "title": "Arboleda (Caldas) cura sus heridas",
+          "url": "https://portalhistorico.unidadvictimas.gov.co/es/oferta/arboleda-caldas-cura-sus-heridas/14859"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "La Patria",
+          "title": "22 años de la toma de Arboleda: Recuerdan a los que ya no están",
+          "url": "https://archivo.lapatria.com/caldas/22-anos-de-la-toma-de-arboleda-recuerdan-los-que-ya-no-estan-494277"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "Alias Karina: el horror que relata sentencia condenatoria de Justicia y Paz",
+          "url": "https://www.eltiempo.com/justicia/paz-y-derechos-humanos/alias-karina-el-horror-que-relata-sentencia-condenatoria-de-justicia-y-paz-680519"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Tintiando",
+          "title": "Tragedia y olvido",
+          "url": "https://www.tintiando.com/2020/07/29/tragedia-y-olvido/"
+        }
+      ]
+    }
+  },
+  "santa-barbara-23442": {
+    "key": "santa-barbara-23442",
+    "seed": {
+      "modality": "AB",
+      "municipioDane": 52696,
+      "date": "2005-02-01",
+      "victims": 16,
+      "responsibleHint": "agente del Estado"
+    },
+    "candidatesInMuniYear": 2,
+    "disambiguatedBy": [
+      "idCaso"
+    ],
+    "status": "matched",
+    "idCaso": 23442,
+    "coded": {
+      "date": "2005-02-01",
+      "victims": 16,
+      "responsible": "AGENTE DEL ESTADO",
+      "responsibleGroup": "INFANTERÍA DE MARINA",
+      "municipio": "SANTA BARBARA",
+      "departamento": "NARIÑO"
+    },
+    "conflicts": [
+      {
+        "field": "victims",
+        "note": "La Armada Nacional contabiliza oficialmente 15 infantes de marina caídos; el CNMH registra 16 víctimas totales; el Informe de Derechos Humanos del Departamento de Estado de EE. UU. (2005) cifra en 17 los muertos. La diferencia entre 15 y 16 puede reflejar distintos momentos de registro (fallecidos en combate vs. fallecidos posteriormente por heridas)."
+      }
+    ],
+    "mergeSuggestion": "review_required",
+    "reviewReasons": [
+      "La Armada Nacional contabiliza oficialmente 15 infantes de marina caídos; el CNMH registra 16 víctimas totales; el Informe de Derechos Humanos del Departamento de Estado de EE. UU. (2005) cifra en 17 los muertos. La diferencia entre 15 y 16 puede reflejar distintos momentos de registro (fallecidos en combate vs. fallecidos posteriormente por heridas)."
+    ],
+    "payload": {
+      "title": {
+        "es": "Toma de la Base de Patrullaje Móvil de Iscuandé",
+        "en": "Iscuandé Mobile Patrol Base Takeover"
+      },
+      "narrative": {
+        "es": "En la madrugada del 1 de febrero de 2005, combatientes de las FARC-EP (Frente 29 y Columna Móvil Daniel Aldana) y del ELN (Frente Comuneros del Sur) atacaron la Base de Patrullaje Móvil de la Infantería de Marina de Colombia en Santa Bárbara de Iscuandé, Nariño, con la complicidad de uniformados infiltrados en las propias filas de la Armada Nacional. El CNMH registra 16 víctimas en este caso; la Armada Nacional contabiliza oficialmente 15 infantes de marina caídos y 25 heridos. Investigaciones de la Fiscalía y la Justicia Penal Militar establecieron que dos marines, Raúl Obando ('Machimba') e Ignacio Garcés ('Tocayo'), eran miembros activos del Frente 29 de las FARC-EP, y que tres reclutas adicionales actuaron como cómplices al abandonar sus puestos defensivos antes del asalto. Un juez especializado en Pasto condenó posteriormente a Obando y Garcés a cincuenta años de prisión. El CNMH clasifica el presunto responsable como 'Agente del Estado / Infantería de Marina', codificación que en el contexto de este hecho refleja la participación de uniformados infiltrados en la operación; fuentes independientes atribuyen el ataque armado a las FARC-EP y al ELN.",
+        "en": "In the early morning of February 1, 2005, FARC-EP fighters (Front 29 and the Daniel Aldana Mobile Column) and ELN combatants (Frente Comuneros del Sur) attacked the Colombian Navy's Mobile Patrol Base in Santa Bárbara de Iscuandé, Nariño, aided by guerrilla members who had infiltrated the unit's own ranks. The CNMH registry records 16 victims in this case; the Colombian Navy officially counts 15 marines killed and 25 wounded. Investigations by the Fiscalía and Military Criminal Justice established that two marines, Raúl Obando ('Machimba') and Ignacio Garcés ('Tocayo'), were active members of FARC-EP Front 29, and that three additional recruits served as accomplices by abandoning their defensive posts before the assault. A specialized judge in Pasto subsequently sentenced Obando and Garcés to fifty years in prison. The CNMH classifies the alleged perpetrator as 'Agente del Estado / Infantería de Marina'—a coding that in this context reflects the role of infiltrated uniformed personnel in enabling the operation; independent sources attribute the armed attack to the FARC-EP and ELN."
+      },
+      "sources": [
+        {
+          "type": "primary",
+          "publisher": "Armada Nacional de Colombia",
+          "title": "La Armada de Colombia rinde homenaje a sus 15 héroes caídos en la toma de la base de patrullaje móvil de Iscuandé",
+          "url": "https://www.armada.mil.co/es/content/armada-colombia-rinde-homenaje-sus-15-heroes-caidos-en-toma-base-patrullaje-movil-iscuande"
+        },
+        {
+          "type": "primary",
+          "publisher": "Armada Nacional de Colombia",
+          "title": "Armada de Colombia rindió homenaje a sus 15 héroes caídos en la toma de la base de patrullaje móvil de Iscuandé",
+          "url": "https://www.armada.mil.co/es/content/armada-colombia-rindio-homenaje-sus-15-heroes-caidos-en-toma-base-patrullaje-movil-iscuande"
+        },
+        {
+          "type": "primary",
+          "publisher": "U.S. Department of State",
+          "title": "Colombia 2005 Country Report on Human Rights Practices",
+          "url": "https://2009-2017.state.gov/j/drl/rls/hrrpt/2005/61721.htm"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Wikipedia (es)",
+          "title": "Toma de Iscuandé",
+          "url": "https://es.wikipedia.org/wiki/Toma_de_Iscuande"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "Semana",
+          "title": "Historia de una traición",
+          "url": "https://www.semana.com/especiales/articulo/historia-traicion/71276-3/"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "Así fue la traición en Iscuandé",
+          "url": "https://www.eltiempo.com/archivo/documento/MAM-3309017"
+        },
+        {
+          "type": "tertiary",
+          "publisher": "El Tiempo",
+          "title": "Un secuestrado y un desmovilizado delataron a 2 miembros del frente 29 infiltrados en la Marina",
+          "url": "https://www.eltiempo.com/archivo/documento/CMS-4802219"
+        }
+      ]
+    }
   }
 }

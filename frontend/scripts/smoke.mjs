@@ -31,7 +31,7 @@ const shot = async (name) => {
   }
 };
 
-await page.goto(BASE, { waitUntil: 'networkidle' });
+await page.goto(`${BASE}/?section=violence`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(4500); // map style + tiles + deck first frame
 
 // fresh context = first visit: the welcome modal is up — capture, then enter

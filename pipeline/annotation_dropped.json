@@ -1503,5 +1503,803 @@
     "municipio": "CARACOLI",
     "reason": "insufficient_coverage",
     "note": "Four targeted web searches in Spanish and English combining municipality (Caracolí, Antioquia), date (October 2002), event type (acción bélica / armed combat), and alleged perpetrator (Ejército Nacional) returned no published source that unambiguously describes this specific event. CNMH SIEVCAC combat-casualty entries of this type rarely generate independent documentation beyond the registry itself, particularly for rural Magdalena Medio events from 2002. Insufficient primary or secondary corroboration to draft a narrative."
+  },
+  {
+    "idCaso": 23457,
+    "municipio": "MUTATA",
+    "reason": "insufficient_coverage",
+    "note": "The CNMH event (Mutatá, 19 victims, Feb 5 2005) very likely corresponds to the \"Emboscada de El Porroso\" (FARC-EP ambush on Feb 8 2005 that killed 19 soldiers of the 46th Infantry Battalion during Operation Exterminio), but two discrepancies prevent confident confirmation: a 3-day date gap (CNMH codes Feb 5; operation departed Feb 7 and combat occurred Feb 8), and an inverted perpetrator coding (CNMH lists AGENTE DEL ESTADO / EJÉRCITO NACIONAL as responsible, while all external sources attribute the killing to FARC who ambushed the Army unit). No primary or scholarly sources (Rutas del Conflicto, Verdad Abierta, JEP, CNMH publications, court rulings) were located for this specific event; only tertiary Wikipedia and press sources were found."
+  },
+  {
+    "idCaso": 4160,
+    "municipio": "EL BAGRE",
+    "reason": "refuted",
+    "note": "Draft claims 'once personas' (11 people) were aboard the targeted vessel; the only accessible primary source (Colombia Nunca Más / Nizkor, cap4.html) describes 4 people in the canoe at Caño San Lorenzo — a direct factual contradiction with no accessible source to support the figure of 11. | Only 1 of the 4 cited sources (Nizkor) can be verified as describing this specific event. The >=3 authoritative-source threshold is not met. | Source 4 (HRW stateofwar2.htm) does not corroborate this case: it names a different victim (Catalino Guerra), contains no boat or canoe shooting incident in January 1990, and erroneously places Yondó in Santander instead of Antioquia. It covers the general operational context (Mobile Brigade + Batallón Nueva Granada, aerial bombardment, La Concha, January 1990) but is not a corroborating source for the draft's specific claims. | Sources 2 and 3 (CINEP PDF and Consejo de Estado PDF) both resolve as binary image/compressed PDFs — their content is entirely unreadable and cannot be confirmed. The Consejo de Estado ruling details (condenación al Ministerio de Defensa y Ejército Nacional, specific vereda La Concepción) rest on an unverifiable source."
+  },
+  {
+    "idCaso": 4162,
+    "municipio": "EL BAGRE",
+    "reason": "insufficient_coverage",
+    "note": "Six web searches and three direct page fetches found no authoritative published source that unambiguously describes this specific acción bélica in El Bagre, Antioquia on 6 January 1990 with 19 victims attributed to the Ejército Nacional. Contextual sources (HRW 1993 Colombia report, El Tiempo archive, Museo de Memoria de Colombia) cover the region and era but do not document this event; the three-primary-source threshold cannot be met."
+  },
+  {
+    "idCaso": 13103,
+    "municipio": "MUTATA",
+    "reason": "insufficient_coverage",
+    "note": "Three tertiary sources (El Tiempo April 14 1999, Semana May 1999, FUNDELT) confirm a major combat action on April 12, 1999 at the Tasidó bridge / Cañón de La Llorona between Mutatá and Dabeiba: a FARC ambush (fronts 5, 34, 57, 58) on a Brigade 17 convoy killed 19 Army soldiers including Major Henry Gómez Navas, while Semana additionally reports the Army claimed 19 guerrilla kills in its response. The CNMH record codes EJÉRCITO NACIONAL as perpetrator with 19 victims — consistent with the Army's counterattack body count, not the FARC ambush — but no primary or scholarship source (JEP Case 04, Fiscalía, Comisión de la Verdad, Rutas del Conflicto) was found that unambiguously narrates the specific action as coded under IdCaso 13103. Minimum three primary/scholarship sources not met."
+  },
+  {
+    "idCaso": 396387,
+    "municipio": "LIBANO",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches across CNMH portals, Rutas del Conflicto, Comisión de la Verdad, Plan Lazo scholarship, and regional violence historiography for Líbano/Tolima in 1962 returned no published source that unambiguously matches this event (July 1962, 19 victims, Ejército Nacional as perpetrator). The closest documented event found — the April 2, 1962 guerrilla attack on an Army convoy at El Taburete in Líbano — is a distinct event with an inverted perpetrator category (guerrilla vs. state) and a different month; it cannot be used as corroboration. The three-source primary/scholarship floor for a draft was not met."
+  },
+  {
+    "idCaso": 17354,
+    "municipio": "TIBU",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches across CNMH microsites, Rutas del Conflicto, Wikipedia armed-conflict chronologies (1990-2002 and 2002-2018 annexes), Verdad Abierta, Semana Proyecto Víctimas, and Vanguardia archives found no source that independently and unambiguously describes a combat action (acción bélica) in Tibú, Norte de Santander on 2002-02-22 with 19 victims attributed to FARC. The nearest documented FARC/military clash in Tibú dates to March 20-21, 2002 (Grupo Mecanizado No. 5 Maza vs Frente 33). The February 22 event exists in the CNMH SIEVCAC registry but no corroborating published source was found."
+  },
+  {
+    "idCaso": 442518,
+    "municipio": "PUERTO WILCHES",
+    "reason": "insufficient_coverage",
+    "note": "Three rounds of targeted searches across El Tiempo archives, El Espectador's FARC kidnapping chronology, CNMH microsites, JEP Case 01 press releases (Bloque Magdalena Medio), Rutas del Conflicto, Vanguardia, and Verdad Abierta turned up no published source that unambiguously covers this specific event. Puerto Wilches was a documented FARC kidnapping hotspot in the Magdalena Medio (JEP Case 01 records 77 victimization events in Santander), but this particular November 2000 collective kidnapping of 19 people does not appear in any accessible named source — the event is recorded only in the CNMH SIEVCAC registry itself."
+  },
+  {
+    "idCaso": 443856,
+    "municipio": "YOPAL",
+    "reason": "insufficient_coverage",
+    "note": "Five targeted searches in Spanish and English found no published source that specifically documents a kidnapping of 19 victims by ELN in Yopal, Casanare on 21 May 1970. The event predates the ELN's documented expansion into Casanare and falls in a period with negligible online archival coverage; the CNMH registry entry is the only traceable record."
+  },
+  {
+    "idCaso": 429524,
+    "municipio": "SAN JOSE DEL GUAVIARE",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches in Spanish and English found no published source — primary, scholarly, or press — that unambiguously identifies this specific event (June 14, 2002, San José del Guaviare, 19 victims). Contextual sources confirm systematic Bloque Centauros forced disappearances in the municipio throughout 2002, but this case appears undocumented by name or specific date in publicly accessible outlets. The CNMH registry entry is the sole available record."
+  },
+  {
+    "idCaso": 437014,
+    "municipio": "CIMITARRA",
+    "reason": "insufficient_coverage",
+    "note": "Five targeted searches in Spanish and English (by date, place, victim count, perpetrator, and CNMH case ID) returned no published sources unambiguously describing a December 18, 1986 forced disappearance of 19 people in Cimitarra, Santander attributed to the Colombian Army. Closely related documented events in Cimitarra differ on date, scale, or perpetrator: the April 1987 paramilitary massacre (14 victims) and the October 1987 \"19 Comerciantes\" disappearances (paramilitaries with state collaboration). No primary or scholarship corroboration found; narrative cannot be drafted in good faith."
+  },
+  {
+    "idCaso": 292130,
+    "municipio": "MUZO",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted searches across Rutas del Conflicto, CNMH Observatorio, the Wikipedia AUC massacre annex, Verdad Abierta, and general Spanish/English press returned no authoritative published source that unambiguously describes a massacre in Muzo, Boyacá on 2004-08-27 with 18 victims attributed to AUC. Muzo's paramilitary presence during this period is contextually documented (emerald-trade region), but no named or detailed account of this specific event was found."
+  },
+  {
+    "idCaso": 290757,
+    "municipio": "SANTA MARTA",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across Rutas del Conflicto, Wikipedia massacre lists (Spanish and English), CNMH public web content, Semana/Proyecto Víctimas chronology, AUC massacre annex, Verdad Abierta, and general press archives found no source that unambiguously identifies a massacre in Santa Marta (DANE 47001) on or around 13 March 2000 with 18 victims. All Magdalena-2000 results consistently point to the February 2000 Trojas de Cataca event and the November 2000 Nueva Venecia/Buenavista massacres. The \"GRUPO ARMADO NO IDENTIFICADO\" perpetrator coding and absence of a named event suggest this may be an undocumented or poorly documented incident not captured in any publicly indexed source."
+  },
+  {
+    "idCaso": 1074189,
+    "municipio": "TIBU",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across Rutas del Conflicto, Wikipedia (FARC massacre annex and 2002–2018 conflict chronology), CNMH Catatumbo micrositio, INDEPAZ, Comisión de la Verdad, and press archives returned no external source unambiguously matching this event (Tibú, 2002-09-01, 18 victims, FARC/guerrilla). Well-documented Catatumbo-area FARC massacres from Sept 2001 and June 2004 appear consistently; this September 2002 event with 18 victims does not surface in any independently published record, leaving only the CNMH SIEVCAC registry entry as the identifying source."
+  },
+  {
+    "idCaso": 744198,
+    "municipio": "PLANADAS",
+    "reason": "insufficient_coverage",
+    "note": "Three rounds of searches across CNMH publications, Comisión de la Verdad (Operación Soberanía page), Rutas del Conflicto, Wikipedia, El Espectador, and Arcoiris found no independently published source that specifically documents a massacre in Planadas, Tolima on June 18, 1964 with 18 victims attributed to state agents or the Army. The event date falls within the documented Operación Soberanía/Marquetalia military operation (May–June 1964) in the same municipality, and civilian casualties during that operation are referenced in general terms by several sources, but no authoritative primary or scholarly source isolates this as a named or specifically dated massacre meeting the ≥3-source threshold required for a draft."
+  },
+  {
+    "idCaso": 291458,
+    "municipio": "TIERRALTA",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches in Spanish and English, plus direct fetches of El Tiempo, El Heraldo, Unidad para las Víctimas, Wikipedia (Anexo FARC masacres), Rutas del Conflicto, Semana cronología, and CNMH tags, returned zero sources unambiguously describing a massacre in Tierralta, Córdoba on November 19, 2001 with 18 victims attributed to FARC. The dominant 2001 FARC massacre documented for Tierralta is Río Manso (May 22–24, 2001, ~22–33 victims), which does not match this record's date or toll. CNMH IdCaso 291458 appears undocumented in indexed press, primary-institution, or scholarship sources."
+  },
+  {
+    "idCaso": 439307,
+    "municipio": "CALARCA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches (Spanish and English) in CNMH, Rutas del Conflicto, Comisión de la Verdad, Wikipedia, academic databases, and press archives found no published source that unambiguously documents a massacre in Calarcá, Quindío on or around 10 October 1959 with 18 victims. The event falls within \"La Violencia\" era (pre-1962), a period poorly indexed online; the CNMH SIEVCAC coded record remains the sole identifiable source. The ≥3 primary/scholarship threshold cannot be met."
+  },
+  {
+    "idCaso": 439327,
+    "municipio": "SANTIAGO DE CALI",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted searches in Spanish and English — querying CNMH, Rutas del Conflicto, Wikipedia lists, Urosario/IDEASPAZ databases, and general press archives — returned no published source that unambiguously documents a massacre in Santiago de Cali in June 1985 with approximately 18 victims. The perpetrator coding \"GRUPO ARMADO NO IDENTIFICADO / NO APLICA\" and the early pre-systematic-documentation era (mid-1980s urban Cali) are consistent with an event that entered the registry without corroborating published coverage."
+  },
+  {
+    "idCaso": 291310,
+    "municipio": "REMEDIOS",
+    "reason": "insufficient_coverage",
+    "note": "The event is documented in detail by Rutas del Conflicto (the sole confirmed primary source): July 6–7, 2001, vereda Cañaveral, Remedios, Antioquia; 18 victims; Bloque Metro paramilitaries in army uniforms; commanded by Carlos Mauricio García alias 'Doble Cero'; bodies buried in improvised mass graves; Batallón Tacines present but did not prevent the attack and was allegedly implicated by witnesses. Three tertiary sources (El Tiempo July 11 2001 — initial count of 14 —, Semana Proyecto Víctimas, and the Wikipedia AUC massacre annex) confirm the event. A February 12 2020 Justice and Peace sentence by the Tribunal Superior de Medellín against Bloque Metro members (Javier Alonso Quintero Agudelo and others) is known to cover this period's crimes, and multiple indirect references indicate it addresses Cañaveral, but the PDF was unreadable due to compression. The CNMH website also showed content about this event in search engine snippets but the relevant pages returned server errors at time of research. Only 1 primary source (Rutas del Conflicto) could be directly verified; the required threshold of 3 is not reached."
+  },
+  {
+    "idCaso": 439392,
+    "municipio": "EL CARMEN DE BOLIVAR",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across CNMH, Rutas del Conflicto, Wikipedia Colombia massacres list, Semana Proyecto Víctimas, CINEP Noche y Niebla, and CMNH Montes de María microsite found no authoritative source that unambiguously documents a massacre in El Carmen de Bolívar in October 1994 with 18 victims. Public documentation of violence in the municipality before 1997 is aggregate or contextual only; this specific event is below the coverage threshold for a reliable narrative."
+  },
+  {
+    "idCaso": 774856,
+    "municipio": "YAGUARA",
+    "reason": "insufficient_coverage",
+    "note": "Three tertiary sources (La Nación, La Silla Vacía, El Espectador) confirm an attack at Hacienda Santana in Yaguará, Huila on January 25, 1963 attributed to a cuadrilla de forajidos (bandoleros), but report 11 named victims rather than 18 as registered in CNMH. No primary or scholarship sources — CNMH published reports, Comisión de la Verdad, JEP, Rutas del Conflicto, academic works — were found that specifically document this event; the ≥3 primary/scholarship threshold is not met."
+  },
+  {
+    "idCaso": 34774,
+    "municipio": "ITUANGO",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches in Spanish and English found no authoritative published sources specifically documenting this event (Ituango, March 5, 1995, ATAQUE A POBLADO, 18 victims, Policía Nacional). All retrievable coverage of Ituango-area violence focuses on the June 1996 La Granja and October 1997 El Aro massacres; the March 1995 record exists only in the CNMH SIEVCAC registry."
+  },
+  {
+    "idCaso": 15715,
+    "municipio": "SURATA",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted searches across El Tiempo archives, CINEP Noche y Niebla, resistenciacivildemocratica.org DIH 2001 database, Semana cronología de víctimas, and CNMH Observatorio portal found no published source specifically documenting an acción bélica on April 21, 2001 in Suratá, Santander with 18 victims attributed to the Ejército Nacional. The only armed-conflict documentation for Suratá in that period covers Operación Berlín (November 2000–January 2001), a distinct and earlier operation; no evidence of a second or follow-on combat event on the coded date surfaced."
+  },
+  {
+    "idCaso": 22023,
+    "municipio": "OROCUE",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches in Spanish and English across CNMH documents, JEP Macrocaso 03 records, Rutas del Conflicto, Noche y Niebla bulletins, Unidad para las Víctimas, and press archives (El Tiempo, Semana) returned no published source that unambiguously describes this specific armed combat action (ACCIÓN BÉLICA) in Orocué, Casanare on 2003-10-12 with 18 victims attributed to AGENTE DEL ESTADO / DAS - EJÉRCITO NACIONAL. The JEP Casanare falsos positivos case involves Army/DAS collaboration but covers 2005–2008 only. Combat actions are systematically less covered in open sources than masacres; insufficient primary or scholarship coverage to draft a narrative."
+  },
+  {
+    "idCaso": 534416,
+    "municipio": "SAN VICENTE DEL CAGUAN",
+    "reason": "insufficient_coverage",
+    "note": "The event is extensively documented in tertiary press (El Tiempo, Semana, Al Jazeera, El Colombiano, etc.) and confirmed by two primary sources: a Fiscalía General de la Nación press release (Boletín 59667) explicitly referencing the August 29, 2019 military action in San Vicente del Caguán, and a Rutas del Conflicto article about Army bombings that confirms the Candilejas bombing with 8+ minor victims. A third primary source (Tribunal Administrativo de Cundinamarca July 2020 ruling ordering disclosure of intelligence reports on Operation Atai, and a second Fiscalía press release on March 2021 capture warrants for four FARC dissident commanders) is confirmed to exist by credible press reporting but no verified official URL was retrieved. The required threshold of three confirmed primary sources was not met; status is 'insufficient' per protocol, though factual confidence in the event details is high."
+  },
+  {
+    "idCaso": 14202,
+    "municipio": "GÜICAN DE LA SIERRA",
+    "reason": "insufficient_coverage",
+    "note": "Two Wikipedia chronology pages independently confirm the event (18 FARC-EP guerrillas killed by the Ejército Nacional in Güicán, Boyacá on 4 April 2000), consistent with the CNMH coded record. No primary sources (CNMH publications, Comisión de la Verdad, JEP, Fiscalía, Rutas del Conflicto, Verdad Abierta, court rulings) or peer-reviewed scholarship were found; acciones bélicas of this type — army-on-guerrilla combat — rarely generate individual primary documentation. Threshold of ≥3 primary/scholarship sources not met."
+  },
+  {
+    "idCaso": 4101,
+    "municipio": "PUERTO LIBERTADOR",
+    "reason": "insufficient_coverage",
+    "note": "One tertiary source (Vanguardia Calendario del Horror) explicitly confirms the event: November 13, 1989, Puerto Libertador, Córdoba, Batallón Junín (Ejército Nacional), with 6 civilians killed among the 18 officially reported as guerrillas. No primary or scholarship sources (CNMH monographs, JEP/Fiscalía rulings, Comisión de la Verdad, Rutas del Conflicto, HRW, Verdad Abierta) documenting this specific event were found; the three-primary-source threshold for drafting is not met."
+  },
+  {
+    "idCaso": 21168,
+    "municipio": "EL CARMEN DE BOLIVAR",
+    "reason": "insufficient_coverage",
+    "note": "One primary source (Armada Nacional) and one tertiary source (Wikipedia) confirm a FARC Front 35 ambush of Infantería de Marina patrols on June 24, 2003 in the Loma de Los Chivos sector near El Carmen de Bolívar, with 1 suboficial and 12 marines killed. Both frame the Marines as the attacked party — opposite to the CNMH perpetrator coding — and neither reports 18 victims. The ≥3 primary/scholarship threshold is not met and the perpetrator inversion cannot be resolved."
+  },
+  {
+    "idCaso": 16269,
+    "municipio": "ALEJANDRIA",
+    "reason": "insufficient_coverage",
+    "note": "Two El Espectador press articles (tertiary) confirm a major combat beginning July 31, 2001 in La Inmaculada hamlet, Alejandría, between FARC Frente 9 and the Metro Bloc paramilitaries, with approximately 200 combatant deaths and 45 buried in a mass grave — consistent with the CNMH acción bélica record for that date. The CNMH Alejandría page (primary) and Rutas del Conflicto (primary) confirm the broader violence context (FARC/Metro Bloc clashes April–August 2001, 650+ displaced) but neither records the July 31 action as a discrete, named, individually documented event. No primary or scholarship source specifically documents this event; the threshold of 3 primary/scholarship sources is not met."
+  },
+  {
+    "idCaso": 18160,
+    "municipio": "SONSON",
+    "reason": "insufficient_coverage",
+    "note": "Multiple searches and fetch attempts found no verifiable primary or scholarship sources that unambiguously describe a guerrilla-conducted acción bélica in Sonsón, Antioquia on June 13, 2002 with 18 victims. AI-synthesized search summaries suggest a June 13, 2002 event at a site called \"La Piñera\" where Army troops (Batallón Juan del Corral) killed approximately 18 ACMM paramilitaries, but this narrative assigns a state-actor perpetrator — directly contradicting the CNMH coding of GUERRILLA / NO IDENTIFICADA — and could not be confirmed from any accessible, readable primary-source document. The PDFs most likely to contain specific event-level data (CINEP Noche y Niebla No. 24 April–June 2002; Conciudadanía \"Sonsón Memoria Viva\") returned unreadable binary content. Insufficient verifiable coverage to draft a narrative without risk of fabrication."
+  },
+  {
+    "idCaso": 20244,
+    "municipio": "SAN FRANCISCO",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across CNMH, Rutas del Conflicto, Wikipedia armed-conflict annexes, El Colombiano, Semana, and regional sources found no published source that unambiguously identifies this specific acción bélica in San Francisco, Antioquia on 2003-03-23 with 18 victims attributed to AGENTE DEL ESTADO / EJÉRCITO NACIONAL. Combat engagements (acciones bélicas) in that municipality during 2003 are contextually confirmed, but this particular event lacks individually documented coverage in any accessible authoritative source."
+  },
+  {
+    "idCaso": 19121,
+    "municipio": "VALLEDUPAR",
+    "reason": "refuted",
+    "note": "CHECK 1 FAIL — Cambio Colombia URL (https://cambiocolombia.com/poder/articulo/2024/10/la-masacre-calificada-como-exito-operacional-por-la-que-ahora-esta-en-juicio-publio-hernan) returns HTTP 403 Forbidden on both URL variants tried. This is the only source cited that specifically names Operation Tormenta II, provides the postpartum-woman detail, and attributes the 'greatest operational success' quote to this specific event. The content is confirmed to exist via web-search snippets, but the URL cannot be fetched and verified directly. Check 1 requires flagging dead/inaccessible URLs. | CHECK 1 FAIL — JEP source #2 ('JEP expide resolución de conclusiones: 12 imputados del Batallón La Popa') describes the sanction process for the 12 OTHER La Popa officers who acknowledged responsibility via restorative justice. Colonel Mejía explicitly refused to acknowledge responsibility and was tried separately under Colombia's first adversarial transitional trial (Juicio Adversarial Transicional). Verified via fetch: the page confirms Mejía's case was referred to the Investigation and Prosecution Unit (UIA), not the Peace Tribunal covered by that resolution. Using this source to support claims about Mejía's December 2025 sentence is a source-claim mismatch. | CHECK 2 — 'disparos en la cabeza' is not confirmed in any directly fetchable primary source. Accessible sources (Semana, El Espectador) use only 'tiros de gracia' (coup de grâce) without specifying the head. The detail 'shots to the head' appears only in a web-search snippet paraphrasing inaccessible testimony, not in any source whose full text was verified. | CHECK 3 — The exact date of the event is contested across sources and the draft does not flag this. Semana (fetched) states September 26, 2002; El Espectador states October 26, 2002; Las2Orillas states October 25, 2002; the CNMH coded record states October 27, 2002. The draft asserts October 27 as established fact without attributing it to the CNMH record or acknowledging source disagreement."
+  },
+  {
+    "idCaso": 396712,
+    "municipio": "GÜICAN DE LA SIERRA",
+    "reason": "insufficient_coverage",
+    "note": "Multiple tertiary press sources confirm a major armed confrontation in Güicán, Boyacá on December 17-18, 1993: ELN's Compañía Simacota (Frente Domingo Laín Sáenz) ambushed Army troops at Vereda Cordoncillo, killing 13 soldiers; the Army's counterattack reportedly killed approximately 10 guerrillas; Wikipedia records 24 total deaths on December 17. No primary sources (CNMH publications, JEP, Comisión de la Verdad, Verdad Abierta, court rulings) specifically documenting CNMH IdCaso 396712 — an acciones bélicas attributed to the Ejército Nacional with 18 victims — were found, and the CNMH victim count of 18 does not align cleanly with any single figure in the press accounts."
+  },
+  {
+    "idCaso": 17587,
+    "municipio": "TIBU",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches in Spanish and English (varying on date, place, victim count, and perpetrator) found no published primary, scholarship, or press source that unambiguously describes this specific combat action (21 March 2002, Tibú, 18 victims, Ejército Nacional). The Tibú/Catatumbo region has extensive published conflict documentation for 2002, but the named events in authoritative sources are distinct occurrences; this SIEVCAC acción bélica record has no recoverable independent corroboration."
+  },
+  {
+    "idCaso": 4272,
+    "municipio": "PUERTO CARREÑO",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches across El Tiempo archives (1990), CNMH Observatorio de Memoria y Conflicto, Rutas del Conflicto, Semana Proyecto Víctimas chronology, UCDP GED, and the CNMH Altillanura paramilitary report returned no source unambiguously describing this specific event. The combination of factors — remote location (Puerto Carreño is Colombia's most isolated departmental capital), combat-action classification rather than massacre, 1990 date, and an army-as-perpetrator framing — places it below the open-source documentation threshold. No primary or scholarship source reached the minimum count of three required for a draft."
+  },
+  {
+    "idCaso": 3949,
+    "municipio": "EL BAGRE",
+    "reason": "insufficient_coverage",
+    "note": "Exhaustive searches in CNMH efemérides, Rutas del Conflicto, Verdad Abierta, Vanguardia's Calendario del Horror (July 1989), Museo de Memoria de Colombia, Comisión de la Verdad Bajo Cauca, and press archives found no published source unambiguously describing a July 12, 1989 acción bélica in El Bagre, Antioquia attributed to the Ejército Nacional with 18 victims. The only recurring El Bagre event near this date is a July 12, 1988 guerrilla attack on an army post (different year, opposite perpetrator); no primary or scholarly source corroborates the CNMH coded record for 1989."
+  },
+  {
+    "idCaso": 18663,
+    "municipio": "TOTORO",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches in Spanish and English — combining place (Totoró, Cauca), date (30 August 2002), event type (acción bélica), perpetrator (Ejército Nacional), and victim count (18) — returned no source that unambiguously identifies this specific combat event. Results surfaced only general Cauca conflict overviews, recent (2024–2026) incidents in the same municipality, and CNMH institutional pages. Combat actions at this scale in small municipalities from 2002 are rarely individually documented in press archives or secondary literature; the three-primary-source floor cannot be met."
+  },
+  {
+    "idCaso": 396841,
+    "municipio": "RESTREPO",
+    "reason": "insufficient_coverage",
+    "note": "Two tertiary sources corroborate a combat on April 11–12, 1998 in the mountains of Restrepo, San Juanito, and El Calvario (Meta) between Brigada Móvil No. 1 and FARC-EP Frente 53, with El Tiempo reporting 11 military and 11 guerrilla deaths (22 total, vs. 18 in the CNMH coded record). No primary or scholarship sources — CNMH published reports, JEP, Comisión de la Verdad, Verdad Abierta, Rutas del Conflicto, or court rulings — were found for this specific acción bélica, so the ≥3 primary/scholarship threshold for a drafted narrative is not met."
+  },
+  {
+    "idCaso": 15486,
+    "municipio": "DAGUA",
+    "reason": "insufficient_coverage",
+    "note": "The event matches the well-documented Toma del Cerro Tokio: a FARC Bloque Occidental assault on the Infantería de Marina's communications base in Dagua on March 10, 2001, leaving 16–18 dead (16 military, 1 civilian confirmed; 2 missing); contemporaneous El Tiempo reporting and a subsequent El Espectador/Consejo de Estado condemnation reference are all the coverage found — every source is tertiary press or Wikipedia, with no accessible primary sources (CNMH institutional report, JEP, CEV, Rutas del Conflicto, or court ruling text with a verifiable URL) reaching the three-source floor. A notable coding discrepancy exists: CNMH lists Infantería de Marina as the presunto responsable, while all secondary sources identify FARC as the attacker and Marines as the victims, suggesting the CNMH record may capture the Marines' counter-engagement or a distinct classification convention."
+  },
+  {
+    "idCaso": 15712,
+    "municipio": "SURATA",
+    "reason": "insufficient_coverage",
+    "note": "Extensive searching across CNMH Observatorio, CINEP Noche y Niebla (n.° 20, April–June 2001), Rutas del Conflicto, El Tiempo archives, Resistencia Civil Democrática (dih2001.php), Wikipedia conflict timelines, and Vanguardia found no authoritative source that unambiguously describes a combat action (acción bélica) on April 21, 2001 in Suratá, Santander with 18 victims attributed to the Ejército Nacional. Suratá's documented conflict coverage is concentrated on Operación Berlín (November 2000–January 2001), which predates this event; no follow-up April 2001 engagement of this scale surfaced in any indexed source. Fewer than the required 3 primary/scholarship confirmations found."
+  },
+  {
+    "idCaso": 14854,
+    "municipio": "SAN CALIXTO",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches across CNMH microsites, JEP Case 03 Catatumbo sub-case documents, Rutas del Conflicto, UCDP, and regional press returned no source that unambiguously identifies an armed combat action in San Calixto, Norte de Santander on 2000-10-25 with 18 victims attributed to the Ejército Nacional. The JEP's Catatumbo proceedings (1999–2008) do cover San Calixto but publicly accessible materials concern extrajudicial executions from 2006–2007, not this event. The minimum of three primary/scholarship sources required for a draft is not met."
+  },
+  {
+    "idCaso": 15714,
+    "municipio": "SURATA",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches (CINEP Noche y Niebla, El Tiempo archive, Rutas del Conflicto, CNMH efemérides, Semana victim chronology, Wikipedia Anexo:Colombia en 2001, Comisión de la Verdad, JEP press releases) returned no source unambiguously documenting an acción bélica in Suratá, Santander on April 21, 2001 with 18 victims attributed to the Ejército Nacional. All Suratá/2001 coverage found relates to Operación Berlín (Nov 2000–Jan 2001), a distinct earlier operation. The CNMH SIEVCAC record is the sole traceable source; no corroborating primary or press source was found."
+  },
+  {
+    "idCaso": 3568,
+    "municipio": "PEQUE",
+    "reason": "insufficient_coverage",
+    "note": "Three Wikipedia chronologies confirm an EPL ambush of a police patrol on October 25, 1988, at Uramita (between Peque and Cañasgordas, Antioquia), reporting 14 victims (10 police + 4 Registraduría officials), which is the only documented combat event matching the date and geographic area. However, all sources attribute the action to the EPL, not to the Policía Nacional as coded in the CNMH record, and the victim counts diverge (14 vs. 18 in CNMH); no primary or scholarship sources were found to meet the >=3 primary floor."
+  },
+  {
+    "idCaso": 25138,
+    "municipio": "MONTELIBANO",
+    "reason": "insufficient_coverage",
+    "note": "Multiple tertiary press sources confirm a major armed confrontation on November 1, 2006, at the Tierradentro corregimiento of Montelibano, Córdoba — date, municipality, and victim scale (16–21 deaths reported) align with the coded record — but all sources attribute the armed action to FARC Front 58 (commanded by Joverman Sánchez \"Manteco\"), not to state/police agents as coded in CNMH. Only one primary-tier source (Unidad para las Víctimas) was found, falling short of the ≥3 threshold; no JEP, Comisión de la Verdad, Fiscalía, or Verdad Abierta documentation of this specific event was located."
+  },
+  {
+    "idCaso": 13146,
+    "municipio": "SAN PABLO",
+    "reason": "insufficient_coverage",
+    "note": "Five targeted searches in Spanish and English (El Tiempo archives, Rutas del Conflicto, CNMH, CIDH, UCDP) found no source that unambiguously identifies this specific event (April 28, 1999, San Pablo, Bolívar, 18 victims, Ejército Nacional). San Pablo was an active conflict zone throughout April 1999 with documented army-guerrilla combats on April 16–17 in the same sector (Caña Braval/Pozo Azul), but none of the sources found match the coded date or victim toll. The threshold of 3 primary/scholarship sources confirming this specific event is not met."
+  },
+  {
+    "idCaso": 16703,
+    "municipio": "CHARTA",
+    "reason": "insufficient_coverage",
+    "note": "Twelve targeted web searches and direct fetches of CNMH, CINEP Noche y Niebla, Rutas del Conflicto, JEP Caso 03, Vanguardia, and U.S. State Department human rights archives found no published source that specifically documents this acción bélica in Charta, Santander on 2001-10-27. Combat actions resulting in guerrilla casualties are among the least covered event types in secondary literature; the event exists only in the CNMH SIEVCAC registry itself, which does not satisfy the ≥3 primary/scholarly source floor."
+  },
+  {
+    "idCaso": 23924,
+    "municipio": "VISTAHERMOSA",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted searches in Spanish and English (Rutas del Conflicto, CNMH observatory, El Tiempo archive, Noche y Niebla, HRW, JEP press coverage) found no authoritative published source specifically documenting this acción bélica in Vistahermosa, Meta on 2005-07-11 with 18 victims attributed to DAS. Well-documented 2005 combat events in Vistahermosa (February army operation, December FARC ambush) are distinct events that do not match date, toll, or alleged perpetrator. Minimum three primary/scholarship sources required for draft; zero found."
+  },
+  {
+    "idCaso": 355222,
+    "municipio": "SAN VICENTE DEL CAGUAN",
+    "reason": "insufficient_coverage",
+    "note": "Three targeted searches (Spanish and English, CNMH/JEP/press archives) found no source that unambiguously describes this specific secuestro event of 18 victims on 14 January 1983 in San Vicente del Caguán. Early-1980s FARC kidnapping records for Caquetá are not substantively indexed online; the minimum threshold of 3 primary/scholarship confirming sources could not be reached."
+  },
+  {
+    "idCaso": 440795,
+    "municipio": "PUERTO RICO",
+    "reason": "insufficient_coverage",
+    "note": "The event — kidnapping of approximately 18 members of a Christian Gnostic community in Puerto Rico, Caquetá, by the FARC's Columna Móvil Teófilo Forero between 9–15 May 1999, followed by the execution of 13 of them on 17 June 1999 — is well-attested across tertiary sources and one primary source (Rutas del Conflicto). The Defensoría del Pueblo and Fiscalía's Human Rights Unit both documented the case (explicitly cited in the HRW 2001 report), and a court conviction of a FARC member is referenced via HCHR Colombia, but those official documents could not be directly accessed at verifiable URLs; the threshold of 3 confirmed primary/scholarship sources was not met."
+  },
+  {
+    "idCaso": 440921,
+    "municipio": "CAJIBIO",
+    "reason": "insufficient_coverage",
+    "note": "Extensive searches across JEP Bloque Calima reports, CNMH resources, Rutas del Conflicto, Verdad Pacífico, Semana Cronología de Víctimas, El Tiempo archive, and CINEP Noche y Niebla found no authoritative source that unambiguously documents a kidnapping (secuestro) of 18 persons by AUC in Cajibío, Cauca on or around March 17, 2001. The only well-sourced AUC crime in Cajibío from that period is a January 15, 2001 bus massacre (10 victims, different modality). Fewer than 3 primary or scholarship sources confirming this event were found."
+  },
+  {
+    "idCaso": 322226,
+    "municipio": "CONVENCION",
+    "reason": "insufficient_coverage",
+    "note": "The event is identifiable with high confidence as the EPL Frente Libardo Mora Toro kidnapping of musicians from Alfredo Gutiérrez's band on November 11, 2001 (held 17 days, released November 28), linked to the Convención/Catatumbo area. Only two tertiary press sources were found; no primary sources (CNMH publications, JEP, Fiscalía, Rutas del Conflicto, Verdad Abierta, court rulings) unambiguously cover this case, falling short of the >=3 primary/scholarship threshold required for a drafted narrative."
+  },
+  {
+    "idCaso": 321559,
+    "municipio": "ALTO BAUDO",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches in Spanish and English (place + date + perpetrator + victim count; CNMH IdCaso; Rutas del Conflicto; Verdad Abierta) returned only regional-context material confirming Los Rastrojos operated in the Baudó area during 2010, but no source unambiguously identifies or narrates this specific kidnapping event of 18 victims on 2010-03-17. The floor of three primary/scholarship sources is not met."
+  },
+  {
+    "idCaso": 443638,
+    "municipio": "MORALES",
+    "reason": "insufficient_coverage",
+    "note": "The event is confirmed by two official Colombian state primary sources — a detailed Fuerza Aérea Colombiana rescue report placing the kidnapping at 1pm on January 15, 2016 in the Ciénaga Sinoé wetland in Morales, Bolívar by the ELN's Luis José Solano Sepúlveda front, and a Defensoría del Pueblo dispatch on humanitarian accompaniment following the liberation of detained fishermen on January 17, 2016 in Morales, Bolívar — plus three consistent press sources reporting 17 victims (against CNMH's 18); the three-primary threshold is not met because no third independent primary source (Ejército Nacional press release, Ministerio de Defensa, CINEP Noche y Niebla No. 53, or JEP/Fiscalía record) was accessible online."
+  },
+  {
+    "idCaso": 877591,
+    "municipio": "PUERTO RONDON",
+    "reason": "refuted",
+    "note": "All three sources labeled 'primary' are inaccessible: OCHA URL returns HTTP 403 Forbidden; both OHCHR hchr.org.co URLs return SSL certificate errors. Zero of the three designated primary sources can be verified as live or as supporting the narrative's specific claims. Check 4 fails outright. | disputedFigures is set to false but is factually wrong. One of the draft's own cited sources (Infobae Colombia, July 22, 2024) reports 15 kidnapped, not 18. Defensoría del Pueblo documentation (found via web search) records 17 total held. The figure varies from 15 to 18 across the source corpus, including within the cited source list itself. | The children's age range 'entre tres y diez años' (3 to 10) is not supported by the accessible evidence. Defensoría del Pueblo rescue records show the freed minors were aged 2, 5, 7, 10, and 12 years old. El Colombiano's victim list includes a 16-year-old minor among the kidnapped. The stated floor (3) and ceiling (10) are both contradicted. | The ELN denial claim and the specific phrase 'voluntariamente refugiados' are confirmed as real (corroborated via web search of Cambio Colombia reporting), but no source in the draft's source list covers this claim. The cite for this assertion is missing."
+  },
+  {
+    "idCaso": 322161,
+    "municipio": "BUCARAMANGA",
+    "reason": "insufficient_coverage",
+    "note": "Three targeted searches in Spanish and English (place, date, perpetrator, victim count) returned no source that unambiguously identifies this specific kidnapping event — Bucaramanga, June 7, 1999, 18 victims, EPL dissident faction. General documentation of EPL dissident activity in Santander during 1999 exists (Hugo Alberto Carvajal / Frente Ramón Gilberto Barbosa Zambrano), but no primary or press record for this case number was found; coverage is insufficient for a faithful narrative."
+  },
+  {
+    "idCaso": 440965,
+    "municipio": "BOGOTA, D.C.",
+    "reason": "refuted",
+    "note": "The cited CNMH 'primary' source (https://centrodememoriahistorica.gov.co/el-m-19-y-la-paz-como-paradigma-del-cambio-y-la-construccion-de-la-democracia/) is about the M-19 peace accord signed in March 1990 in Caloto, Cauca. It contains no information about the 1980 embassy siege, hostages, or victim count. The annotation's explicit claim 'El Centro Nacional de Memoria Histórica registra 18 víctimas en este caso' has no support from this URL. This is a citation pointing to the wrong event. | The resolution date 'April 25, 1980' stated in both narrative versions is contradicted by the majority of verifiable sources: Semana's 2010 anniversary article, en.wikipedia, the Christian Science Monitor's contemporaneous 1980 report, and the Señal Memoria archived airport audio all give April 27, 1980. The draft is also internally inconsistent: 61 days counted from February 27 inclusive in a leap year yields April 27, not April 25. The two figures in the draft cannot both be correct. | Only 2 of the 3 declared primary/scholarship sources pass verification. The CNMH URL describes a different event (see reason 1). The Tandfonline article is real and about the right event (confirmed via ResearchGate and web search) but is paywalled (HTTP 403 on fetch). The OpenEdition article is verified and accessible. The requirement of >= 3 genuinely authoritative sources with real URLs pointing to this event is not met."
+  },
+  {
+    "idCaso": 345739,
+    "municipio": "DIBULLA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches in Spanish and English (place + date + perpetrator + victim count combinations; CNMH, Verdad Abierta, El Tiempo archives, Semana, JEP Caso 01, FIDH/ONIC reports) returned no publicly indexed source that unambiguously identifies a kidnapping of 18 persons in Dibulla, La Guajira on 28 August 2002 attributed to the ELN. The CNMH registry entry is the sole authoritative trace found; independent corroboration is insufficient to draft a narrative."
+  },
+  {
+    "idCaso": 321268,
+    "municipio": "NEIVA",
+    "reason": "insufficient_coverage",
+    "note": "Two Wikipedia pages describe a potentially related event — FARC under Januario Valero kidnapping and killing 12 campesinos in San Bartolo, rural Neiva, on April 17, 1968 (citing an El Tiempo archive from April 21, 1968) — but victim count (12 vs. 18) and date (Apr 17 vs. Apr 16) diverge from the coded record, and both pages are tertiary with no independent primary or scholarship corroboration of this exact case. No JEP filings, CNMH special reports, court documents, or peer-reviewed sources for IdCaso 321268 were found."
+  },
+  {
+    "idCaso": 229223,
+    "municipio": "SAN JOSE DEL GUAVIARE",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches in Spanish and English (CNMH, Rutas del Conflicto, Verdad Abierta, OMCT, JEP, direct IdCaso lookup) returned no publicly accessible source that specifically documents a forced disappearance of 18 persons in San José del Guaviare on November 2, 1995. The CNMH SIEVCAC entry is the only record found; no corroborating primary, scholarship, or tertiary sources could be identified."
+  },
+  {
+    "idCaso": 273918,
+    "municipio": "SAN PABLO",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches in Spanish and English (CNMH, Rutas del Conflicto, Verdad Abierta, JEP/UBPD, OMCT, general press) found no authoritative source that unambiguously identifies this specific event: 18 forced disappearances in San Pablo, Bolívar on December 26, 2004. General documentation of the Bloque Central Bolívar in the region and a 1999 San Pablo massacre were found, but nothing matching the date, scale, or IdCaso. The coded perpetrator \"GRUPO ARMADO NO IDENTIFICADO / NO APLICA\" is consistent with an event that received no specific documented coverage."
+  },
+  {
+    "idCaso": 280356,
+    "municipio": "TADO",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches across CNMH, UBPD, Rutas del Conflicto, Verdad Abierta, JEP, and general press (Spanish and English, by place/date/scale/perpetrator type) returned no source that unambiguously describes this specific event. The UBPD confirms at least 60 total disappearances in Tadó linked to the armed conflict but provides no event-level documentation of the May 27, 2007 incident. Insufficient primary or scholarship coverage to draft a faithful narrative."
+  },
+  {
+    "idCaso": 290338,
+    "municipio": "PUERTO GAITAN",
+    "reason": "insufficient_coverage",
+    "note": "Rutas del Conflicto (primary, CNMH project) directly documents this event — Nov 5, 1998, Puerto Gaitán Meta, 17 victims (including 5 Sikuani), paramilitares, ACMV connection via Justice and Peace proceedings — and is the sole confirmed primary source. The CNMH's own Altillanura book covers ACMV violence in Puerto Gaitán 1990–2005 and references massacres in the area during 1996–1999, but the PDF was binary-encoded and could not be read to confirm this specific event. Two tertiary sources (CIJP naming 12 victims, Wikipedia) corroborate basic facts. The strict 3-primary floor is not met with directly verifiable sources."
+  },
+  {
+    "idCaso": 288529,
+    "municipio": "INZA",
+    "reason": "insufficient_coverage",
+    "note": "The event — the FARC toma de Inzá on March 17, 1965 — is historically well-known as the FARC's first armed takeover of a populated center; date, location, and FARC responsibility are consistently confirmed across one authoritative primary source (CNMH 'Tomas y ataques guerrilleros', 2016) and multiple tertiary press accounts. However, no second independent primary or scholarly source directly documenting the event was located, falling short of the three-source primary/scholarship threshold. Victim-count discrepancy noted: most sources report 16 deaths; the El Tiempo archive account and CNMH SIEVCAC registry both record 17."
+  },
+  {
+    "idCaso": 290996,
+    "municipio": "EL CARMEN DE BOLIVAR",
+    "reason": "refuted",
+    "note": "Fabricated/unsupported detail: the narrative says victims were killed 'con piedras, garrotes y machetes' (with stones, clubs, and machetes). No cited source supports 'machetes'. Rutas del Conflicto (https://rutasdelconflicto.com/masacres/macayepo) says only 'piedras y garrotes'; El Espectador likewise says 'piedras y garrotes'; the CSJ sentence (Nizkor) specifies no method, only 'muertes violentas'. On a memorial of real victims this fails the data-integrity bar (default-to-refute). | All other checks pass strongly. Check 1: all four primary URLs were fetched and are live and about THIS event (El Carmen de Bolívar/Macayepo, 2000-10-14, AUC Bloque Héroes de los Montes de María under Rodrigo Mercado Pelufo 'Cadena', ~80 paramilitaries, ~200 families displaced, García Romero 40-year conviction as determinador, Joaquín García coordination — all corroborated). Check 3: the 17 (CNMH) vs 15 (Rutas) vs 12 (urban Macayepo) divergence is explicitly attributed and disputedFigures=true. Check 4: >=3 authoritative real sources verified (Rutas/CNMH, JEP, CSJ/Nizkor, Unidad para las Víctimas). The single fabricated method word is the only fatal flaw."
+  },
+  {
+    "idCaso": 288906,
+    "municipio": "VISTAHERMOSA",
+    "reason": "insufficient_coverage",
+    "note": "Multiple tertiary sources (NGO bulletins and press) consistently document a paramilitary attack on the gallera (cockfighting venue) of Piñalito, inspección of Vistahermosa, Meta around February 20–22, 1988. The CNMH count of 17 victims is corroborated by El Tiempo and Periódico del Meta; Justicia y Paz lists 12 named UP militants killed in the same event; Wikipedia Anexo:Colombia en 1988 reports 14. No primary source in the defined set (dedicated Rutas del Conflicto page, CNMH published case report, JEP or Fiscalía document, court ruling, Verdad Abierta entry) was located; the threshold of 3 primary/scholarship confirmations is not met."
+  },
+  {
+    "idCaso": 290111,
+    "municipio": "CUCUTA",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across Rutas del Conflicto, HRW 1998 Annual Report, US State Department 1998 Colombia Human Rights Report, Wikipedia's masacres list, and CINEP/CNMH-adjacent sources found no authoritative published source that unambiguously describes a massacre in Cúcuta on or around September 12, 1997 with 17 victims attributed to ELN. The only open-source documented 1997 Cúcuta massacre is the October 21, 1997 El Estanco event (5 victims, suspected paramilitary). This event may exist solely in the CNMH SIEVCAC registry without secondary coverage."
+  },
+  {
+    "idCaso": 290749,
+    "municipio": "TIBU",
+    "reason": "insufficient_coverage",
+    "note": "Multiple searches across Rutas del Conflicto, CNMH microsites, Comisión de la Verdad, El Espectador, Semana, and INDEPAZ/Fiscalía sources yield no published record specific to a Tibú massacre on or around March 7, 2000 with 17 victims. The publicly documented Tibú events from this period are the July 1999 massacre (11 victims) and the April 6, 2000 massacre (20 victims); this case appears to be one of the many under-documented events within the broader Bloque Catatumbo paramilitary campaign acknowledged in CNMH's 'Con licencia para desplazar' monograph. Fewer than 3 primary or scholarship sources confirming this specific event were found."
+  },
+  {
+    "idCaso": 836306,
+    "municipio": "DOLORES",
+    "reason": "insufficient_coverage",
+    "note": "Searches across the CNMH Observatorio, Universidad del Valle digital library (including the contemporaneous \"Breve historia de La Violencia en el municipio de Dolores,\" Sept. 11, 1958), Rutas del Conflicto, the Comisión de la Verdad final report, Wikipedia's La Violencia chronology, and BanRepCultural found no independently published source that unambiguously identifies the April 13, 1958 massacre in Dolores, Tolima (17 victims, Bandolerismo Conservador) by date, scale, or perpetrator. General documentation of Conservative-attributed violence in this municipio during La Violencia exists but covers the broader 1951–1958 period without event-level specificity."
+  },
+  {
+    "idCaso": 292167,
+    "municipio": "TAME",
+    "reason": "insufficient_coverage",
+    "note": "The massacre is unambiguously identified as the \"Masacre de San Salvador\" (caserío San Salvador, Tame, Arauca, 31 December 2004, 17 victims, FARC Columna Móvil Alfonso Castellanos del Bloque Oriental) and is documented in consistent detail across all located sources. However, only one primary source (Rutas del Conflicto) could be directly confirmed; the CNMH Bloque Vencedores de Arauca report (Informe N.º 15, centrodememoriahistorica.gov.co) likely covers this event but its PDF exceeded fetch limits and could not be verified for specific mention. The >=3 primary/scholarship threshold is not met."
+  },
+  {
+    "idCaso": 288949,
+    "municipio": "EL CASTILLO",
+    "reason": "refuted",
+    "note": "CAJAR source (colectivodeabogados.org/masacre-de-cano-sibao-25-anos-de-memoria-contra-la-impunidad) is about the June 3 1992 massacre at Caño Sibao (5 victims: UP-aligned elected officials), not the July 3 1988 event (17 passengers). Published 2017 — '25 años' anchors to 1992. Citing it as support for the 1988 narrative is an attribution error. | The claim that the Masetos were 'financiadas por el comerciante de esmeraldas Víctor Carranza Niño' is not supported by the verifiable primary source. Rutas del Conflicto names Gonzalo Rodríguez Gacha and unnamed 'esmeralderos del occidente de Boyacá'; El Espectador attributes the operative structure to Fidel Castaño Gil's organization. No fetched, live source specifically ties the 1988 massacre financing to Carranza by name. | justiciaypazcolombia.com returns ECONNREFUSED — the URL is dead and cannot be verified. This is one of two sources listed as 'primary' in the draft."
+  },
+  {
+    "idCaso": 290163,
+    "municipio": "TURBO",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches across HRW annual reports, Rutas del Conflicto, Semana Cronología, El Tiempo archives, Wikipedia's AUC and FARC massacre annexes, and the CNMH Observatorio de Memoria y Conflicto found no published source that unambiguously identifies a masacre in Turbo, Antioquia on or around 1997-12-01 with 17 victims. The coded perpetrator (DESCONOCIDO / NO APLICA) is consistent with under-documented events. No draft is possible without at least three primary or scholarly confirming sources."
+  },
+  {
+    "idCaso": 34879,
+    "municipio": "HACARI",
+    "reason": "insufficient_coverage",
+    "note": "Targeted searches in Spanish and English found only a single tertiary reference (Wikipedia Armed Conflict Chronology) confirming an event in Hacarí, Norte de Santander on October 27, 1998 — but that source attributes the attack to FARC-EP and ELN guerrillas killing 7 police and 7 military, with state forces as victims, not perpetrators. No primary or scholarship source corroborating the CNMH coding of Ejército Nacional/Policía Nacional as perpetrators of an 'ATAQUE A POBLADO' against 17 victims was found. The CNMH Catatumbo report (Tomo I) is the most probable primary source but was not text-searchable at scale. The ≥3 primary/scholarship threshold is not met."
+  },
+  {
+    "idCaso": 15483,
+    "municipio": "DAGUA",
+    "reason": "refuted",
+    "note": "The legal theory attributed to the Consejo de Estado civilian-death ruling — 'señalando fallas en los sistemas de seguridad de la base' — is not confirmed by any accessible cited source. El Espectador confirms the condemnation exists but states no reasoning; the Consejo de Estado official source covers only the property-occupation case and makes no mention of the civilian's death. | The draft's 'declaró... y ordenó adicionalmente' phrasing implies the civilian-death condemnation and the property-occupation indemnity are the same ruling or the same proceeding. The cited sources show they are two separate and independent Consejo de Estado cases with no documented connection between them."
+  },
+  {
+    "idCaso": 17960,
+    "municipio": "CAREPA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches in Spanish and English across CNMH microsites, Rutas del Conflicto, JEP Case 03 documentation, Brigade 17 records, and general press archives returned no source that unambiguously identifies this specific acción bélica in Carepa on 2002-05-14 with 17 victims attributed to the Ejército Nacional. General documentation on Brigade 17 operations and extrajudicial-execution investigations in Carepa exists but does not map onto this specific event."
+  },
+  {
+    "idCaso": 2124,
+    "municipio": "TULUA",
+    "reason": "insufficient_coverage",
+    "note": "Two tertiary sources corroborate the event: a contemporaneous Semana article (1985) reports an M-19 ambush on a VIII Brigada patrol in Monteloro, rural Tuluá (Valle del Cauca) on October 2, 1985, resulting in 4 soldiers and at least 13 guerrillas killed (total 17) plus 4 soldiers detained — matching the CNMH toll exactly, with a one-day date offset consistent with a multi-day combat. No primary or scholarship sources (CNMH thematic reports, Comisión de la Verdad, JEP, Rutas del Conflicto, Verdad Abierta, court rulings) that unambiguously cite this specific incident were found, so the 3-source primary/scholarship floor is not met."
+  },
+  {
+    "idCaso": 597,
+    "municipio": "ALVARADO",
+    "reason": "insufficient_coverage",
+    "note": "The event is identifiable with high confidence in at least three tertiary sources (Wikipedia/Jacinto Cruz Usma, occidente.co, luisvillamarin.com) that consistently describe Sangrenegra's gang attacking vehicles at Los Guayabos on the Alvarado–Anzoátegui road on March 20, 1963, killing 13 passengers + 1 police lieutenant + 3 carabineros = 17 victims. However, no primary sources (CNMH narrative report, Comisión de la Verdad, JEP, Rutas del Conflicto event page, court ruling, or official state report) and no confirmed peer-reviewed scholarship specifically documenting this event were found. The ≥3 primary/scholarship threshold is not met."
+  },
+  {
+    "idCaso": 396540,
+    "municipio": "CAROLINA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches and direct page fetches (Wikipedia chronology, CNMH OMC portal, Semana acciones bélicas, Rutas del Conflicto, the municipality's own history page, and general Spanish/English queries) produced no source that unambiguously identifies this specific combat action in Carolina, Antioquia on 4 November 1986. The event predates the 1988 floor of most digitised acciones-bélicas datasets; the CNMH SIEVCAC case record is not publicly browsable by case ID. Minimum three primary/scholarship sources required; zero found."
+  },
+  {
+    "idCaso": 20514,
+    "municipio": "SONSON",
+    "reason": "insufficient_coverage",
+    "note": "Four search passes in Spanish and English — covering El Tiempo, El Colombiano, Semana, CINEP Noche y Niebla n.27 (image-based PDF, unsearchable), Rutas del Conflicto, Hacemos Memoria, CNMH Observatorio portal, and Comisión de la Verdad resources — returned no independently published source confirming an acción bélica in Sonsón, Antioquia on April 20, 2003 attributed to the Ejército Nacional with 17 victims. All Sonsón 2003 coverage in open sources points to the February FARC massacre at La Danta or the May 2003 Operation Sonar; this specific combat event is undocumented in accessible archives. Minimum corroboration threshold (≥ 3 primary/scholarship sources) is unmet."
+  },
+  {
+    "idCaso": 23651,
+    "municipio": "TAME",
+    "reason": "insufficient_coverage",
+    "note": "Multiple Colombian press sources (two El Tiempo archive articles, Wikipedia, and a soldiers' memorial blog) consistently document a FARC Front 10 ambush on April 6, 2005 in the Corocito sector of Tame, Arauca, killing 17 soldiers (Major Omar Pío Bellojín Guillot plus 16 enlisted) from Batallón de Contraguerrillas No. 47, Brigada Móvil No. 5 — date, location, and toll match the coded record exactly. No primary sources (CNMH formal monographs, Comisión de la Verdad, JEP, Rutas del Conflicto, or Verdad Abierta) that specifically document this event were found; coverage remains at the tertiary press level, insufficient for the ≥3 primary/scholarship threshold. All press sources attribute the attack to FARC Front 10, while CNMH codes the perpetrator as AGENTE DEL ESTADO / EJÉRCITO NACIONAL, likely reflecting a SIEVCAC methodology that attributes the acción bélica to the state force conducting the operation rather than the ambushing party."
+  },
+  {
+    "idCaso": 2236,
+    "municipio": "JAMUNDI",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches across Rutas del Conflicto, El Tiempo archives, CNMH efemerides, Wikipedia (Colombia 1986 / armed conflict 1974-1990), Comisión de la Verdad Valle del Cauca chapter, the CNMH OMC portal, and Verdad Abierta returned no external published source that unambiguously documents a March 4, 1986 armed combat event in Jamundí (Valle del Cauca) with 17 victims attributed to the Colombian Army. Broad contextual sources confirm M-19 and Army clashes near the Pance/Jamundí area in March 1986, but none corroborate this specific date, municipio, and toll. The minimum three primary/scholarship sources required for a draft narrative are not met."
+  },
+  {
+    "idCaso": 527,
+    "municipio": "LIBANO",
+    "reason": "insufficient_coverage",
+    "note": "Tertiary sources (Wikipedia chronology, military journalism, local history) corroborate an armed action at vereda El Taburete, Libano, Tolima on April 2, 1962, where bandolero groups Sangrenegra, Pedro Brincos, and Desquite ambushed an army convoy with victim counts varying 14-17 soldiers and civilians. No primary or scholarly sources (CNMH reports, Comision de la Verdad, JEP, Rutas del Conflicto, court rulings) were found for this event. All tertiary accounts identify bandoleros as perpetrators, contradicting the CNMH coding of Ejercito Nacional as presunto responsable, leaving the perpetrator attribution unresolved."
+  },
+  {
+    "idCaso": 18306,
+    "municipio": "LA PLATA",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches in Spanish and English — targeting the specific date (July 11, 2002), place (La Plata, Huila), event type (acción bélica), perpetrator (Ejército Nacional), and victim count (17) — returned no published source that unambiguously documents this specific armed combat action. The CNMH Observatorio, Rutas del Conflicto, Verdad Abierta, El Tiempo archivo, and Human Rights Watch 2003 world report were all queried; none corroborate IdCaso 18306."
+  },
+  {
+    "idCaso": 577777,
+    "municipio": "URRAO",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches in Spanish and English across CNMH, JEP Caso 03, Rutas del Conflicto, Consejo de Estado, press archives, and Wikipedia returned no independent sources that unambiguously document a combat action (acción bélica) in Urrao, Antioquia on or around 2004-02-22 with 17 victims attributed to the Ejército Nacional. All matching Urrao events found belong to different dates or perpetrators (Feb 2000 AUC massacre, May 2003 FARC assassination). Minimum threshold of 3 primary/scholarship sources cannot be met."
+  },
+  {
+    "idCaso": 21615,
+    "municipio": "BARBACOAS",
+    "reason": "insufficient_coverage",
+    "note": "Five searches and direct fetches of JEP Caso 02, Rutas del Conflicto, HCHR, and the CNMH Observatorio returned no publicly accessible source that unambiguously describes this specific event (Army combat action in Barbacoas, Nariño, 11 August 2003, 17 victims). A FARC-EP civilian massacre in Barbacoas in 2003 was found but is a distinct event with a different perpetrator and CNMH category. The required floor of three primary or scholarship sources could not be met."
+  },
+  {
+    "idCaso": 11312,
+    "municipio": "TURBO",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across CNMH publications, CINEP/Noche y Niebla No. 4 (Apr–Jun 1997), HRW 1998 Colombia report, El Tiempo archive, PBI Colombia, JEP Caso 04 (Urabá), and date-specific queries found no published source that independently documents a combat action (acción bélica) in Turbo, Antioquia on or around 15 June 1997 with 17 victims attributed to the Ejército Nacional. The event exists only in the SIEVCAC coded record; acciones bélicas are systematically under-covered in secondary literature relative to massacres, and the minimum three primary/scholarship sources required for a draft cannot be met."
+  },
+  {
+    "idCaso": 10860,
+    "municipio": "RIOSUCIO",
+    "reason": "insufficient_coverage",
+    "note": "The only external source found that hits the exact date and place is the HRW 1998 guerrilla-violations chapter, which records a FARC attack on the Riosucio police post on January 9, 1997 — matching date and municipio, but attributing the action to FARC (not state forces) and providing no 17-victim count. No primary or scholarship sources (CNMH memorial, Rutas del Conflicto, JEP, Comisión de la Verdad, court rulings) specifically document this acción bélica coded to Policía Nacional. The three-primary-source threshold cannot be met, and the perpetrator framing diverges from the CNMH record, making confident corroboration impossible."
+  },
+  {
+    "idCaso": 6033,
+    "municipio": "BARRANCABERMEJA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches across CNMH, HRW (1993 Colombia report), Comisión de la Verdad, Nizkor/derechos.org chronicles of 1992 Barrancabermeja, Semana, and date-specific queries returned no authoritative published source that unambiguously documents this specific ACCIONES BÉLICAS event (May 20, 1992, Barrancabermeja, 17 victims, Ejército Nacional). The Nizkor detailed chronicle of May 1992 killings in Barrancabermeja covers dates May 6, 11, 18, and 23 but not May 20. Armed-combat category events from this period are structurally under-represented in available human rights literature; the minimum threshold of three primary/scholarship sources cannot be met."
+  },
+  {
+    "idCaso": 3405,
+    "municipio": "EL BAGRE",
+    "reason": "insufficient_coverage",
+    "note": "Two tertiary sources (Las2Orillas, Wikipedia) confirm a July 12, 1988 armed engagement at Puerto López (corregimiento del río Tugui, 25 km from El Bagre): ~250 FARC/ELN combatants attacked a Colombian Army post, killing 15 soldiers and at least 20 guerrillas. The CNMH codes IdCaso 3405 as army-perpetrated (Ejército Nacional) with 17 victims — likely recording the guerrilla combatants killed by army fire — but no primary or scholarly source explicitly corroborating that framing or the figure of 17 was found; the minimum threshold of 3 primary/scholarship sources is not met."
+  },
+  {
+    "idCaso": 397501,
+    "municipio": "CUMARIBO",
+    "reason": "refuted",
+    "note": "Check 3 fails (gate): the narrative dates the event '1 de septiembre de 2007' but the coded CNMH record dates it 2007-09-02, and the draft does not attribute or reconcile this divergence. Sources genuinely split on the date (Semana: bombing began 4:39am Sat Sept 1 / campamento copado 5:50pm Sept 1; Wikipedia and coded record: Sept 2; Ejercito Nacional: Sept 3 announcement), so picking Sept 1 as bare fact while the annotated record says Sept 2 is an unflagged inconsistency. | Per the rubric, confirm requires all of checks 1-4 to pass; one hard gate (check 3) fails, so default is refute despite otherwise strong sourcing. | Substance is largely well-supported (Comision de la Verdad and Semana independently confirm Operacion Sol Naciente, Negro Acacio + 14 guerrilleros, 17 total = 14 recovered + 3 removed by 'Cepillo', Super Tucano/Tucano bombing), but one of the two cited primary sources (Presidencia) could not be loaded to verify (ECONNREFUSED)."
+  },
+  {
+    "idCaso": 396824,
+    "municipio": "SAN JUAN DE ARAMA",
+    "reason": "insufficient_coverage",
+    "note": "The event — a FARC-EP ambush at Alto La Bodega (San Juan de Arama, Meta) on 4 October 1997 that killed 17 National Police officers — is unambiguously documented by at least 2 confirmed primary sources (the UNIPEP/Policía Nacional official memorial book 'Las aguas profundas de San Juan de Arama' and the CNMH 'Ventana de la Memoria' initiative) plus multiple tertiary press sources, but falls short of the 3-primary threshold required for a draft. Note: the CNMH AB code 'AGENTE DEL ESTADO / POLICÍA NACIONAL' identifies the victim group's combatant affiliation (police were the victims), not the attacker; all external sources attribute the attack to FARC-EP fronts operating in western Meta."
+  },
+  {
+    "idCaso": 21817,
+    "municipio": "CHITA",
+    "reason": "insufficient_coverage",
+    "note": "No published source was found describing a September 6, 2003 combat action in Chita, Boyacá attributed to Army/DAS forces with 17 victims. The only well-documented Chita event from September 2003 is the FARC \"Caballo Bomba\" of September 10, 2003 (8 deaths + 15 wounded), which differs in date, perpetrator, and scale. Ten targeted web searches in Spanish and English, plus direct fetches of CNMH Observatorio, Coljuristas, Boyacá conflict reports, and press archives, returned no corroborating coverage of IdCaso 21817."
+  },
+  {
+    "idCaso": 11763,
+    "municipio": "CAICEDO",
+    "reason": "insufficient_coverage",
+    "note": "Two tertiary sources confirm that on October 15–16, 1997 the FARC attacked and briefly seized Caicedo (Antioquia), killing 8 police; Wikipedia's conflict chronology records that the ensuing army counter-operation produced 6 soldiers and 11 guerrillas killed (total 17), matching the CNMH figure. No primary sources (CNMH report, JEP filing, Rutas del Conflicto entry, Comisión de la Verdad document, or court ruling) specifically documenting the army's October 16 combat action were found; the ≥3 primary/scholarship floor is not met."
+  },
+  {
+    "idCaso": 25136,
+    "municipio": "PUERTO LIBERTADOR",
+    "reason": "insufficient_coverage",
+    "note": "The event is clearly the FARC-EP (Bloque José María Córdova / Frente 58, commanded by Joverman Sánchez Arroyave alias 'el Manteco') assault on the Tierradentro police post on November 1, 2006, killing 17 police officers — confirmed by the Unidad para las Víctimas (primary) and multiple press sources. Only 1 primary source was confirmed accessible; reliefweb and government PDFs returned access errors. A material perpetrator discrepancy prevents drafting: CNMH codes POLICÍA NACIONAL as perpetrator, but all external sources name FARC as the attacking force, suggesting this CNMH record may capture a different subset of the battle's casualties."
+  },
+  {
+    "idCaso": 23988,
+    "municipio": "VALLEDUPAR",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches (Spanish and English) on place, date, perpetrator, and victim count found no authoritative published source — primary, scholarly, or press — that unambiguously describes this specific ACCIÓN BÉLICA in Valledupar, Cesar on 2005-08-01 with 17 victims attributed to the Ejército Nacional. The nearest contextual background is the JEP macrocaso on Batallón La Popa (135 extrajudicial killings, Jan 2002–Jul 2005), which covers adjacent events but does not explicitly match this date or case."
+  },
+  {
+    "idCaso": 2165,
+    "municipio": "LEJANIAS",
+    "reason": "insufficient_coverage",
+    "note": "Four targeted searches (Spanish and English, CNMH/Rutas del Conflicto/Nizkor/general conflict chronologies) returned no source that unambiguously identifies a FARC armed action in Lejanías, Meta on 1985-12-03 with 17 victims. Results surface an unrelated paramilitary massacre in Lejanías (early 2000s) and general FARC history in the Ariari region, but nothing event-specific. Coverage is insufficient to draft a narrative."
+  },
+  {
+    "idCaso": 16374,
+    "municipio": "SAN JUAN DE ARAMA",
+    "reason": "insufficient_coverage",
+    "note": "One press source (El Tiempo) confirms a FARC attack on San Juan de Arama on the night of August 22–23, 2001 and Colombian Air Force air-support response, but reports no confirmed casualties and does not attribute 17 victims to the Air Force. No primary or scholarly sources (CNMH reports, Comisión de la Verdad, JEP, Rutas del Conflicto, court rulings) were found that independently document this specific combat action with the detail required to draft a narrative."
+  },
+  {
+    "idCaso": 22493,
+    "municipio": "EL CARMEN DE ATRATO",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted searches across Rutas del Conflicto, Comisión de la Verdad, Consonante, JEP Caso 03, CNMH Observatorio, and press archives returned no published source that unambiguously identifies a February 22, 2004 acción bélica in El Carmen de Atrato, Chocó with 17 victims attributed to the Ejército Nacional. The event exists only in the CNMH SIEVCAC coded record; no corroborating primary or secondary sources were located."
+  },
+  {
+    "idCaso": 2568,
+    "municipio": "ANGOSTURA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches (Spanish and English) combining place, date, victim count, and perpetrator type found no published sources — primary, scholarly, or tertiary — that unambiguously describe this specific acción bélica in Angostura, Antioquia on 1986-11-05. Combat incidents of this category and period in small municipalities are severely under-documented in public repositories; the CNMH SIEVCAC registry entry appears to be the sole accessible record."
+  },
+  {
+    "idCaso": 2121,
+    "municipio": "TULUA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches (Spanish and English) and three direct page fetches — CNMH SIEVCAC landing, Rutas del Conflicto Tuluá municipality page, and the 1985-in-Colombia Wikipedia article — returned no published source that unambiguously identifies an armed combat action in Tuluá, Valle del Cauca on 3 October 1985 with 17 victims attributed to the National Army. Armed combat events (acciones bélicas) from 1985 are systematically under-narrated in the digital memorial literature, and no primary, scholarly, or reliable tertiary source meeting the verification threshold was found."
+  },
+  {
+    "idCaso": 24133,
+    "municipio": "VALLE DEL GUAMUEZ",
+    "reason": "insufficient_coverage",
+    "note": "Four targeted web searches (Spanish and English) across CNMH, Rutas del Conflicto, JEP, Fiscalía, and press archives returned no source that unambiguously documents a combat action (acción bélica) in Valle del Guamuez, Putumayo on 2005-09-17 with 17 victims attributed to the Bloque Central Bolívar. The closest event found is a September 7, 2005 BCB–FARC confrontation in La Esmeralda with 3 civilian deaths, which does not match on date or scale. ACCIONES BÉLICAS are structurally under-documented in narrative sources; the CNMH SIEVCAC registry appears to be the sole record of this specific event."
+  },
+  {
+    "idCaso": 471,
+    "municipio": "PLANADAS",
+    "reason": "insufficient_coverage",
+    "note": "Multiple searches found general historical context about early-1962 military operations in southern Tolima, but no source unambiguously confirms this specific event (Planadas DANE 73555, January 22 1962, 17 victims). Wikipedia mentions January 1962 combats in Marquetalia/Planadas with only \"at least 4 uniformed soldiers\" killed (different toll, tertiary). El Espectador documents a contemporaneous Army operation in Natagaima (wrong municipality, different commemorative date). The Comisión de la Verdad's Marquetalia coverage addresses only the 1964 Operación Soberanía. No primary or scholarship source meeting the ≥3 floor was found."
+  },
+  {
+    "idCaso": 367461,
+    "municipio": "SAN ONOFRE",
+    "reason": "insufficient_coverage",
+    "note": "Published sources confirm systematic sexual violence in San Onofre (Sucre) in 2003 by the AUC Bloque Héroes de los Montes de María under commanders alias 'El Oso' (Marco Tulio Pérez Guzmán) and alias 'Cadena' (Rodrigo Mercado Peluffo), including a documented forced boxing spectacle at Alto de Julio (May 10, 2003) involving LGBTI victims and women, and a forced beauty pageant with rape at Libertad (Holy Week 2003). However, no published open source identifies a discrete event with exactly 17 victims that can be unambiguously matched to CNMH case 367461, and only one primary source (CNMH microsite) was found — below the three-source floor required for a drafted narrative."
+  },
+  {
+    "idCaso": 308842,
+    "municipio": "SANTA MARTA",
+    "reason": "insufficient_coverage",
+    "note": "Multiple searches across CNMH publications, JEP Case 07, Fiscalía/Rama Judicial sentencing documents, press archives (El Tiempo, Semana, El Espectador, Infobae), and Verdad Abierta found no published source that specifically documents this individual recruitment episode of 17 minors in Santa Marta on 2001-08-05. The broader operational context (ACMG/Frente Resistencia Tayrona active in the region; Hernán Giraldo convicted of illicit recruitment in Justice and Peace proceedings) is well-attested, but the discrete event is not described in any retrievable authoritative source, leaving the >=3 primary/scholarship threshold unmet."
+  },
+  {
+    "idCaso": 342705,
+    "municipio": "URUMITA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches (Spanish and English) and four document fetches — El Tiempo archive, CINEP Noche y Niebla No. 21, Rutas del Conflicto Urumita page, BAPP Plan Regional de Búsqueda Sur de La Guajira — returned no source that unambiguously describes a 17-victim ELN kidnapping in Urumita on 28 September 2001. General contextual material confirms ELN Frente Luciano Ariza operated in Urumita and conducted kidnappings in the area, but no published primary or press account corroborating this specific case (CNMH IdCaso 342705) was found."
+  },
+  {
+    "idCaso": 649213,
+    "municipio": "MESETAS",
+    "reason": "insufficient_coverage",
+    "note": "The event is the \"Toma del Cerro Girasoles\" (January 8-9, 1991, Mesetas/La Macarena, Meta): FARC-EP Bloque Oriental, Front 26, commanded by Mono Jojoy, Martín Sombra, and El Cura Camilo, attacked a platoon from Battalion 21 Vargas, killing 2 soldiers and kidnapping 16-17 (CNMH records 17; most press sources corroborate 17, Wikipedia says 16). Hostages were released to the Red Cross. Two court convictions specifically for this attack are documented in press: Martín Sombra (24 years 7 months, Juzgado Penal del Circuito Especializado de Villavicencio, October 2008) and El Cura Camilo (10 years). However, the court ruling documents are not accessible online; the only identified scholarly source (Hernández Torres, Pontificia Universidad Javeriana, 2013, confirmed to begin with the Girasoles attack) returned HTTP 403; and no CNMH/JEP/Verdad Abierta/Rutas del Conflicto page for this specific event was found accessible. Coverage is rich in press (tertiary) but falls below the required three primary/scholarship sources."
+  },
+  {
+    "idCaso": 438571,
+    "municipio": "SANTA MARTA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches found no source that specifically identifies this event — a 17-victim forced disappearance in Santa Marta on 2001-08-05 attributed to the Autodefensas de Hernán Giraldo. The 2019 Justice and Peace sentence (Tribunal Superior de Barranquilla) covers 755 forced disappearance cases in Santa Marta 1996–2004 attributed to Giraldo Serna, but no named incident matching this date and scale could be isolated from any primary, scholarship, or tertiary source."
+  },
+  {
+    "idCaso": 291284,
+    "municipio": "VILLAGARZON",
+    "reason": "insufficient_coverage",
+    "note": "Rutas del Conflicto (CNMH) documents this event in full detail: on June 10, 2001, Bloque Sur Putumayo paramilitaries entered Puerto Umbría corregimiento in Villagarzón, ordered a 72-hour evacuation, then called 17 residents by name, took them to La Cristalina vereda, killed them, and dumped the bodies in the Putumayo River (16 unidentified); named victim Melba Erazo, former concejal, and two minors are confirmed. Only 1 verified primary source was located; Verdad Abierta and a CNMH Putumayo report are cited as underlying sources by Rutas del Conflicto but no working URLs for those records were found, leaving the ≥3 primary/scholarship threshold unmet."
+  },
+  {
+    "idCaso": 424293,
+    "municipio": "AMALFI",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches in Spanish and English across CNMH, Rutas del Conflicto, Verdad Abierta, Comisión de la Verdad, Justicia y Paz, HRW, and Amnesty International sources returned no source that unambiguously describes this specific event — the forced disappearance of 17 persons in Amalfi, Antioquia on June 4, 1997 attributed to Autodefensas Campesinas del Magdalena Medio. Abundant general context about ACMM operations and forced disappearances in the Magdalena Medio/northeast Antioquia region exists, but no indexed public source isolates this date, place, and victim count."
+  },
+  {
+    "idCaso": 185296,
+    "municipio": "BARRANCABERMEJA",
+    "reason": "insufficient_coverage",
+    "note": "The car bomb at Talleres Fullton (Calle 28, Barrio Palmira, Barrancabermeja) on February 10, 1993 is corroborated by three contemporaneous El Tiempo archive reports and a 2015 Vanguardia retrospective, all tertiary press. No primary or scholarship sources were located — Rutas del Conflicto, Verdad Abierta, Comisión de la Verdad, and CNMH published reports do not cover this event; a Consejo de Estado PDF (case 25000-23-26-000-1995-00595-01/18860) surfaced in searches but was unreadable as compressed binary, preventing verification of its scope. The case does not meet the three-primary-source threshold."
+  },
+  {
+    "idCaso": 805292,
+    "municipio": "NATAGAIMA",
+    "reason": "insufficient_coverage",
+    "note": "The event is corroborated in two Wikipedia timeline articles, which record that on 26 September 1963 troops of the Batallón Caicedo killed 16 members of communist self-defense forces in the Cañón de la Troja, Natagaima (Tolima), including commanders Plácido Aragón \"capitán Tolima\" and Gratiniano Rocha \"Avenegra\". Both Wikipedia entries carry \"[cita requerida]\" markers (no underlying citations provided). No primary sources (CNMH reports, JEP filings, Comisión de la Verdad, Rutas del Conflicto, Verdad Abierta, court documents) or peer-reviewed scholarship documenting this specific event were found; the >=3 primary/scholarly threshold is not met."
+  },
+  {
+    "idCaso": 288512,
+    "municipio": "BARBOSA",
+    "reason": "insufficient_coverage",
+    "note": "Four rounds of targeted web searches (Spanish and English) across CNMH, Rutas del Conflicto, academic databases, and press archives returned no published source that unambiguously identifies a masacre in Barbosa, Santander on 28 January 1964 with 16 victims attributed to bandolerismo. Rutas del Conflicto's massacre database begins in 1982; the CNMH SIEVCAC registry is the sole confirming record found, which is insufficient to draft a narrative."
+  },
+  {
+    "idCaso": 288688,
+    "municipio": "CIMITARRA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches and multiple document fetches found no published source that unambiguously describes a massacre in Cimitarra, Santander on 1983-08-08 with 16 victims. The nearest documented events are the Vuelta Acuña massacre (Cimitarra, January 1984, ~10-20 victims, MAS + XIV Brigade) and a 1987 Cimitarra massacre (14 victims) — neither matches on date. The event likely predates the documentation window of most accessible Colombian conflict archives, which begin systematic tracking of paramilitary massacres from 1984-1985 onward."
+  },
+  {
+    "idCaso": 533515,
+    "municipio": "SAN ALBERTO",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted web searches in Spanish and English (Rutas del Conflicto, CNMH, Comisión de la Verdad, Wikipedia, HRW, press archives) returned no published source that unambiguously describes a February 1968 massacre in San Alberto, Cesar with ~16 victims attributed to the Colombian Army. The event predates the online coverage window of all major conflict-documentation portals (Rutas del Conflicto starts 1982; Comisión de la Verdad focuses on 1985–2016); no primary, scholarship, or tertiary source was found to meet the corroboration threshold."
+  },
+  {
+    "idCaso": 743939,
+    "municipio": "PITAL",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted web searches in Spanish and English (place, date, victim count, perpetrator type, Rutas del Conflicto site search, CNMH tag pages) returned no sources that unambiguously describe a massacre in Pital, Huila on or around April 25, 1961 with ~16 victims. The bandolerismo period (late 1950s–mid 1960s) in Huila is almost entirely absent from digitally accessible primary or scholarly sources; no corroborating source meeting the ≥3 primary/scholarship threshold was found."
+  },
+  {
+    "idCaso": 288967,
+    "municipio": "CANALETE",
+    "reason": "refuted",
+    "note": "Check 2 fails — 'Tribunal de Justicia y Paz de Medellín' as the specific venue where witnesses implicated López Gómez is not confirmed by any fetched source (Rutas del Conflicto, Wikipedia, El Colombiano, El Espectador all mention López Gómez and/or the Ralito Pact conviction, but none name this specific tribunal or testimony); this is a positive factual claim in the narrative without source support. | Check 2 fails — bus interception at 'corregimiento de Popayán (San Pedro de Urabá, Antioquia)' is not confirmed by any fetched source; El Espectador confirms a bus on the Montería–Arboletes route was commandeered but does not name Popayán as the interception stop; El Colombiano confirms bus interception but also gives no specific stop. | Check 4 borderline fails — of the three sources labeled 'primary' (Rutas del Conflicto, Unidad para las Víctimas, Alcaldía de Canalete), only Rutas returned usable substantive content; both the Unidad para las Víctimas and Alcaldía pages rendered as essentially empty (JS-heavy shells), so they cannot be verified as live content-bearing sources supporting the narrative's specific claims."
+  },
+  {
+    "idCaso": 291325,
+    "municipio": "TIBU",
+    "reason": "insufficient_coverage",
+    "note": "Multiple targeted searches across Rutas del Conflicto, CNMH microsites, Wikipedia's FARC massacres annex, and HRW archives found no published source independently documenting a FARC massacre in Tibú on July 17, 2001 with 16 victims. The only 2001 FARC events in this municipio with published corroboration are the La Gabarra massacres of September 6 and 10, 2001; this event appears in the CNMH SIEVCAC registry but lacks independent published coverage sufficient to draft a narrative."
+  },
+  {
+    "idCaso": 439532,
+    "municipio": "YARUMAL",
+    "reason": "insufficient_coverage",
+    "note": "Rutas del Conflicto (primary) provides a dedicated account confirming January 17, 2000, 16 victims across four veredas of Yarumal (La Quiebra, El Llano, La Rivera, Ochalí), attributed to Bloque Mineros/AUC — fully consistent with the coded record. Four tertiary sources independently corroborate the event with the same victim count and AUC attribution, though Hacemos Memoria (UdeA) gives the date as January 6 rather than January 17. No additional primary or peer-reviewed sources explicitly documenting this specific event were located, leaving only one primary source against the required three-source floor."
+  },
+  {
+    "idCaso": 297744,
+    "municipio": "SAN JOSE DEL GUAVIARE",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted web searches in Spanish and English (varying perpetrator, date, location, victim count) returned no specific published coverage of this event. No press archive, human rights report, PAICMA/Acción Contra Minas incident record, Rutas del Conflicto entry, or scholarly source independently confirms this MINAS event in San José del Guaviare on 2007-02-20 with 16 victims attributed to the Ejército Nacional. The event appears only in the CNMH SIEVCAC registry, which is the coded record itself rather than an independently verifiable corroborating source."
+  },
+  {
+    "idCaso": 27425,
+    "municipio": "PUERTO RICO",
+    "reason": "insufficient_coverage",
+    "note": "Three rounds of targeted web searches in Spanish and English — covering the Colombian Air Force (FAC) news archive, El Tiempo archive, Wikipedia armed-conflict chronologies (2000–2019), Rutas del Conflicto, Semana Cronología, CINEP, and El Universal — returned no published source that unambiguously describes this specific acción bélica in Puerto Rico, Meta on or around July 23, 2009 with 16 victims attributed to the Fuerza Aérea. Combat engagements of this type (Air Force strike on guerrilla combatants) were routinely absorbed into aggregate press tallies and did not receive standalone indexed coverage unless they were named operations; this event has no such named-operation footprint in publicly accessible sources."
+  },
+  {
+    "idCaso": 17621,
+    "municipio": "LA SIERRA",
+    "reason": "insufficient_coverage",
+    "note": "Nine targeted searches across CNMH efemerides, Rutas del Conflicto, Verdad Abierta, CINEP Noche y Niebla no. 23 (Jan–Mar 2002), El Tiempo archive, Semana, Wikipedia conflict chronologies, and HRW 2003 annual report found no authoritative published source that specifically documents this acción bélica in La Sierra, Cauca on 2002-03-26. CINEP records confirm La Sierra (Macizo Colombiano) was an active FARC/Army combat zone in this period, but no primary or scholarly source narrates this specific event or its 16 victims."
+  },
+  {
+    "idCaso": 25247,
+    "municipio": "URIBE",
+    "reason": "insufficient_coverage",
+    "note": "The Wikipedia article on Colombia's 2002-2010 armed conflict confirms a combat on December 23, 2006 in the La Julia inspection of La Uribe (Meta) between FARC-EP and the Ejército Nacional, listing 54 total deaths. A Colombian presidential press-office URL from December 24, 2006 (historico.presidencia.gov.co) was indexed under the title \"Militares asesinados en 'La Julia' impidieron ataque a esa población\" but the server was unreachable. No primary source (CNMH report, JEP resolution, Fiscalía indictment, Comisión de la Verdad entry, Rutas del Conflicto, Verdad Abierta, or court ruling) was found that specifically identifies the 16 civilian victims recorded in the CNMH as an Acción Bélica attributed to the Ejército Nacional. Threshold of 3 primary/scholarship sources not met."
+  },
+  {
+    "idCaso": 13328,
+    "municipio": "IQUIRA",
+    "reason": "insufficient_coverage",
+    "note": "Six targeted searches across CINEP Noche y Niebla (issues 12 and 14, 1999), El Tiempo archive, Semana conflict chronology, Rutas del Conflicto, and general web sources found no published source independently documenting this specific June 28, 1999 acción bélica in Iquira, Huila with 16 victims attributed to the Ejército Nacional. The event record exists only in the CNMH SIEVCAC registry; no corroborating primary, scholarly, or tertiary source was located."
+  },
+  {
+    "idCaso": 20522,
+    "municipio": "SONSON",
+    "reason": "insufficient_coverage",
+    "note": "Eight targeted searches in Spanish and English across Rutas del Conflicto, JEP Caso 03 Antioquia subcase, CCEEU eastern Antioquia extrajudicial killings report, CNMH Observatorio, and general press turned up no source that unambiguously identifies this specific acción bélica (Sonsón, April 20 2003, 16 victims, Ejército Nacional). The only Sonsón 2003 event with authoritative coverage is a FARC massacre in La Danta on February 22, 2003 (5 victims, distinct event). JEP Caso 03 covers Sonsón in its Oriente Antioqueño subcase but does not surface this specific April 2003 incident at the detail level accessible via web sources."
+  },
+  {
+    "idCaso": 13429,
+    "municipio": "TURBO",
+    "reason": "insufficient_coverage",
+    "note": "Approximately 15 targeted searches across CINEP Noche y Niebla (issue 13, Jul-Sep 1999), CIDH annual reports, Rutas del Conflicto, El Tiempo archive, HRW, CNMH Observatorio, and Semana's violence chronology found no source that unambiguously identifies this specific acción bélica in Turbo, Antioquia on 1999-08-01. Combat engagements attributed to the Ejército Nacional (as opposed to civilian massacres) generate substantially less independent press and NGO documentation in publicly indexed sources for this period; the event may exist only in military records and the CNMH SIEVCAC registry itself. No draft produced."
+  },
+  {
+    "idCaso": 24655,
+    "municipio": "HACARI",
+    "reason": "insufficient_coverage",
+    "note": "The April 20, 2006 armed confrontation at vereda Astilleros, Hacarí (Norte de Santander) is the most significant single loss of DAS personnel in the agency's history: an EPL (Frente Libardo Mora Toro) ambush of a joint DAS-Army convoy mounted to capture Víctor Ramón Navarro alias Megateo, triggered by advance intelligence leaked by a corrupt DAS agent. The event is thoroughly confirmed across seven independent press sources and one peer-reviewed journal article (Reflexión Política/Redalyc), which puts the toll at 16 (10 DAS + 6 military) — matching the CNMH figure exactly; press sources report 17. JEP proceedings (Sala de Definición de Situaciones Jurídicas, Catatumbo subsection) adjudicated the case of convicted informant Carlos Alberto Suárez Reyes in 2024 and explicitly reference this event, constituting a primary JEP record, but the actual JEP resolution documents were inaccessible during this search. With only one confirmed scholarship source and no directly verified primary document, the record falls short of the ≥3 primary/scholarship floor required for drafted status."
+  },
+  {
+    "idCaso": 2324,
+    "municipio": "JAMBALO",
+    "reason": "insufficient_coverage",
+    "note": "Three rounds of targeted searches (Spanish and English) across Rutas del Conflicto, CNMH tag archives, CRIC, and general press returned no authoritative secondary source describing a specific acción bélica on 12 May 1986 in Jambaló, Cauca attributed to the Ejército Nacional with 16 victims. The event type (combat action, not massacre) and the early date (1986) place it in a period and category that are systematically under-documented in published memorial and human-rights literature; the minimum of 3 primary/scholarship sources cannot be met."
+  },
+  {
+    "idCaso": 13571,
+    "municipio": "SAN CARLOS",
+    "reason": "insufficient_coverage",
+    "note": "Seven targeted searches across CIDH reports, CNMH publications, HRW/Amnesty documents, JEP records, Comisión de la Verdad, Rutas del Conflicto, and Wikipedia yielded no source that specifically identifies this acción bélica in San Carlos, Antioquia on 22 September 1999 attributed to the Ejército Nacional. San Carlos has extensive conflict documentation but it centers on paramilitary masacres from the same period; this army combat action with 16 victims does not appear in any accessible authoritative publication."
+  },
+  {
+    "idCaso": 22498,
+    "municipio": "SANTA MARIA",
+    "reason": "insufficient_coverage",
+    "note": "Two sources confirm a major armed engagement in Santa María, Huila on February 24, 2004 — the FARC Frente Joselo Lozada attacked the Army's Batallón de Artillería Tenerife at Cerro San Sebastián, killing 12 soldiers and wounding several more — but both sources attribute perpetration to FARC, not the Ejército Nacional as coded in IdCaso 22498. No source was found confirming an Army-initiated action with 16 victims on that date, and the minimum of 3 primary/scholarship sources confirming the CNMH-coded event is not met."
+  },
+  {
+    "idCaso": 1774,
+    "municipio": "VALPARAISO",
+    "reason": "insufficient_coverage",
+    "note": "Four targeted web searches in Spanish and English (place, date, perpetrator, victim count, IdCaso) found no authoritative published source that unambiguously documents an acción bélica on November 16, 1982 in Valparaíso, Caquetá attributed to the Ejército Nacional with 16 victims. General histories of the armed conflict in Caquetá around 1982 exist but do not mention this specific engagement."
+  },
+  {
+    "idCaso": 649077,
+    "municipio": "ALGECIRAS",
+    "reason": "insufficient_coverage",
+    "note": "The event is identifiable as the \"Emboscada de La Perdiz\" (March 3, 1967, road from Santana Ramos to Algeciras, Huila): a FARC unit of 40-50 combatants under Januario Valero ambushed a 22-soldier patrol from Batallón de Infantería N°9 Boyacá, killing 16 (2 sub-officers + 14 soldiers). Date, location, and victim count match exactly, but all corroborating sources are tertiary (Wikipedia citing 1967 El Tiempo newspaper archives); no primary or scholarship sources (CNMH thematic reports, Comisión de la Verdad, JEP, Rutas del Conflicto, peer-reviewed scholarship) were found. Additionally, the CNMH-coded perpetrator \"AGENTE DEL ESTADO / EJÉRCITO NACIONAL\" contradicts all independent sources, which attribute the attack to FARC — this discrepancy likely reflects a CNMH coding convention for acciones bélicas where the state party is always listed, but cannot be resolved without access to the original case file."
+  },
+  {
+    "idCaso": 18710,
+    "municipio": "PLANADAS",
+    "reason": "insufficient_coverage",
+    "note": "Twelve targeted searches across CNMH Observatory, Rutas del Conflicto, JEP Caso 03 records, CINEP Noche y Niebla (issues 25 and 26 covering 2002), Observatorio de DDHH del Gobierno, FIP conflict dynamics reports, and Colombian news archives (El Tiempo, El Espectador) returned no source that unambiguously identifies this specific acción bélica in Planadas, Tolima on 5 September 2002. Combat events in this FARC-stronghold municipality during 2002 are referenced only in aggregate statistics; individual acción bélica incidents from that zone and date are not individually documented in any accessible primary or scholarship source."
+  },
+  {
+    "idCaso": 17084,
+    "municipio": "ALBAN",
+    "reason": "insufficient_coverage",
+    "note": "The combat action in Albán, Nariño on January 13–14, 2002 is confirmed: FARC (~200 combatants) attacked the police station, killing 9 named officers and 1 civilian (10 deaths per El Tiempo; CNMH Memorias Visuales confirms the date). However, CNMH IdCaso 17084 codes AGENTE DEL ESTADO / POLICÍA NACIONAL as perpetrator with 16 victims, likely recording guerrilla combatants killed by police during the same engagement — a sub-event for which no authoritative source documenting those 16 deaths was found. Only 1 primary source identified; the ≥3 threshold was not met."
+  },
+  {
+    "idCaso": 19487,
+    "municipio": "CHITA",
+    "reason": "insufficient_coverage",
+    "note": "Four rounds of targeted searches in Spanish and English (CNMH, Rutas del Conflicto, HRW, FAC/JEP reports, regional Boyacá conflict literature, El Tiempo archives, press) turned up no source that unambiguously describes an Air Force combat action in Chita, Boyacá on or around December 17, 2002 with 16 victims. The event is likely a low-profile armed engagement that was not independently documented in accessible public sources."
+  },
+  {
+    "idCaso": 1932,
+    "municipio": "TAME",
+    "reason": "insufficient_coverage",
+    "note": "Six rounds of targeted searches in Spanish and English — across CNMH documents, Amnesty International's Arauca report, Semana's conflict chronology, Rutas del Conflicto, Wikipedia's armed-conflict chronology, and academic sources — returned no published source that unambiguously describes this specific acción bélica (Tame, Arauca, 22 August 1984, 16 victims, AGENTE DEL ESTADO / POLICÍA NACIONAL). General contextual documentation of ELN growth in Arauca during 1984 exists but does not identify this particular event; early-1980s individual incidents in the department are largely undocumented in available open sources."
   }
 ]

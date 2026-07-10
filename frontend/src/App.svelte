@@ -28,6 +28,7 @@
   import Credits from './lib/Credits.svelte';
   import EventStory from './lib/EventStory.svelte';
   import Welcome from './lib/Welcome.svelte';
+  import Landing from './lib/Landing.svelte';
   import { dbgEnabled } from './lib/debug.svelte';
   import { defDbg, defRamp, DEF_DBG_GROUPS, DEF_RAMP_LABELS } from './lib/defDebug.svelte';
   import { FIRE_DEFAULTS, RAMP_DEFAULTS } from './lib/LossRasterLayer';
@@ -56,16 +57,43 @@
   let shapes = $state.raw<MuniShapes | null>(null);
   let error = $state<string | null>(null);
 
-  // URL flag: ?section=deforestation opens the deforestation view (mirrors the
-  // existing ?tier/?lang/?debug query-param pattern; no path routing needed).
-  const isDeforestation =
-    new URLSearchParams(location.search).get('section') === 'deforestation';
+  // URL flag drives which view renders (mirrors the existing ?tier/?lang/?debug
+  // query-param pattern; no path routing — works on GH Pages project sites where
+  // a path would 404). `null` (plain `/` or an unknown value) => the landing
+  // page, the gateway to both archives. Both archives are gated behind a flag so
+  // they share one front door.
+  type Section = 'violence' | 'deforestation';
+  function readSection(): Section | null {
+    const s = new URLSearchParams(location.search).get('section');
+    return s === 'deforestation' || s === 'violence' ? s : null;
+  }
+  const section = readSection();
+  const isDeforestation = section === 'deforestation';
+
+  // Cinematic arrival: an archive view fades in from black on every load (paired
+  // with the landing's fade-to-black on click, and masking the map's first
+  // paint). Skipped under the OS reduce-motion pref — arrival is instant.
+  const reduceMotion =
+    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const introFade = section !== null && !reduceMotion;
+
+  // neutral tab/title on the landing; per-view title otherwise
+  document.title =
+    section === 'deforestation'
+      ? 'Cenizas de muerte · Colombia 2001–2025'
+      : section === 'violence'
+        ? 'Cicatrices de violencia · Colombia 1958–2026'
+        : 'Colombia · dos archivos de la pérdida';
+
   if (isDeforestation) {
     app.tab = 'deforestation';
-    // open at the start of the Hansen window and auto-play (the welcome modal,
-    // which otherwise starts playback on close, is suppressed on this view)
+    // open at the start of the Hansen window and auto-play (this view has no
+    // blocking welcome modal). Playback holds until the arrival veil has fully
+    // lifted (0.7 s + 0.06 s delay) — otherwise the opening beat, the first
+    // years igniting, elapses hidden behind black.
     app.defPos = 2001;
-    app.playing = true;
+    if (introFade) setTimeout(() => (app.playing = true), 800);
+    else app.playing = true;
   }
 
   // Hansen tree-cover-loss artifacts — only fetched when the deforestation view
@@ -93,18 +121,24 @@
       return true;
     }
   })();
-  // Show the welcome modal on every page load (not just first visit). The
-  // welcome copy is violence-specific, so skip it on the deforestation view.
-  app.overlay = isDeforestation ? null : 'welcome';
+  // The modal auto-shows only on the FIRST violence visit — the landing now does
+  // the framing job, and a returning visitor shouldn't clear two doors before the
+  // map. It stays reopenable via "?" on either archive (tab-aware copy).
+  app.overlay = section === 'violence' && firstVisit ? 'welcome' : null;
+  if (section === 'violence' && !firstVisit) app.playing = true;
   function closeWelcome() {
     try {
       localStorage.setItem(WELCOME_KEY, '1');
     } catch {
       /* private mode — modal will show again next visit */
     }
-    if (firstVisit) app.playHint = true;
     app.overlay = null;
-    app.playing = true;
+    // playback auto-start + the play-button hint are the violence-view arrival
+    // choreography; a "?"-opened modal on deforestation must not touch playback
+    if (app.tab !== 'deforestation') {
+      if (firstVisit) app.playHint = true;
+      app.playing = true;
+    }
   }
 
   // Victim-detail buffers are large (~9 MB) and only needed once a panel opens —
@@ -136,6 +170,9 @@
   });
 
   $effect(() => {
+    // the landing page renders no map and must stay light — never fetch the
+    // multi-megabyte violence/elections/munis artifacts there
+    if (section === null) return;
     Promise.all([
       loadViolence(),
       loadJson<ElectionsData>('data/elections.json'),
@@ -159,7 +196,9 @@
 
 </script>
 
-{#if error}
+{#if section === null}
+  <Landing />
+{:else if error}
   <div class="splash">
     <span class="eyebrow">{t('load_error')}</span>
     <p class="mono dim">{error}</p>
@@ -280,9 +319,18 @@
     {/if}
 
     {#if app.overlay === 'welcome'}
-      <Welcome onclose={closeWelcome} />
+      <Welcome
+        variant={app.tab === 'deforestation' ? 'deforestation' : 'violence'}
+        onclose={closeWelcome}
+      />
     {/if}
   </main>
+{/if}
+
+<!-- fade-from-black arrival: sits above everything and dissolves on load,
+     continuing the landing's fade-to-black into one uninterrupted cut -->
+{#if introFade}
+  <div class="intro-veil" aria-hidden="true"></div>
 {/if}
 
 <style>
@@ -290,6 +338,25 @@
     position: relative;
     height: 100%;
     overflow: hidden;
+  }
+
+  /* ---------- fade-from-black arrival veil ---------- */
+  .intro-veil {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #000;
+    pointer-events: none;
+    animation: introFadeOut 0.7s ease 0.06s both;
+  }
+  @keyframes introFadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
   }
 
   /* ---------- splash ---------- */

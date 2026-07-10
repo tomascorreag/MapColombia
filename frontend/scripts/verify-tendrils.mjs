@@ -12,7 +12,7 @@ page.on('console', (msg) => {
 });
 page.on('pageerror', (err) => errors.push(String(err)));
 
-await page.goto(BASE, { waitUntil: 'networkidle' });
+await page.goto(`${BASE}/?section=violence`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(4000);
 await page.getByRole('button', { name: /memoria|memory/i }).click();
 await page.waitForTimeout(2500);

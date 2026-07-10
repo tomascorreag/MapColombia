@@ -98,6 +98,10 @@ body {
   animation: rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
+/* Reduce-motion clamp: every CSS animation/transition jumps to its end state.
+   Decorative loops (speck pulses, seam drift) were authored so their at-rest
+   frame reads as a static texture rather than vanishing. The JS-driven guards
+   (Landing's veil + bloom, App's intro veil) check the same media query. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -336,8 +336,8 @@
     background: var(--gold);
   }
 
-  /* attention affordance until the first interaction — the global
-     prefers-reduced-motion override (app.css) caps it at one iteration */
+  /* attention affordance until the first interaction (loops until dismissed;
+     the reduced-motion cap in app.css is disabled for now) */
   .beckon {
     animation: beckon 2.6s ease-out infinite;
   }

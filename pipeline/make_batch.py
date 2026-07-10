@@ -46,7 +46,10 @@ def main():
     )
 
     out = BW / f"annotation-batch-{args.n}.js"
-    out.write_text(tpl, encoding="utf-8")
+    # Write LF-only: the Workflow approval validator rejects scripts containing
+    # CR (0x0d) as "hidden control characters". Binary write avoids Windows
+    # text-mode CRLF translation.
+    out.write_bytes(tpl.replace("\r\n", "\n").encode("utf-8"))
     print(str(out))
     print(f"  {len(packet)} events, victims {packet[0]['codedVictims']}..{packet[-1]['codedVictims']}, "
           f"idCasos {[p['idCaso'] for p in packet]}")

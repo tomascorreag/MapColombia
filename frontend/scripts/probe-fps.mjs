@@ -6,8 +6,11 @@ const page = await browser.newPage({ viewport: { width: 1500, height: 900 } });
 page.on('console', (m) => {
   if (m.text().startsWith('[perf]')) console.log(m.text());
 });
-// pass e.g. `?tier=low` as argv[2] to force a perf tier
-const url = (process.env.SMOKE_URL ?? 'http://localhost:5199') + (process.argv[2] ?? '');
+// pass e.g. `&tier=low` as argv[2] to force a perf tier
+const url =
+  (process.env.SMOKE_URL ?? 'http://localhost:5199') +
+  '/?section=violence' +
+  (process.argv[2] ? '&' + process.argv[2].replace(/^[?&]/, '') : '');
 await page.goto(url, { waitUntil: 'networkidle' });
 await page.waitForTimeout(4000);
 // the welcome modal shows on every load — dismiss it, then pause the

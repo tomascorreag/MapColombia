@@ -133,8 +133,8 @@ await page.getByRole('button', { name: /reproducir|play/i }).click();
 await page.waitForTimeout(2200);
 await shot('defor-playing');
 
-// ---- violence view still works at the bare URL ----
-await page.goto(BASE, { waitUntil: 'networkidle' });
+// ---- violence view still works at its section URL ----
+await page.goto(`${BASE}/?section=violence`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(2500);
 const welcome = await page
   .getByRole('button', { name: /entrar al archivo|enter the archive/i })

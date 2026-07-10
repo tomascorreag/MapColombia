@@ -11,7 +11,7 @@ const errors = [];
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 page.on('pageerror', (e) => errors.push(String(e)));
 
-await page.goto(BASE, { waitUntil: 'networkidle' });
+await page.goto(`${BASE}/?section=violence`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(4500);
 await page.getByRole('button', { name: /entrar al archivo|enter the archive/i }).click();
 await page.waitForTimeout(800);

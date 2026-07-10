@@ -235,8 +235,21 @@ const dict: Record<string, { es: string; en: string }> = {
     en: 'cases with a known year but unknown exact date appear only as a scar once their year closes, never as a wound',
   },
 
+  // landing page (root `/`, no ?section= flag): the gateway to both archives
+  landing_eyebrow: {
+    es: 'Colombia · dos archivos de la pérdida',
+    en: 'Colombia · two archives of loss',
+  },
+  landing_title: { es: 'Lo que Colombia ha perdido', en: 'What Colombia has lost' },
+  landing_sub: {
+    es: 'Dos archivos cartográficos: la violencia humana y ecológica.',
+    en: "Two cartographic archives: human and ecological violence.",
+  },
+  landing_enter: { es: 'Entrar', en: 'Enter' },
+  landing_file: { es: 'Expediente', en: 'File' },
+
   // deforestation view
-  def_title: { es: 'Bosque perdido', en: 'Forest Lost' },
+  def_title: { es: 'Cenizas de muerte', en: 'Ashes of death' },
   def_eyebrow: {
     es: 'Pérdida de cobertura arbórea · Colombia 2001–2025',
     en: 'Tree-cover loss · Colombia 2001–2025',
@@ -246,13 +259,12 @@ const dict: Record<string, { es: string; en: string }> = {
     en: 'Where and when forest was lost',
   },
   def_cumulative_to: { es: 'Pérdida acumulada hasta', en: 'Cumulative loss through' },
-  def_national_loss: { es: 'Pérdida anual nacional', en: 'National annual loss' },
   def_hectares: { es: 'hectáreas', en: 'hectares' },
   def_ha: { es: 'ha', en: 'ha' },
   def_drivers_title: { es: 'Causas por año', en: 'Drivers by year' },
   def_drivers_hint: {
-    es: 'Pasa el cursor sobre una causa para resaltar sus píxeles en el mapa.',
-    en: 'Hover a driver to spotlight its pixels on the map.',
+    es: 'Motor dominante 2001–2023 por celda de 1 km (WRI/Google DeepMind).',
+    en: 'Dominant driver 2001–2023 per 1 km cell (WRI/Google DeepMind).',
   },
   def_lens_agri: { es: 'Agricultura', en: 'Agriculture' },
   def_lens_legality: { es: 'Legalidad', en: 'Legality' },
@@ -262,12 +274,12 @@ const dict: Record<string, { es: string; en: string }> = {
   def_bucket_hide: { es: 'Clic para ocultar en el mapa', en: 'Click to hide on map' },
   def_bucket_show: { es: 'Clic para mostrar en el mapa', en: 'Click to show on map' },
   def_legality_hint: {
-    es: 'Pérdida dentro de áreas protegidas (RUNAP) y reservas de Ley 2ª. Clasificación zonal, no un fallo jurídico. Pasa el cursor para resaltar.',
-    en: 'Loss inside protected areas (RUNAP) and Ley 2ª reserves. Zonal classification, not a legal verdict. Hover to spotlight.',
+    es: 'Pérdida dentro de áreas protegidas (RUNAP) y reservas de Ley 2ª. Clasificación zonal, no un fallo jurídico.',
+    en: 'Loss inside protected areas (RUNAP) and Ley 2ª reserves. Zonal classification, not a legal verdict.',
   },
   def_agri_hint: {
-    es: 'Cobertura del suelo despejado (CORINE 2022) + coca (SIMCI). Pasto ≈ ganadería. Pasa el cursor para resaltar.',
-    en: 'Land cover of cleared land (CORINE 2022) + coca (SIMCI). Pasture ≈ cattle ranching. Hover to spotlight.',
+    es: 'Cobertura del suelo despejado (CORINE 2022) + coca (SIMCI). Pasto ≈ ganadería.',
+    en: 'Land cover of cleared land (CORINE 2022) + coca (SIMCI). Pasture ≈ cattle ranching.',
   },
   def_agri_vintage: {
     es: 'Reparto según la cobertura de 2022, no el año del corte: una celda despejada en 2004 se clasifica por lo que era en 2022. Una sola clase por celda (~700 m); el pasto gana los empates. Cifras indicativas del orden, no hectáreas exactas.',
@@ -317,6 +329,10 @@ const dict: Record<string, { es: string; en: string }> = {
   def_click_hint: {
     es: 'Haga clic en un municipio para ver su pérdida anual.',
     en: 'Click a municipality to see its annual loss.',
+  },
+  def_welcome_how_legend: {
+    es: 'Cambie de lente — Agricultura, Legalidad, Motores — y pase el cursor sobre una clase para resaltarla en el mapa; haga clic para ocultarla.',
+    en: 'Switch lenses — Agriculture, Legality, Drivers — and hover a class to spotlight it on the map; click to hide it.',
   },
   def_welcome_what: {
     es: 'Este mapa muestra la pérdida de cobertura arbórea en Colombia, 2001–2025, según los datos satelitales de Hansen/UMD (Global Forest Change). Cada celda aparece en el año más temprano en que se detectó pérdida. La pérdida de cobertura arbórea no equivale a la deforestación oficial del IDEAM: incluye plantaciones, incendios y pérdida natural. Los actores y las causas se atribuyen a nivel regional, no por píxel.',

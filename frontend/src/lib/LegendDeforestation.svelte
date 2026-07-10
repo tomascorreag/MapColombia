@@ -9,7 +9,6 @@
 
   const years = $derived(deforestation.years);
   const nat = $derived(deforestation.national);
-  const natMax = $derived(Math.max(1, ...nat));
   // Continuous (float) index into `years`, clamped. Driving the bars/numbers off
   // this instead of the floored defYear lets them glide as defPos advances
   // (RAF playback + step="any" scrub) rather than jumping each integer year.
@@ -17,7 +16,6 @@
     Math.min(Math.max(app.defPos, years[0]), years[years.length - 1]) - years[0]
   );
   const yearIdx = $derived(Math.min(Math.floor(fpos), years.length - 1));
-  const current = $derived(atYear(nat));
   const cumulative = $derived(thru(nat));
 
   // Which lens drives the ranked list + the map spotlight. Default to the
@@ -256,31 +254,14 @@
 </script>
 
 <div class="legend">
-  <span class="eyebrow">{t('def_national_loss')}</span>
-
-  <!-- national annual loss (Hansen). Bars up to the scrubbed year are lit. -->
-  <svg class="meter" viewBox="0 0 {years.length} 50" preserveAspectRatio="none" aria-hidden="true">
-    {#each nat as v, i (i)}
-      <rect
-        x={i + 0.1}
-        y={50 - (v / natMax) * 48}
-        width="0.8"
-        height={(v / natMax) * 48}
-        class:lit={years[i] <= app.defYear}
-      />
-    {/each}
-  </svg>
-  <div class="axis mono dim">
-    <span>{years[0]}</span><span>{years[years.length - 1]}</span>
-  </div>
-
+  <!-- national headline: cumulative loss through the scrubbed year. The annual
+       rhythm (histogram + per-year figure) lives in the timebar alone — the
+       legend never restates what the scrubber already shows. -->
   <ul class="figs">
     <li>
-      <span class="k mono dim">{app.defYear}</span>
-      <span class="v">{formatInt(Math.round(current), ui.lang)} {t('def_hectares')}</span>
-    </li>
-    <li>
-      <span class="k mono dim">{t('def_total_muni')}</span>
+      <span class="k mono dim">
+        {t('def_total_muni')} · {app.defYear === years[0] ? years[0] : `${years[0]}–${app.defYear}`}
+      </span>
       <span class="v">{formatInt(Math.round(cumulative), ui.lang)} {t('def_hectares')}</span>
     </li>
   </ul>
@@ -412,32 +393,9 @@
     padding: 12px 16px 14px;
   }
 
-  .meter {
-    display: block;
-    width: 100%;
-    height: 50px;
-    margin-top: 8px;
-  }
-
-  .meter rect {
-    fill: rgba(232, 130, 30, 0.22);
-  }
-
-  .meter rect.lit {
-    fill: rgba(232, 130, 30, 0.82);
-  }
-
-  .axis {
-    display: flex;
-    justify-content: space-between;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    margin-top: 2px;
-  }
-
   .figs {
     list-style: none;
-    margin: 10px 0 0;
+    margin: 0;
     padding: 0;
   }
 

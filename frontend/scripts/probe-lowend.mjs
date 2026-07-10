@@ -25,8 +25,11 @@ page.on('console', (m) => {
 });
 
 const t0 = Date.now();
-// pass e.g. `?tier=high` as argv[2] to force a tier (A/B on the same build)
-const url = (process.env.SMOKE_URL ?? 'http://localhost:5199') + (process.argv[2] ?? '');
+// pass e.g. `&tier=high` as argv[2] to force a tier (A/B on the same build)
+const url =
+  (process.env.SMOKE_URL ?? 'http://localhost:5199') +
+  '/?section=violence' +
+  (process.argv[2] ? '&' + process.argv[2].replace(/^[?&]/, '') : '');
 await page.goto(url, { waitUntil: 'networkidle' });
 // wait for the map UI (play button) to exist = data loaded + first layer build
 await page.getByRole('button', { name: /reproducir|play/i }).waitFor({ timeout: 120000 });
