@@ -35,9 +35,23 @@
    `setData` re-tessellates and is wrong for this).
 3. **Static hosting works — with one trap.** PMTiles needs only HTTP range requests, but
    GitHub Pages has documented intermittent range-request failures with PMTiles
-   (protomaps/PMTiles#584, #582, maintainer-reproduced). Therefore: app shell on Pages,
-   `.pmtiles` + large data on Cloudflare R2 (free egress). Also avoids Pages' 100 GB/mo
+   (protomaps/PMTiles#584, #582, maintainer-reproduced). Target end state: app shell on
+   Pages, `.pmtiles` + large data on Cloudflare R2 (free egress). Also avoids Pages' 100 GB/mo
    soft bandwidth cap.
+
+   **Realized (2026-07-14): `deforestation_lossyear.pmtiles` is committed and served from
+   Pages, not R2** — accepted deliberately to ship the deployed deforestation view without
+   standing up R2. Known costs, eyes open:
+   - The ~89 MB blob is **permanent in git history**; each rebuild commits another. Reclaiming
+     it needs a `git filter-repo`/BFG rewrite (all SHAs change, force-push).
+   - Still exposed to #584. Its failure mode is not a blank map but the *whole file* returned
+     for a range request (symptom: "content-length exceeding request") — i.e. an ~89 MB
+     download **and** a broken raster. If that shows up in the wild, moving to R2 is the fix;
+     shrinking the pyramid is **not** (#584 hits sub-50 MB files, so size isn't the trigger).
+   - Escape hatch is pre-built: set `VITE_TILES_BASE` to a range-reliable, CORS-enabled origin
+     and only this file moves off Pages. Build-time config, no code change.
+   - Rejected alternative: **GitHub Release assets** host it outside git history and do honor
+     Range (verified 206), but send **no CORS headers** (verified) — unusable from the browser.
 4. **Svelte 5 over React.** Signal-based fine-grained reactivity — no virtual-DOM diff on
    each scrub tick fanning out to map + timeline + charts; smallest bundle; genre precedent
    (The Pudding: Svelte + D3). deck.gl is framework-independent (`@deck.gl/core` standalone),

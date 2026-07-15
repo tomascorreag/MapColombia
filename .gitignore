@@ -8,10 +8,6 @@ venv/
 # Raw data — large downloads; re-fetch via pipeline scripts, never hand-edit
 data/raw/
 
-# Deforestation tile pyramid (large, ~170 MB) — regenerate via
-# pipeline/build_deforestation_tiles.py; do not commit the binary
-data/processed/frontend/*.pmtiles
-
 # OS / editor
 .DS_Store
 Thumbs.db

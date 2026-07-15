@@ -4,6 +4,11 @@
 
 import { PMTiles } from 'pmtiles';
 
+// Optional off-origin host for the deforestation tile pyramid only (see
+// loadDeforestation). Inlined by Vite at build time; trailing slash trimmed so
+// callers can join with '/' unconditionally.
+const TILES_BASE = import.meta.env.VITE_TILES_BASE?.replace(/\/+$/, '') || null;
+
 export interface Munis {
   codes: number[];
   names: string[];
@@ -420,7 +425,13 @@ export async function loadDeforestation(base = 'data'): Promise<DeforestationDat
   ]);
   // PMTiles defers all tile fetches to getZxy(); construction is cheap (reads only
   // the header lazily on first access via HTTP range requests).
-  const lossTiles = new PMTiles(`${base}/deforestation_lossyear.pmtiles`);
+  // The pyramid is the one artifact that may live off-origin: it is served from
+  // Pages today, but PMTiles-on-Pages has intermittent range-request failures
+  // (protomaps/PMTiles#584), whose fallback is a full ~89 MB download. VITE_TILES_BASE
+  // moves just this file to a range-reliable host (R2) as a build-time config change
+  // — set it to an absolute origin; the host must send CORS headers (Pages does not
+  // need them, being same-origin). Unset = alongside the other data.
+  const lossTiles = new PMTiles(`${TILES_BASE ?? base}/deforestation_lossyear.pmtiles`);
   const forestImage = forestBlob ? await createImageBitmap(forestBlob) : null;
   return { ...json, lossTiles, forestImage };
 }
