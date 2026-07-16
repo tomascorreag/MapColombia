@@ -1,46 +1,257 @@
 <script lang="ts">
   // Landing page (root `/`): the gateway to the two archives. Self-contained —
-  // no map, no deck.gl, no data fetch. "Split territory" diptych: violence (red,
-  // dark) on the left, forest (green) on the right, with the country's own
-  // silhouette as a faint watermark straddling the seam. Each half is one big
-  // anchor that expands on hover/focus while the other recedes.
+  // no map, no deck.gl, no data fetch.
+  //
+  // ONE ink field, not two coloured ones. An earlier build split the page red
+  // (violence) vs green (forest), but neither hue came from the archives: the
+  // violence view renders crimson->red strands and the deforestation view an
+  // amber fire ramp over a dim canopy that exists to be burned. The halves are
+  // told apart here by the FORM of their mark — thin crimson strands vs blocky
+  // amber pixels, both drawn by landingEffects.ts with colours quoted from the
+  // real shaders — over a shared ink ground. Gold belongs to neither side and so
+  // carries the shared chrome (silhouette, eyebrow). Colour stays out of the
+  // type entirely; the atmosphere carries each side's identity.
+  //
+  // The effects are masked to each half's OUTER FLANK: they never cross the
+  // silhouette, because they contain no data and must not read as a map. See the
+  // header of landingEffects.ts.
   import { t, ui, toggleLang } from './i18n.svelte';
   import { COLOMBIA_VIEWBOX, COLOMBIA_PATH } from './colombiaOutline';
+  import { createScarField, createEmberField, type AmbientField } from './landingEffects';
+  import { smoothstep } from './noise';
 
   // language rides along into the destination so the choice persists
   const lang = $derived(ui.lang);
   const violenceHref = $derived(`?section=violence&lang=${lang}`);
-  const forestHref = $derived(`?section=deforestation&lang=${lang}`);
+  const ashesHref = $derived(`?section=deforestation&lang=${lang}`);
 
-  // Honor the OS reduce-motion pref: skip the cursor bloom writes and the
-  // fade-to-black veil (navigation becomes a plain instant jump). CSS-side
-  // motion is clamped globally in app.css.
-  const reduceMotion =
-    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The OS reduce-motion pref is IGNORED site-wide (owner decision) — the CSS
+  // clamp in app.css is commented out and this guard is pinned false, so the rAF
+  // loop and the fade-to-black veil always run. To honor the pref again, restore
+  // the query here, in App.svelte, and the app.css clamp together.
+  // const reduceMotion =
+  //   typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = false;
 
-  // ---- cursor-tracked bloom: write --mx/--my (%) on the pointed half so a
-  // radial glow floods toward the pointer. rAF-throttled — a fast pointer
-  // coalesces to one style write per frame (no layout thrash, just a repaint).
-  let rafId = 0;
-  let pending: { el: HTMLElement; x: number; y: number } | null = null;
-  function flushPointer() {
-    rafId = 0;
-    if (!pending) return;
-    pending.el.style.setProperty('--mx', `${pending.x}%`);
-    pending.el.style.setProperty('--my', `${pending.y}%`);
-    pending = null;
-  }
-  function onPointerMove(ev: PointerEvent) {
-    if (reduceMotion) return;
-    const el = ev.currentTarget as HTMLElement;
-    const r = el.getBoundingClientRect();
-    pending = {
-      el,
-      x: ((ev.clientX - r.left) / r.width) * 100,
-      y: ((ev.clientY - r.top) / r.height) * 100,
+  let scarCanvas: HTMLCanvasElement | undefined = $state();
+  let emberCanvas: HTMLCanvasElement | undefined = $state();
+  // the two <a class="half"> elements — the rAF loop writes --ignite onto them
+  let violenceHalf: HTMLElement | undefined = $state();
+  let ashesHalf: HTMLElement | undefined = $state();
+
+  // Stacked layout drops the ambient fields entirely. Not a perf concession —
+  // a correctness one. Once the halves stack, the silhouette spans nearly the
+  // whole width of the middle (60vh, centred) and each half's remaining space is
+  // taken by its own type, so there is no placement where a field clears both.
+  // A field painted across the country outline would read as deforestation or
+  // violence MAPPED ONTO Colombia, which is precisely the claim these synthetic
+  // effects must never make (see landingEffects.ts). The silhouette is the
+  // page's thesis and stays; the atmosphere is what goes.
+  const NARROW = '(max-width: 760px)';
+  let narrow = $state(typeof matchMedia === 'function' ? matchMedia(NARROW).matches : false);
+  $effect(() => {
+    if (typeof matchMedia !== 'function') return;
+    const mq = matchMedia(NARROW);
+    const sync = () => (narrow = mq.matches);
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  });
+
+  // ---- seam extent ----
+  // The seam divides the two archives, so it stops short of the masthead and the
+  // sources line, which belong to both. Those two boxes are content-sized (the
+  // title's height moves with the viewport, the language, and where it wraps —
+  // measured, its bottom lands anywhere from 19vh to 29vh), so the stops are
+  // measured rather than authored as a fixed inset.
+  //
+  // offsetTop/offsetHeight, NOT getBoundingClientRect: the masthead runs a `rise`
+  // entrance that translates it, and a rect would measure it mid-flight and pin
+  // the seam to wherever the animation happened to be. offset* is untransformed
+  // layout, so it reads the settled position even on the first frame.
+  const SEAM_GAP_PX = 28; // breathing room at each end
+  let landingEl: HTMLElement | undefined = $state();
+  let mastheadEl: HTMLElement | undefined = $state();
+  let footerEl: HTMLElement | undefined = $state();
+
+  $effect(() => {
+    const root = landingEl;
+    const mast = mastheadEl;
+    const foot = footerEl;
+    if (!root || !mast || !foot) return;
+    const sync = () => {
+      const top = mast.offsetTop + mast.offsetHeight + SEAM_GAP_PX;
+      const bottom = root.offsetHeight - foot.offsetTop + SEAM_GAP_PX;
+      root.style.setProperty('--seam-top', `${Math.round(top)}px`);
+      root.style.setProperty('--seam-bottom', `${Math.round(bottom)}px`);
     };
-    if (!rafId) rafId = requestAnimationFrame(flushPointer);
+    sync();
+    // the masthead reflows on language toggle and on any resize of the title
+    const ro = new ResizeObserver(sync);
+    ro.observe(root);
+    ro.observe(mast);
+    ro.observe(foot);
+    return () => ro.disconnect();
+  });
+
+  // Cursor-proximity "ignite", per half (0 = rest, 1 = fully lit). Plain
+  // (non-reactive) arrays: they are read by the rAF loop and fed to canvas maths,
+  // never rendered, so making them $state would just schedule pointless
+  // re-renders. Eased in the loop rather than by a CSS transition for the same
+  // reason — the value drives a shader-ish computation, not a style.
+  const igniteTarget = [0, 0];
+  const igniteNow = [0, 0];
+  const igniteVar = ['', '']; // last --ignite string written per half, to skip no-op writes
+
+  // Each field's ignite anchor, as a fraction of its half. NOT the canvas centre:
+  // the canvas fills the half, but the radial mask in the stylesheet below only
+  // reveals an ellipse on the OUTER FLANK, so the canvas centre is a spot where
+  // nothing is painted — anchoring there would peak the glow over blank ink.
+  // These must track the `mask-image` ellipses in `.violence .fx` / `.ashes .fx`.
+  const FIELD_ANCHOR: [number, number][] = [
+    [0.07, 0.3],
+    [0.93, 0.3],
+  ];
+  // Distance (as a fraction of the gap between the two anchors) inside which a
+  // field is fully lit. The gap is measured at runtime rather than hardcoded, so
+  // the response scales with the viewport instead of with a magic pixel count.
+  const NEAR_FRAC = 0.05;
+  // >1 concentrates the response near the field: crossing the page barely stirs
+  // the far half, and the last stretch toward a flank is where it slams on. This
+  // is the "drastic as you get closer" curve — linear falloff felt like a dimmer.
+  const PROX_GAMMA = 2;
+
+  const anchorX = [0, 0];
+  const anchorY = [0, 0];
+  let anchorSpan = 1;
+  let fieldsLive = false; // no anchors until the first fit(); also false when narrow
+
+  // Keyboard focus has no coordinates, so it pins ignite to full rather than
+  // going through the proximity curve — a tab-through must light the half it
+  // lands on. Pointer proximity can only ever raise it from there, never dim it.
+  const focused = [false, false];
+
+  function proximity(i: number, cx: number, cy: number) {
+    const d = Math.hypot(cx - anchorX[i], cy - anchorY[i]) / anchorSpan;
+    return Math.pow(1 - smoothstep(NEAR_FRAC, 1, d), PROX_GAMMA);
   }
+
+  function retarget(cx: number, cy: number) {
+    for (let i = 0; i < igniteTarget.length; i++) {
+      igniteTarget[i] = Math.max(focused[i] ? 1 : 0, proximity(i, cx, cy));
+    }
+  }
+
+  function onPointerMove(ev: PointerEvent) {
+    if (!fieldsLive) return;
+    retarget(ev.clientX, ev.clientY);
+  }
+
+  // The pointer leaving the window fires no further moves, so without this the
+  // fields would stay frozen at whatever the last in-window position lit.
+  function onPointerLeaveWindow() {
+    for (let i = 0; i < igniteTarget.length; i++) igniteTarget[i] = focused[i] ? 1 : 0;
+  }
+
+  function setFocus(i: number, on: boolean) {
+    focused[i] = on;
+    if (on) igniteTarget[i] = 1;
+    else igniteTarget[i] = 0; // next pointermove re-applies proximity
+  }
+
+  $effect(() => {
+    if (!scarCanvas || !emberCanvas) return;
+    const canvases = [scarCanvas, emberCanvas];
+    const halves = [violenceHalf, ashesHalf];
+    const fields: AmbientField[] = [
+      createScarField(scarCanvas, 'left'),
+      createEmberField(emberCanvas, 'right'),
+    ];
+
+    // Anchors are cached here rather than measured per pointermove: a
+    // getBoundingClientRect() on every move would force layout on the hot path.
+    // The ResizeObserver below re-runs fit(), which is what keeps them honest.
+    const fit = () => {
+      for (let i = 0; i < fields.length; i++) {
+        const r = canvases[i].getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          fields[i].resize(r.width, r.height);
+          anchorX[i] = r.left + FIELD_ANCHOR[i][0] * r.width;
+          anchorY[i] = r.top + FIELD_ANCHOR[i][1] * r.height;
+        }
+      }
+      anchorSpan = Math.max(1, Math.hypot(anchorX[1] - anchorX[0], anchorY[1] - anchorY[0]));
+      fieldsLive = true;
+    };
+    // dt = 0, ignite = 0 renders the settled frame: scars fully accumulated and
+    // cold, embers scattered mid-cool, nothing flaring.
+    const settle = () => fields.forEach((f) => f.render(0, 0));
+
+    fit();
+    settle();
+
+    let raf = 0;
+    let last = 0;
+    const loop = (now: number) => {
+      const dt = last ? Math.min((now - last) / 1000, 0.05) : 0; // clamp: a tab-switch must not jump the sim
+      last = now;
+      for (let i = 0; i < fields.length; i++) {
+        // follow filter, not an animation: the target already moves continuously
+        // with the cursor, so this only takes the stair-steps off pointer events
+        igniteNow[i] += (igniteTarget[i] - igniteNow[i]) * Math.min(1, dt * 6);
+        fields[i].render(dt, igniteNow[i]);
+        // Publish the SAME eased value the field just rendered, so the type and
+        // the atmosphere move as one thing. A CSS transition on :hover instead
+        // would run on its own clock and drift out of step, and would be back to
+        // a binary hover — this follows the cursor's distance like everything else.
+        // Quantised and diffed: igniteNow approaches its target asymptotically and
+        // never quite lands, so writing it raw would invalidate style every frame
+        // forever, on a page that is otherwise idle once the cursor stops.
+        const v = igniteNow[i].toFixed(3);
+        if (v !== igniteVar[i]) {
+          igniteVar[i] = v;
+          halves[i]?.style.setProperty('--ignite', v);
+        }
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (!raf) {
+        last = 0;
+        raf = requestAnimationFrame(loop);
+      }
+    };
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    // don't burn a core animating an invisible tab
+    const onVis = () => (document.hidden ? stop() : start());
+    if (!reduceMotion) {
+      start();
+      document.addEventListener('visibilitychange', onVis);
+    }
+
+    let rzT: ReturnType<typeof setTimeout>;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(rzT);
+      // resize rebuilds geometry and re-rasterises the scar layer — debounce it
+      rzT = setTimeout(() => {
+        fit();
+        if (reduceMotion) settle();
+      }, 150);
+    });
+    canvases.forEach((c) => ro.observe(c));
+
+    return () => {
+      stop();
+      clearTimeout(rzT);
+      ro.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
+      fields.forEach((f) => f.destroy());
+      fieldsLive = false; // anchors are stale the moment the canvases go
+    };
+  });
 
   // ---- fade-to-black, then navigate ----
   let leaving = $state(false);
@@ -68,43 +279,30 @@
   function onPageShow() {
     leaving = false;
   }
-
-  // Ambient motif specks. Deterministic positions (no Math.random — keeps the
-  // field stable across renders). Violence: wounds flaring to gold scar. Forest:
-  // dark loss opening in the canopy. Each speck's base opacity is its at-rest
-  // "scar" look, so when prefers-reduced-motion freezes the pulse the field
-  // simply reads as a static stipple rather than vanishing.
-  const violenceSpecks = [
-    [18, 22, 9], [34, 64, 11], [55, 31, 7], [71, 73, 13], [44, 12, 6],
-    [82, 40, 10], [27, 86, 8], [63, 18, 12], [12, 52, 7], [90, 67, 9],
-    [49, 49, 14], [76, 8, 6],
-  ];
-  const forestSpecks = [
-    [22, 70, 8], [40, 30, 11], [58, 80, 7], [73, 44, 12], [15, 38, 6],
-    [85, 64, 9], [31, 14, 8], [66, 26, 10], [48, 58, 13], [9, 82, 7],
-    [79, 88, 6], [54, 9, 9],
-  ];
 </script>
 
-<svelte:window onpageshow={onPageShow} />
+<!-- Proximity is tracked on the WINDOW, not on .split: the masthead, silhouette
+     and footer are siblings that overlay the halves, so a pointermove over any of
+     them never bubbles through .split and the fields would stall wherever the
+     cursor last crossed a half. The cursor's relationship to each archive is a
+     page-level fact, so it is listened for at page level. -->
+<svelte:window onpageshow={onPageShow} onpointermove={onPointerMove} />
+<svelte:body onpointerleave={onPointerLeaveWindow} />
 
-<div class="landing">
+<div class="landing" bind:this={landingEl}>
   <div class="split">
     <a
       class="half violence"
+      bind:this={violenceHalf}
       href={violenceHref}
       aria-label={`${t('title')} — ${t('subtitle')}`}
-      onpointermove={onPointerMove}
+      onfocus={() => setFocus(0, true)}
+      onblur={() => setFocus(0, false)}
       onclick={(ev) => goTo(ev, violenceHref)}
     >
-      <div class="field" aria-hidden="true">
-        {#each violenceSpecks as [top, left, size], i}
-          <span
-            class="speck"
-            style="top:{top}%; left:{left}%; --s:{size}px; animation-delay:{i * 0.47}s; animation-duration:{4 + (i % 5)}s"
-          ></span>
-        {/each}
-      </div>
+      {#if !narrow}
+        <canvas class="fx" bind:this={scarCanvas} aria-hidden="true"></canvas>
+      {/if}
       <div class="content">
         <span class="file mono">{t('landing_file')} 01 · 1958–2026</span>
         <h2>{t('title')}</h2>
@@ -114,20 +312,17 @@
     </a>
 
     <a
-      class="half forest"
-      href={forestHref}
+      class="half ashes"
+      bind:this={ashesHalf}
+      href={ashesHref}
       aria-label={`${t('def_title')} — ${t('def_subtitle')}`}
-      onpointermove={onPointerMove}
-      onclick={(ev) => goTo(ev, forestHref)}
+      onfocus={() => setFocus(1, true)}
+      onblur={() => setFocus(1, false)}
+      onclick={(ev) => goTo(ev, ashesHref)}
     >
-      <div class="field" aria-hidden="true">
-        {#each forestSpecks as [top, left, size], i}
-          <span
-            class="speck"
-            style="top:{top}%; left:{left}%; --s:{size}px; animation-delay:{i * 0.53}s; animation-duration:{5 + (i % 5)}s"
-          ></span>
-        {/each}
-      </div>
+      {#if !narrow}
+        <canvas class="fx" bind:this={emberCanvas} aria-hidden="true"></canvas>
+      {/if}
       <div class="content">
         <span class="file mono">{t('landing_file')} 02 · 2001–2025</span>
         <h2>{t('def_title')}</h2>
@@ -137,13 +332,18 @@
     </a>
   </div>
 
-  <!-- country silhouette: one faint gold watermark, centered on the viewport
-       (not glued to the moving seam) — "one country, split two ways" -->
+  <!-- Sits between .split and the silhouette so the stacking is what it was when
+       this was .ashes' border-left: above the halves, under the country. -->
+  <div class="seam" aria-hidden="true"></div>
+
+  <!-- country silhouette: one faint gold watermark, centered on the viewport.
+       "One country, split two ways" — and the only element either archive's
+       atmosphere is forbidden to touch. -->
   <svg class="silhouette" viewBox={COLOMBIA_VIEWBOX} aria-hidden="true" focusable="false">
     <path d={COLOMBIA_PATH} />
   </svg>
 
-  <header class="masthead">
+  <header class="masthead" bind:this={mastheadEl}>
     <span class="eyebrow">{t('landing_eyebrow')}</span>
     <h1>{t('landing_title')}</h1>
     <p class="sub">{t('landing_sub')}</p>
@@ -153,7 +353,7 @@
     {ui.lang === 'es' ? 'EN' : 'ES'}
   </button>
 
-  <footer class="mono">
+  <footer class="mono" bind:this={footerEl}>
     <span class="dim">{t('sources')}:</span> CNMH/SIEVCAC · CEDE · Hansen/UMD · IDEAM · DANE
   </footer>
 
@@ -176,115 +376,27 @@
     height: 100%;
   }
 
+  /* One shared ground. No per-half gradient, no cursor bloom: the ambient field
+     is the only thing that distinguishes the halves, and it is the real thing. */
   .half {
     position: relative;
     flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
+    background: var(--ink);
     border: none; /* reset global <a> underline border */
     text-decoration: none;
     color: var(--paper);
-    /* grow/shrink eased; killed under reduced-motion below */
-    transition: flex-grow 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
-    /* entrance: slide in from the centre seam */
+    /* entrance: the field settles in first, then the country, then the words */
     animation: halfIn 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-
-  /* cursor-tracked colour bloom — the "mask" that floods toward the pointer.
-     Centered at --mx/--my (set per-frame from JS); at rest it sits centred
-     and low; on hover it brightens and swells (the flood). Sits above the base
-     gradient, below the specks + content. Moved/swollen via the individual
-     `translate`/`scale` transform properties, NOT background-position/-size:
-     those repaint the whole half every pointer-move frame, while transforms
-     recomposite the once-rasterised gradient on the GPU. Only `scale`
-     transitions — position updates stay instant, matching the old feel. */
-  .half::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.45;
-    translate: calc(var(--mx, 50%) - 50%) calc(var(--my, 50%) - 50%);
-    scale: 0.62;
-    will-change: translate, scale;
-    transition:
-      opacity 0.45s ease,
-      scale 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .violence::before {
-    background-image: radial-gradient(
-      circle,
-      rgba(232, 64, 58, 0.44) 0%,
-      rgba(201, 162, 39, 0.16) 42%,
-      transparent 70%
-    );
-  }
-  .forest::before {
-    background-image: radial-gradient(
-      circle,
-      rgba(63, 174, 95, 0.5) 0%,
-      rgba(21, 105, 44, 0.18) 45%,
-      transparent 72%
-    );
-  }
-  .half:hover::before,
-  .half:focus::before {
-    opacity: 1;
-    scale: 1.55;
-  }
-
   .violence {
-    background: radial-gradient(120% 90% at 30% 25%, #1b0f12 0%, #0b0d11 60%);
-    animation-delay: 0.05s;
+    animation-delay: 0s;
   }
-
-  .forest {
-    /* the real forest palette, held a stop darker than jungle-bright so the two
-       halves sit at comparable rest luminance (the gold silhouette stays the
-       brightest element; hover's bloom is what ignites the green) */
-    background: radial-gradient(120% 90% at 70% 25%, #104a20 0%, #0f2e1a 55%, #0a150e 100%);
-    border-left: 1px solid rgba(0, 0, 0, 0.55);
-    animation-delay: 0.12s;
-  }
-
-  /* luminous seam: the forest's left edge is the join between the two archives.
-     It rides the flex layout (so it leans toward the smaller half as the other
-     expands), brightens whenever either half is engaged, and drifts a faint
-     gold shimmer down its length. */
-  .forest::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -1px;
-    width: 2px;
-    height: 100%;
-    z-index: 3;
-    pointer-events: none;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(201, 162, 39, 0.12) 18%,
-      rgba(201, 162, 39, 0.4) 50%,
-      rgba(201, 162, 39, 0.12) 82%,
-      transparent 100%
-    );
-    background-size: 100% 260%;
-    opacity: 0.5;
-    transition: opacity 0.5s ease;
-    animation: seamDrift 9s linear infinite;
-  }
-  .split:hover .forest::after,
-  .split:focus-within .forest::after {
-    opacity: 1;
-  }
-  @keyframes seamDrift {
-    from {
-      background-position: 0 0;
-    }
-    to {
-      background-position: 0 260%;
-    }
+  .ashes {
+    /* the seam used to live here as a border-left, which tied it to the half's
+       full height — see .seam below, which is the same hairline freed from that */
+    animation-delay: 0.06s;
   }
 
   @keyframes halfIn {
@@ -298,68 +410,71 @@
     }
   }
 
-  /* lean the page toward the half you point at; the other recedes + dims */
-  .split:hover .half:not(:hover),
-  .split:focus-within .half:not(:focus) {
-    flex-grow: 0.72;
-  }
-  .split:hover .half:not(:hover) .content,
-  .split:focus-within .half:not(:focus) .content {
-    opacity: 0.55;
-  }
-  .half:hover .field,
-  .half:focus .field {
-    opacity: 1;
-  }
-
-  /* ---------- ambient motif specks ---------- */
-  .field {
+  /* ---------- ambient field ---------- */
+  /* Masked to the OUTER FLANK: clear of the silhouette (the effects carry no
+     data — they must never read as geography) and clear of the type below. */
+  .fx {
     position: absolute;
     inset: 0;
     z-index: 1;
-    opacity: 0.8;
-    transition: opacity 0.55s ease;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
   }
+  /* Geometry is load-bearing, not taste: this ellipse is the OUTER BOUND of each
+     field — how far it can ever spread, at full ignite, once landingEffects.ts's
+     own reach has opened all the way. Its falloff has to land clear enough of the
+     masthead (which spans the middle ~55% of the viewport) and of the content
+     block pinned to each half's bottom that neither loses contrast. It was 56% 54%
+     — tuned until the rim JUST grazed the title — and is now opened to 70% 62% so
+     the fields reach further across the flank on hover. That is deliberately into
+     the title's left edge and the content's top, but only with the gradient's
+     faint outer rim (it is already fading from 30% and gone by 74%), and only on
+     the half being approached. Push it much past this and the type starts to go.
 
-  .speck {
-    position: absolute;
-    width: var(--s);
-    height: var(--s);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation-name: pulse-speck;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-  }
-
-  /* violence: a wound flaring red, cooling to a gold scar */
-  .violence .speck {
-    background: radial-gradient(
-      circle,
-      rgba(232, 64, 58, 0.95) 0%,
-      rgba(201, 162, 39, 0.35) 55%,
-      transparent 72%
+     MASK_RX/MASK_RY/MASK_CX/MASK_CY in landingEffects.ts MIRROR these four numbers
+     so the canvas-side reach is concentric with this mask. Change one, change both
+     — they are one geometry expressed in two places. */
+  .violence .fx {
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 62% at 7% 30%,
+      #000 0%,
+      #000 30%,
+      transparent 74%
     );
-    opacity: 0.28;
+    mask-image: radial-gradient(ellipse 70% 62% at 7% 30%, #000 0%, #000 30%, transparent 74%);
+  }
+  .ashes .fx {
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 62% at 93% 30%,
+      #000 0%,
+      #000 30%,
+      transparent 74%
+    );
+    mask-image: radial-gradient(ellipse 70% 62% at 93% 30%, #000 0%, #000 30%, transparent 74%);
   }
 
-  /* forest: a patch of canopy opening to dark loss */
-  .forest .speck {
-    background: radial-gradient(circle, rgba(7, 11, 8, 0.9) 0%, rgba(7, 11, 8, 0.2) 60%, transparent 75%);
-    opacity: 0.32;
-  }
+  /* The seam: the join between the two archives, and the only division on the
+     page. A static hairline, in the design system's own rule vocabulary.
 
-  @keyframes pulse-speck {
-    0%,
-    100% {
-      opacity: 0.28;
-      transform: translate(-50%, -50%) scale(0.85);
-    }
-    50% {
-      opacity: 0.7;
-      transform: translate(-50%, -50%) scale(1.9);
-    }
+     It divides the two ARCHIVES, so it runs only as far as they do. The title
+     speaks for the whole country and the sources line credits both halves —
+     neither is split by it, and a rule drawn through centred type looked like it
+     was striking the words out rather than separating the fields.
+
+     The stops are measured, not authored: the masthead's bottom edge lands
+     anywhere from 19vh to 29vh depending on viewport and how the title wraps, so
+     any fixed inset is either tight at one size or leaves a hole at another. The
+     script sets --seam-top/--seam-bottom from the real boxes; the fallbacks here
+     are only for the frame before that runs. */
+  .seam {
+    position: absolute;
+    left: 50%;
+    top: var(--seam-top, 30vh);
+    bottom: var(--seam-bottom, 8vh);
+    width: 1px;
+    background: var(--hairline);
+    pointer-events: none;
   }
 
   /* ---------- per-half content block ---------- */
@@ -368,37 +483,41 @@
     left: 0;
     bottom: 0;
     z-index: 2;
-    /* constant viewport-based width (the rest-state half), anchored to the
-       half's OUTER edge: the flex-grow lean then slides the block without ever
-       re-wrapping its type (a width that tracked the shrinking half made the
-       headline break lines mid-animation). Overflow past the shrunken half is
-       clipped on the text-free side. */
+    /* constant viewport-based width, anchored to the half's OUTER edge, so the
+       headline never re-wraps as the viewport changes */
     width: 50vw;
     padding: 0 6vw 9vh;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    transition: opacity 0.55s ease;
+    /* Grows with the field, off the SAME eased --ignite the canvas renders (the
+       rAF loop writes it; see Landing's script). Not a :hover transition — that
+       would run on its own clock and drift out of step with the atmosphere, and
+       would snap binary instead of tracking the cursor's distance.
+       Deliberately small: the fields are the drama, and type that lunges at the
+       reader reads as a banner ad. Anchored to the half's OUTER bottom corner so
+       the block swells inward from the corner it is pinned to, rather than
+       drifting off the edge or shoving itself under the silhouette. */
+    transform: scale(calc(1 + var(--ignite, 0) * 0.035));
+    transform-origin: left bottom;
   }
 
-  .forest .content {
+  .ashes .content {
     left: auto;
     right: 0;
     align-items: flex-end;
     text-align: right;
+    transform-origin: right bottom;
   }
 
+  /* Colour has left the type. Both file labels are neutral paper — each side's
+     identity is carried by its atmosphere, not by a tinted label. */
   .file {
     font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-  }
-  .violence .file {
-    color: var(--accent);
-  }
-  .forest .file {
-    color: #5fb878;
+    color: var(--paper-faint);
   }
 
   .content h2 {
@@ -428,6 +547,7 @@
     color: var(--paper);
     border-bottom: 1px solid currentColor;
     padding-bottom: 3px;
+    transition: color 0.4s ease;
   }
   .arrow {
     display: inline-block;
@@ -437,13 +557,15 @@
   .half:focus .arrow {
     transform: translateX(6px);
   }
+  /* the only colour in the type, and only on engagement: each side's own flare
+     (TendrilExtension.ts) / ember (LossRasterLayer.ts ramp) */
   .violence:hover .cta,
   .violence:focus .cta {
-    color: var(--accent);
+    color: #ff3a1c;
   }
-  .forest:hover .cta,
-  .forest:focus .cta {
-    color: #5fb878;
+  .ashes:hover .cta,
+  .ashes:focus .cta {
+    color: #ff8a1f;
   }
 
   /* ---------- silhouette watermark ---------- */
@@ -457,15 +579,7 @@
     pointer-events: none;
     z-index: 2;
     opacity: 0;
-    animation: silhouetteIn 1.4s ease 0.35s forwards;
-    /* leans a few px toward the half you point at (parallax depth cue) */
-    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .split:has(.violence:hover) ~ .silhouette {
-    transform: translate(calc(-50% - 9px), -50%);
-  }
-  .split:has(.forest:hover) ~ .silhouette {
-    transform: translate(calc(-50% + 9px), -50%);
+    animation: silhouetteIn 1.4s ease 0.3s forwards;
   }
   .silhouette path {
     fill: rgba(201, 162, 39, 0.03);
@@ -474,9 +588,12 @@
     stroke-opacity: 0.4;
     vector-effect: non-scaling-stroke;
   }
+  /* resolves against --sil-o so the mobile dim below actually lands: an
+     `animation-fill-mode: forwards` end state outranks a plain `opacity`
+     declaration, so the old media-query override never applied */
   @keyframes silhouetteIn {
     to {
-      opacity: 1;
+      opacity: var(--sil-o, 1);
     }
   }
 
@@ -493,7 +610,7 @@
     text-align: center;
     padding: 0 20px;
     pointer-events: none;
-    animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both;
+    animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.45s both;
   }
   .masthead h1 {
     font-family: var(--font-display);
@@ -573,26 +690,23 @@
     .split {
       flex-direction: column;
     }
-    .forest {
-      border-left: none;
-      border-top: 1px solid rgba(0, 0, 0, 0.55);
+    .ashes {
+      /* stacked, the join between the archives is horizontal */
+      border-top: 1px solid var(--hairline);
     }
-    /* the seam is a vertical left-edge line — meaningless once stacked */
-    .forest::after {
+    .seam {
+      /* the vertical seam has nothing to divide once the halves stack */
       display: none;
     }
-    /* expansion is awkward when stacked — keep them even */
-    .split:hover .half:not(:hover),
-    .split:focus-within .half:not(:focus) {
-      flex-grow: 1;
-    }
+    /* the ambient fields are not rendered at all here — see the `narrow` guard
+       in the script: stacked, no field placement clears the silhouette */
     .content {
       /* stacked halves are full-width — the desktop fixed 50vw no longer applies */
       width: 100%;
       padding-bottom: 5vh;
       gap: 5px;
     }
-    .forest .content {
+    .ashes .content {
       left: 0;
       right: auto;
       align-items: flex-start;
@@ -605,10 +719,10 @@
     }
     .silhouette {
       height: 60vh;
-      opacity: 0.5;
+      --sil-o: 0.5;
     }
   }
 
-  /* CSS-side reduced-motion is clamped globally in app.css; the JS-driven
-     bloom + veil check the same media query in the script above */
+  /* The reduce-motion pref is ignored site-wide: the CSS clamp in app.css is
+     commented out and the JS guard in the script above is pinned false. */
 </style>

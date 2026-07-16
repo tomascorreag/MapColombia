@@ -72,9 +72,10 @@
 
   // Cinematic arrival: an archive view fades in from black on every load (paired
   // with the landing's fade-to-black on click, and masking the map's first
-  // paint). Skipped under the OS reduce-motion pref — arrival is instant.
-  const reduceMotion =
-    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // paint). The OS reduce-motion pref is IGNORED site-wide (owner decision), so
+  // the arrival fade runs for everyone; see the disabled clamp in app.css and the
+  // matching pinned guard in Landing.svelte — restore all three together.
+  const reduceMotion = false;
   const introFade = section !== null && !reduceMotion;
 
   // neutral tab/title on the landing; per-view title otherwise

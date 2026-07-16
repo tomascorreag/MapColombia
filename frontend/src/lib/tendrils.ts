@@ -18,21 +18,19 @@
 // All of this is visual interpretation of where violence occurred; no data
 // values are fabricated.
 import type { ViolenceData } from './data';
+// noise primitives live in noise.ts — shared verbatim with the landing page's
+// ambient scar field so both integrate through the same flow field
+import { mulberry32, flowAngle, type FlowParams } from './noise';
 
 // Tunable look constants (visual iteration knobs). The debug panel
 // (debug.svelte.ts, `?debug`) can override the geometry subset at runtime.
 const STEPS = 22; // segments per curve
 export const REACH_KM = 55; // base wound influence radius (victim-scaled in shader)
 
-export interface TendrilGeoParams {
-  seed: number; // distinct per field: decorrelates noise AND curve seeding
+export interface TendrilGeoParams extends FlowParams {
   nCurves: number;
   stepKm: number; // segment length in km
   reachKm: number;
-  noiseLen1: number; // km wavelength, broad meander
-  noiseLen2: number; // km wavelength, fine wiggle
-  noiseAmp1: number; // turns contributed by the broad octave
-  noiseAmp2: number; // turns contributed by the fine octave
 }
 
 export const TENDRIL_GEO_DEFAULTS: TendrilGeoParams = {
@@ -66,45 +64,6 @@ export interface TendrilData {
     getVictimW: { value: Float32Array; size: 1 };
     getModality: { value: Float32Array; size: 1 }; // modality index of the source event
   };
-}
-
-function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/** integer-lattice hash -> [0, 1); deterministic value-noise basis */
-function hash2(ix: number, iy: number, seed: number): number {
-  let h = Math.imul(ix, 0x85ebca6b) ^ Math.imul(iy, 0xc2b2ae35) ^ seed;
-  h = Math.imul(h ^ (h >>> 13), 0x27d4eb2f);
-  return ((h ^ (h >>> 15)) >>> 0) / 4294967296;
-}
-
-/** bilinear value noise over the integer lattice, smoothstep-eased */
-function valueNoise(x: number, y: number, seed: number): number {
-  const ix = Math.floor(x);
-  const iy = Math.floor(y);
-  let fx = x - ix;
-  let fy = y - iy;
-  fx = fx * fx * (3 - 2 * fx);
-  fy = fy * fy * (3 - 2 * fy);
-  const v00 = hash2(ix, iy, seed);
-  const v10 = hash2(ix + 1, iy, seed);
-  const v01 = hash2(ix, iy + 1, seed);
-  const v11 = hash2(ix + 1, iy + 1, seed);
-  return v00 + (v10 - v00) * fx + (v01 - v00) * fy + (v11 + v00 - v10 - v01) * fx * fy;
-}
-
-/** flow direction (radians) at a km-space point; two octaves for organic curl */
-function flowAngle(xKm: number, yKm: number, p: TendrilGeoParams): number {
-  const broad = valueNoise(xKm / p.noiseLen1, yKm / p.noiseLen1, p.seed);
-  const fine = valueNoise(xKm / p.noiseLen2, yKm / p.noiseLen2, p.seed);
-  return (broad * p.noiseAmp1 + fine * p.noiseAmp2) * 2 * Math.PI;
 }
 
 /** First index `i` with `cum[i] > r` (cum is strictly increasing). */

@@ -337,7 +337,7 @@
   }
 
   /* attention affordance until the first interaction (loops until dismissed;
-     the reduced-motion cap in app.css is disabled for now) */
+     the reduce-motion pref is ignored site-wide — see app.css) */
   .beckon {
     animation: beckon 2.6s ease-out infinite;
   }

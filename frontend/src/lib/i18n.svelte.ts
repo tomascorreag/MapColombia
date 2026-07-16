@@ -27,9 +27,18 @@ export function toggleLang() {
 const dict: Record<string, { es: string; en: string }> = {
   title: { es: 'Cicatrices de violencia', en: 'Scars of Violence' },
   eyebrow: { es: 'Archivo cartográfico · Colombia 1958–2026', en: 'Cartographic archive · Colombia 1958–2026' },
+  // "caso por caso", not "municipio por municipio" (understated the archive) and
+  // not "hecho por hecho" (would overstate it). The unit here is the CNMH caso —
+  // one row, one date, one victim count — which is exactly what the archive holds
+  // and claims nothing about where. The coordinates are sub-municipal but heavily
+  // shared: 155,793 asesinatos carry only 5,103 distinct coordinates (~30 casos
+  // per point, median 4 points per municipio), so they are populated-place
+  // locations, not sites. Any copy implying each event sits where it happened is
+  // a precision claim the data does not support — the pipeline already drops
+  // department-centroid placeholders for the same reason.
   subtitle: {
-    es: 'El conflicto armado, municipio por municipio',
-    en: 'The armed conflict, municipality by municipality',
+    es: 'El conflicto armado, caso por caso',
+    en: 'The armed conflict, case by case',
   },
   tab_violence: { es: 'Violencia', en: 'Violence' },
   tab_elections: { es: 'Elecciones', en: 'Elections' },
@@ -254,9 +263,14 @@ const dict: Record<string, { es: string; en: string }> = {
     es: 'Pérdida de cobertura arbórea · Colombia 2001–2025',
     en: 'Tree-cover loss · Colombia 2001–2025',
   },
+  // "cayeron los árboles", not "se perdió el bosque". Hansen measures TREE-COVER
+  // loss, which is not deforestation: a harvested plantation or a burn is cover
+  // loss without forest loss, and IDEAM — not Hansen — is the deforestation
+  // authority. The view's own eyebrow already says "pérdida de cobertura
+  // arbórea"; this line was claiming more than the layer beneath it.
   def_subtitle: {
-    es: 'Dónde y cuándo se perdió el bosque',
-    en: 'Where and when forest was lost',
+    es: 'Dónde y cuándo cayeron los árboles',
+    en: 'Where and when the trees came down',
   },
   def_cumulative_to: { es: 'Pérdida acumulada hasta', en: 'Cumulative loss through' },
   def_hectares: { es: 'hectáreas', en: 'hectares' },

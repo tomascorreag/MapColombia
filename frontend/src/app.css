@@ -98,19 +98,30 @@ body {
   animation: rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-/* Reduce-motion clamp: every CSS animation/transition jumps to its end state.
-   Decorative loops (speck pulses, seam drift) were authored so their at-rest
-   frame reads as a static texture rather than vanishing. The JS-driven guards
-   (Landing's veil + bloom, App's intro veil) check the same media query. */
+/* DISABLED (owner decision): the OS reduce-motion pref is ignored site-wide —
+   everyone gets the full motion. The JS-side guards are flipped off at the same
+   time (`reduceMotion = false` in Landing.svelte and App.svelte); flip all three
+   back together, they are one decision.
+
+   To restore, re-enable the clamp below. Note the delay clamps were load-bearing,
+   not belt-and-braces: a staggered entrance pairs a delay with
+   `animation-fill-mode: both`, and `both` holds the FROM state — typically
+   `opacity: 0` — for the whole delay. Zeroing only the duration still hid
+   delayed content (the landing masthead measured opacity 0 for ~400ms), a flash
+   of invisible text served to exactly the people who asked for less motion.
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 }
+*/
 
 /* ---------- type utilities ---------- */
 
