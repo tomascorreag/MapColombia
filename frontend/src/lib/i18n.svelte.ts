@@ -249,7 +249,7 @@ const dict: Record<string, { es: string; en: string }> = {
     es: 'Colombia · dos archivos de la pérdida',
     en: 'Colombia · two archives of loss',
   },
-  landing_title: { es: 'Lo que Colombia ha perdido', en: 'What Colombia has lost' },
+  landing_title: { es: 'La memoria de la tierra', en: 'The memory of the land' },
   landing_sub: {
     es: 'Dos archivos cartográficos: la violencia humana y ecológica.',
     en: "Two cartographic archives: human and ecological violence.",
