@@ -1,6 +1,6 @@
 // Device-performance tiers for the map renderer. The memoria scene is sized
-// for a discrete GPU (~6M tendril line instances + large additive sprites at
-// full devicePixelRatio); on integrated/software GPUs that is seconds per
+// for a discrete GPU (~142k tendril curves as ~6.8M strip vertices + large additive
+// sprites at full devicePixelRatio); on integrated/software GPUs that is seconds per
 // frame. A tier picked at startup (GPU renderer string + core/memory
 // heuristics) caps the expensive knobs, and a runtime FPS governor demotes
 // the tier once if playback still can't hold frame rate — demotions persist
@@ -22,18 +22,23 @@ export interface TierParams {
   curves2: number;
   /** stroke-width multiplier compensating sparser fields on lower tiers */
   widthScale: number;
-  /** rendering resolution cap (deck useDevicePixels / maplibre pixelRatio) */
+  /** rendering resolution cap (deck useDevicePixels / maplibre pixelRatio).
+   * 1.5 even on 'high': fill + basemap cost scale with dpr², and at 1.5 the
+   * sub-pixel strands/sprites are visually indistinguishable from 2 on a
+   * retina panel while cutting ~44% of fragments (owner decision 2026-08-19). */
   dprCap: number;
+  /** forest backdrop uses the single-fbm noise instead of the 8-eval blend */
+  forestCheap: boolean;
   /** wound glow halo layer (additive, the worst overdraw + 341k instances of
    * vertex work); off on 'low' — the wound core still marks every event */
   glow: boolean;
   /** additive glow sprite cap in px — overdraw grows with radius² */
   glowMaxPx: number;
-  /** pickMultipleObjects depth for hover gather / click pin */
-  hoverDepth: number;
+  /** max events pinned per click (the CPU gather is uncapped; this bounds the
+   * detail panel) */
   clickDepth: number;
-  /** re-pick the tooltip under a stationary cursor every N colour buckets
-   * during playback; 0 = skip (tooltip still refreshes on pointer move) */
+  /** re-evaluate the tooltip under a stationary cursor every N colour buckets
+   * during playback (a ~1 ms CPU scan); 0 = skip (still refreshes on move) */
   repickBuckets: number;
   /** panel backdrop blur (resamples the animating canvas every frame) */
   blur: boolean;
@@ -50,10 +55,10 @@ export const PERF: Record<Tier, TierParams> = {
     curves1: 80000,
     curves2: 62000,
     widthScale: 1,
-    dprCap: 2,
+    dprCap: 1.5,
+    forestCheap: false,
     glow: true,
     glowMaxPx: 100,
-    hoverDepth: 12,
     clickDepth: 48,
     repickBuckets: 1,
     blur: true,
@@ -65,9 +70,9 @@ export const PERF: Record<Tier, TierParams> = {
     curves2: 22000,
     widthScale: 1.3,
     dprCap: 1.5,
+    forestCheap: true,
     glow: true,
     glowMaxPx: 72,
-    hoverDepth: 8,
     clickDepth: 32,
     repickBuckets: 2,
     blur: true,
@@ -79,9 +84,9 @@ export const PERF: Record<Tier, TierParams> = {
     curves2: 7000,
     widthScale: 1.8,
     dprCap: 1,
+    forestCheap: true,
     glow: false,
     glowMaxPx: 48,
-    hoverDepth: 4,
     clickDepth: 24,
     repickBuckets: 0,
     blur: false,

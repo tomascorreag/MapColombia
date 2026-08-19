@@ -128,8 +128,22 @@
 
 ## Device-performance tiers (2026-06-11)
 
-The memoria scene at full quality is ~6M tendril line instances + large additive
-sprites at devicePixelRatio — seconds per frame on integrated/software GPUs.
+The memoria scene at full quality is ~142k tendril curves (~6.8M strip vertices,
+drawn as a scar pass + a fresh pass) + large additive sprites at devicePixelRatio —
+seconds per frame on integrated/software GPUs. Since 2026-08 the tendrils are a
+custom `TendrilLayer` (one non-instanced triangle strip per field, curves sorted
+by appear-day so each pass draws only a prefix/window via `rangeDraw.ts`; the
+wound/scar dot layers use the same range trick over the year-sorted event slices)
+instead of instanced LineLayer quads — ~4x less vertex work, same pixels. The
+fields are built in Workers (`tendrils.worker.ts`, one per field, results
+transferred) so load/rebuild never freezes the page, and `high` now caps dpr at
+1.5 like `mid` (fragments scale with dpr²; sub-pixel strands look the same).
+Memoria hover/click picking is done on the CPU (`pickIndex.ts` grid + heavy-event
+list, exact sprite-radius test in `MapView.gatherEventsAt`), not with deck picking:
+deck's pick renders to an FBO and reads pixels back synchronously — per pointer
+move and per depth level of `pickMultipleObjects` — which drained the GPU queue and
+halved the frame rate with the cursor parked over the map at peak years. The dot
+layers are therefore `pickable: false`. Keep it that way.
 `frontend/src/lib/perf.svelte.ts` defines three tiers (low/mid/high) that cap the
 expensive display knobs; `?tier=` forces one, and demotions persist via
 localStorage (`mdv:tier:v1`).
@@ -147,6 +161,22 @@ localStorage (`mdv:tier:v1`).
   resamples every frame).
 - **Playback tick cap**: TimeBar clamps each rAF advance to 100 ms of real time —
   below 10 fps sim time slows instead of silently lurching years per frame.
+- **Deforestation per-frame path (2026-08-19)**: tiers cap that view's GPU cost
+  (dpr, forest noise octaves, tile budget) but its CPU path was O(cached tiles)
+  per scrub frame — `updateTriggers.renderSubLayers` on the TileLayer made deck
+  null + reconstruct a LossRasterLayer per cached tile each frame, the muni
+  polygons were deck-pickable (GPU pick + sync readPixels per pointer move) with
+  an invisible full-country fill, and every `overlay.setProps` forwarded
+  `useDevicePixels` → a forced `getBoundingClientRect` layout per frame. Now:
+  per-frame uniforms live in one shared mutable object read in `draw()`, the
+  TileLayer/outline layers are memoized instances, muni picking is CPU
+  (`muniPick.ts`), layers go straight to `_deck.setProps`, and each page fetches
+  only its own archive (no elections.json anywhere; no tendril Workers on the
+  deforestation page). Loss tiles also sample with `mipmapFilter: 'none'` — deck's
+  default NEAREST_MIPMAP_LINEAR blended averaged mip levels into the year/packed
+  codes at fractional zooms on dpr 1. Harness: `probe-deforestation.mjs` (CPU
+  throttle proxy) + `probe-def-cpuprofile.mjs`. The picking rule (keep deck
+  picking off the animated layers) now applies to both views.
 - Measured on SwiftShader (same build, `probe-lowend.mjs`): high 23 s/frame,
   low 6.2 s/frame, load 48 s → 11 s. Software GL stays unusable (not a target);
   the headed reference (RTX-class) holds 76 fps at every tier.

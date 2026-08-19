@@ -1,16 +1,21 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
   import { MapboxOverlay } from '@deck.gl/mapbox';
-  import { GeoJsonLayer, LineLayer, ScatterplotLayer } from '@deck.gl/layers';
+  import { GeoJsonLayer, ScatterplotLayer } from '@deck.gl/layers';
   import { TileLayer } from '@deck.gl/geo-layers';
   import { DataFilterExtension, MaskExtension } from '@deck.gl/extensions';
   import type { PickingInfo, Layer } from '@deck.gl/core';
-  import { TendrilExtension } from './TendrilExtension';
-  import { LossRasterLayer, SPOT_DIM, rampStopToVec4 } from './LossRasterLayer';
+  import { TendrilLayer } from './TendrilLayer';
+  import { RangedScatterplotLayer, type InstanceRange } from './rangeDraw';
+  import { LossRasterLayer, SPOT_DIM, rampStopToVec4, type LossLive } from './LossRasterLayer';
+  import { buildMuniPick, pickMuni } from './muniPick';
   import { ForestLayer, hexToVec4 } from './ForestLayer';
-  import { buildTendrils } from './tendrils';
+  import { lowerBound, upperBound } from './tendrils';
+  import type { TendrilField, TendrilGeoParams, TendrilSource } from './tendrils';
+  import type { TendrilJob, TendrilResult } from './tendrils.worker';
+  import { buildPickIndex, forEachInBox, BIG_RV } from './pickIndex';
   import type {
     ViolenceData,
     ElectionsData,
@@ -18,11 +23,10 @@
     MuniShapes,
     Election,
     DeforestationData,
-    ShapeFeature,
   } from './data';
   import { formatDay, formatInt } from './data';
   import { MODALITY_COLORS, hexToRgb } from './colors';
-  import { COLOR_BUCKET_DAYS } from './memoria';
+  import { COLOR_BUCKET_DAYS, yearProgress } from './memoria';
   import { app, type Hover } from './state.svelte';
   import { dbg } from './debug.svelte';
   import { defDbg, defRamp } from './defDebug.svelte';
@@ -31,15 +35,19 @@
   import { t, ui, modalityName } from './i18n.svelte';
   import { muniLabel as fmtMuniLabel, responsible, abParticipants, abInitiative } from './eventFormat';
 
+  // Each section loads only its own archive: the violence page passes
+  // `violence`, the deforestation page passes `deforestation` (App.svelte).
+  // `elections` is never fetched today (no reachable elections tab) and stays
+  // optional so the dormant layer code can be revived without a rewrite.
   let {
-    violence,
-    elections,
+    violence = null,
+    elections = null,
     munis,
     shapes,
     deforestation = null,
   }: {
-    violence: ViolenceData;
-    elections: ElectionsData;
+    violence?: ViolenceData | null;
+    elections?: ElectionsData | null;
     munis: Munis;
     shapes: MuniShapes;
     deforestation?: DeforestationData | null;
@@ -75,7 +83,6 @@
   // Hoisted like yearFilter: fresh extension instances per frame would
   // register as shader changes and rebuild pipelines every animation tick.
   const memoriaMask = new MaskExtension();
-  const tendrilExt = new TendrilExtension();
 
   // Hoisted: a fresh parameters object per frame would register as a pipeline
   // change in luma.gl every animation tick.
@@ -94,36 +101,87 @@
   // Every event renders as a red wound/scar; the GPU filter value is the wound
   // day (exact date; -1 never flares) or, for scars, the year-close scar day.
   const woundDataByMod = $derived(
-    violence.meta.modalities.map((m) => ({
+    (violence?.meta.modalities ?? []).map((m) => ({
       length: m.n,
       attributes: {
-        getPosition: { value: violence.pos.subarray(m.start * 2, m.end * 2), size: 2 },
-        getRadius: { value: violence.radius.subarray(m.start, m.end), size: 1 },
-        getFilterValue: { value: violence.dayF32.subarray(m.start, m.end), size: 1 },
+        getPosition: { value: violence!.pos.subarray(m.start * 2, m.end * 2), size: 2 },
+        getRadius: { value: violence!.radius.subarray(m.start, m.end), size: 1 },
+        getFilterValue: { value: violence!.dayF32.subarray(m.start, m.end), size: 1 },
       },
     }))
   );
   const scarDataByMod = $derived(
-    violence.meta.modalities.map((m) => ({
+    (violence?.meta.modalities ?? []).map((m) => ({
       length: m.n,
       attributes: {
-        getPosition: { value: violence.pos.subarray(m.start * 2, m.end * 2), size: 2 },
-        getRadius: { value: violence.radius.subarray(m.start, m.end), size: 1 },
-        getFilterValue: { value: violence.scarDayF32.subarray(m.start, m.end), size: 1 },
+        getPosition: { value: violence!.pos.subarray(m.start * 2, m.end * 2), size: 2 },
+        getRadius: { value: violence!.radius.subarray(m.start, m.end), size: 1 },
+        getFilterValue: { value: violence!.scarDayF32.subarray(m.start, m.end), size: 1 },
       },
     }))
   );
 
-  const modByCode = $derived(
-    new Map(violence.meta.modalities.map((m) => [m.code, m]))
-  );
-
   // One SHARED tendril field across every event type (plus a finer second field
   // for visual richness), seeded ∝ victims. Built at load and rebuilt only when
-  // the debug panel commits a geometry param (slider release — see DebugPanel).
-  // Toggling a modality is a uniform update (enabledMask), never a rebuild.
-  const tendrilData = $derived.by(() =>
-    buildTendrils(violence, violence.modOf, {
+  // the debug panel commits a geometry param (slider release — see DebugPanel)
+  // or the governor demotes the tier. Toggling a modality is a uniform update
+  // (enabledMask), never a rebuild.
+  //
+  // Built OFF the main thread (tendrils.worker.ts, one Worker per field so the
+  // two build in parallel): a full-tier field is ~0.5–1 s of CPU, which used to
+  // freeze the page at load and on every rebuild. Until a field arrives its
+  // layers are simply not emitted — the dots show first, the strands a beat
+  // later. A newer job supersedes an older one (stale results are dropped), so
+  // rapid debug-panel commits never paint out of order.
+  const tendrilSrc = $derived<TendrilSource | null>(
+    violence
+      ? {
+          n: violence.meta.n,
+          pos: violence.pos,
+          victims: violence.victims,
+          dayF32: violence.dayF32,
+          scarDayF32: violence.scarDayF32,
+          modOf: violence.modOf,
+        }
+      : null
+  );
+
+  function createFieldBuilder() {
+    let worker: Worker | null = null;
+    let nextId = 0;
+    let latest = 0;
+    let field: TendrilField | null = $state(null);
+    const onResult = (e: MessageEvent<TendrilResult>) => {
+      const r = e.data;
+      if (r.id !== latest) return; // superseded while it was building
+      field = { nCurves: r.nCurves, vertexCount: r.vertexCount, bytes: r.bytes, appearDay: r.appearDay };
+    };
+    return {
+      get field() {
+        return field;
+      },
+      build(src: TendrilSource, params: TendrilGeoParams) {
+        if (!worker) {
+          worker = new Worker(new URL('./tendrils.worker.ts', import.meta.url), { type: 'module' });
+          worker.onmessage = onResult;
+        }
+        latest = ++nextId;
+        worker.postMessage({ id: latest, src, params } satisfies TendrilJob);
+      },
+      destroy() {
+        worker?.terminate();
+        worker = null;
+      },
+    };
+  }
+  const fieldA = createFieldBuilder();
+  const fieldB = createFieldBuilder();
+  // No fields without the violence archive (the deforestation page never
+  // draws them — building two ~1 s Worker jobs there only competed with tile
+  // decode on the opening beat).
+  $effect(() => {
+    if (!tendrilSrc) return;
+    fieldA.build(tendrilSrc, {
       seed: 0x1958,
       nCurves: Math.min(dbg.nCurves, P.curves1),
       stepKm: dbg.stepKm,
@@ -132,10 +190,11 @@
       noiseLen2: dbg.noiseLen2,
       noiseAmp1: dbg.noiseAmp1,
       noiseAmp2: dbg.noiseAmp2,
-    })
-  );
-  const tendrilData2 = $derived.by(() =>
-    buildTendrils(violence, violence.modOf, {
+    });
+  });
+  $effect(() => {
+    if (!tendrilSrc) return;
+    fieldB.build(tendrilSrc, {
       seed: 0x77aa,
       nCurves: Math.min(dbg.t2Curves, P.curves2),
       stepKm: dbg.t2StepKm,
@@ -144,8 +203,12 @@
       noiseLen2: dbg.t2NoiseLen2,
       noiseAmp1: dbg.t2NoiseAmp1,
       noiseAmp2: dbg.t2NoiseAmp2,
-    })
-  );
+    });
+  });
+  onDestroy(() => {
+    fieldA.destroy();
+    fieldB.destroy();
+  });
   // Live shader knobs (one uniform-block update per frame, no attribute work)
   const tendrilParams = $derived({
     fadeDays: dbg.fadeDays,
@@ -170,6 +233,7 @@
   // Single-event detail card, built from a global event index so it can be
   // produced from a fresh re-pick (during playback) as well as a live hover.
   function violenceCard(gi: number, x: number, y: number): Hover {
+    if (!violence) throw new Error('violenceCard without the violence archive');
     const m = violence.meta.modalities[violence.modOf[gi]];
     const exactDate = formatDay(violence.day[gi], ui.lang);
     const rows = [
@@ -193,45 +257,120 @@
     return { x, y, accent: MODALITY_COLORS[m.code], title: modalityName(m.code), rows };
   }
 
-  // Build the memoria tooltip by re-picking every enabled wound/scar layer at a
-  // screen position. Decoupled from deck's hover event so it can run both on a
-  // live hover and as time advances under a stationary cursor during playback
-  // (deck's onHover only fires on pointer movement). A few px on screen can
-  // cover many events at national zoom, so gather everything under the cursor
-  // (fixed pixel radius — the covered ground area shrinks as the user zooms in)
-  // and list them all. `hintGi`, when ≥ 0, is the directly-hovered event,
-  // guaranteed to be included even if the multi-pick radius misses it.
-  // Gather every event under a screen position (a few px cover many records at
-  // national zoom), returned as global indices sorted newest-first — the most
+  // ---- memoria picking: CPU, not GPU ----
+  // The wound/scar dot layers are NOT deck-pickable. deck's picking renders the
+  // pickable layers into an FBO and reads pixels back SYNCHRONOUSLY — once per
+  // pointer move, and `pickMultipleObjects` repeats it per depth level — which
+  // drains the GPU queue each time. Measured: with the cursor parked over the
+  // map during peak-year playback the frame rate halved even on a desktop GPU
+  // (the per-bucket re-pick below hit up to 12 read-backs each), and dense
+  // years hit the depth limit while sparse years exited early — exactly the
+  // "peak years stutter" symptom. The dataset is small enough to do the same
+  // query on the CPU: every event's screen circle is known (position, the
+  // scar/core radius rules below mirror the layers' props), so "what is under
+  // the cursor" is a bounding-box scan of 341k positions (<1 ms) plus a few
+  // exact distance tests. No GPU sync at all, no depth cap (the "+N more"
+  // count is now exact), same ordering as before.
+  const PICK_RADIUS_PX = 6; // same as the old deck pick radius
+  // grid + heavy-event list, built once per dataset (see pickIndex.ts)
+  const pickIndex = $derived(
+    violence ? buildPickIndex(violence.pos, violence.radius, violence.meta.n) : null
+  );
+
+  // Gather every visible event whose scar/core sprite overlaps the pick radius
+  // at a screen position, as global indices sorted newest-first — the most
   // recent events sit nearest the timeline position the user is looking at.
   // Within a year, day = -1 (exact day unknown) sorts after dated events.
-  // `hintGi`, when ≥ 0, is the directly-picked event, guaranteed included even
-  // if the multi-pick radius misses it. Shared by the hover card and the click
-  // handler, so both surfaces list events in the same order.
-  function gatherEventsAt(x: number, y: number, hintGi: number, depth: number): number[] {
-    if (!overlay) return [];
-    const layerIds: string[] = [];
-    for (const mm of violence.meta.modalities) {
-      if (app.enabled[mm.code]) layerIds.push(`wound-core-${mm.code}`, `scar-${mm.code}`);
+  // Shared by the hover card and the click handler, so both surfaces list
+  // events in the same order.
+  function gatherEventsAt(x: number, y: number): number[] {
+    if (!map || !violence || !pickIndex) return [];
+    const T = app.mday;
+    const fade = dbg.fadeDays;
+    // meters per CSS px at the view's centre latitude — what deck's
+    // radiusUnits:'meters' uses (one scale per viewport, not per point)
+    const zoom = map.getZoom();
+    const mpp =
+      (40075016.686 * Math.cos((map.getCenter().lat * Math.PI) / 180)) / (512 * 2 ** zoom);
+    const scarMin = 1.6;
+    const scarMax = 14;
+    const coreMin = 2.2;
+    const coreMax = dbg.coreMaxPx;
+    const coreK = dbg.coreScale / mpp; // px per unit of radius[] (sqrt victims)
+    const scarK = dbg.scarScale / mpp;
+    const enabledByMod = violence.meta.modalities.map((m) => app.enabled[m.code]);
+    const { pos, scarDayF32, dayF32, radius, modOf } = violence;
+    // Screen offsets without map.project (allocates, ~1 us; thousands of
+    // candidates sit near the cursor at national zoom): Web-Mercator maths
+    // relative to the cursor's unprojected point. Assumes bearing 0 (rotation
+    // is disabled on this map). Linearised dy for the cheap reject (1 px slack
+    // over the search window), exact for survivors.
+    const c0 = map.unproject([x, y]);
+    const worldPx = 512 * 2 ** zoom; // px per 360 deg lon / 2*pi merc units
+    const pxPerDegLon = worldPx / 360;
+    const pxPerMerc = worldPx / (2 * Math.PI);
+    const merc = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+    const lon0 = c0.lng;
+    const lat0 = c0.lat;
+    const merc0 = merc(lat0);
+    const pxPerDegLat = (pxPerMerc * (Math.PI / 180)) / Math.cos((lat0 * Math.PI) / 180);
+    const hits: number[] = [];
+    const test = (gi: number) => {
+      const lon = pos[gi * 2];
+      const lat = pos[gi * 2 + 1];
+      const rv = radius[gi];
+      // cheap reject: even the biggest sprite this event could draw misses
+      const ax = (lon - lon0) * pxPerDegLon;
+      const ay = (lat0 - lat) * pxPerDegLat;
+      const a2 = ax * ax + ay * ay;
+      const rMax = Math.min(coreMax, Math.max(coreMin, coreK * rv)) + PICK_RADIUS_PX + 1;
+      if (a2 > rMax * rMax) return;
+      if (!enabledByMod[modOf[gi]]) return;
+      // visibility mirrors the layers' filterRange: scar once its scar day has
+      // passed; core while the wound is fresh (hard zero pre-event)
+      const scarOn = scarDayF32[gi] <= T;
+      const d = dayF32[gi];
+      const coreOn = d >= 0 && d <= T && d > T - fade;
+      if (!scarOn && !coreOn) return;
+      // sprite radius in CSS px, per the layers' radiusScale / min / max
+      let r = 0;
+      if (scarOn) r = Math.min(scarMax, Math.max(scarMin, scarK * rv));
+      if (coreOn) r = Math.max(r, Math.min(coreMax, Math.max(coreMin, coreK * rv)));
+      const dy = (merc0 - merc(lat)) * pxPerMerc;
+      if (ax * ax + dy * dy <= (r + PICK_RADIUS_PX) * (r + PICK_RADIUS_PX)) hits.push(gi);
+    };
+    // search box in degrees for a given pad in px (pad covers the largest
+    // sprite of the events that path can contain, + pick radius + slack)
+    const boxFor = (padPx: number) => {
+      const nw = map!.unproject([x - padPx, y - padPx]);
+      const se = map!.unproject([x + padPx, y + padPx]);
+      return [Math.min(nw.lng, se.lng), Math.max(nw.lng, se.lng), Math.min(nw.lat, se.lat), Math.max(nw.lat, se.lat)] as const;
+    };
+    // grid path: ordinary events, whose sprite is at most coreK*BIG_RV px
+    const smallPad = Math.min(coreMax, Math.max(coreMin, coreK * BIG_RV)) + PICK_RADIUS_PX + 1;
+    const [sLonMin, sLonMax, sLatMin, sLatMax] = boxFor(smallPad);
+    forEachInBox(pickIndex, sLonMin, sLonMax, sLatMin, sLatMax, test);
+    // heavy events: a short list, scanned in full with the big pad
+    const bigPad = Math.max(scarMax, coreMax) + PICK_RADIUS_PX + 1;
+    const [bLonMin, bLonMax, bLatMin, bLatMax] = boxFor(bigPad);
+    const { big } = pickIndex;
+    for (let k = 0; k < big.length; k++) {
+      const gi = big[k];
+      const lon = pos[gi * 2];
+      if (lon < bLonMin || lon > bLonMax) continue;
+      const lat = pos[gi * 2 + 1];
+      if (lat < bLatMin || lat > bLatMax) continue;
+      test(gi);
     }
-    const picks = overlay.pickMultipleObjects({ x, y, radius: 6, layerIds, depth });
-    const seen = new Set<number>(); // global indices
-    if (hintGi >= 0) seen.add(hintGi);
-    for (const p of picks) {
-      if (p.index < 0) continue;
-      const code = (p.layer?.id ?? '').replace(/^(wound-core|scar)-/, '');
-      const mm = modByCode.get(code);
-      if (mm) seen.add(mm.start + p.index);
-    }
-    return [...seen].sort(
-      (a, b) => violence.year[b] - violence.year[a] || violence.day[b] - violence.day[a]
-    );
+    // (typed arrays hoisted out of the comparator: `violence` is a reactive
+    // proxy and per-compare property reads through it dominated the pick)
+    const { year, day } = violence;
+    return hits.sort((a, b) => year[b] - year[a] || day[b] - day[a]);
   }
 
-  function memoriaPickAt(x: number, y: number, hintGi = -1) {
-    if (!overlay) return;
-    const idxs = gatherEventsAt(x, y, hintGi, P.hoverDepth);
-    if (idxs.length === 0) {
+  function memoriaPickAt(x: number, y: number) {
+    const idxs = gatherEventsAt(x, y);
+    if (idxs.length === 0 || !violence) {
       app.hover = null;
       return;
     }
@@ -239,10 +378,11 @@
       app.hover = violenceCard(idxs[0], x, y); // single event: full detail card
       return;
     }
+    const v = violence;
     const MAX_ROWS = 6;
     const rows = idxs.slice(0, MAX_ROWS).map((gi) => ({
-      label: formatDay(violence.day[gi], ui.lang) ?? String(violence.year[gi]),
-      value: `${modalityName(violence.meta.modalities[violence.modOf[gi]].code)} · ${muniLabel(violence.muni[gi])} · ${formatInt(violence.victims[gi], ui.lang)} ${t('victims').toLowerCase()}`,
+      label: formatDay(v.day[gi], ui.lang) ?? String(v.year[gi]),
+      value: `${modalityName(v.meta.modalities[v.modOf[gi]].code)} · ${muniLabel(v.muni[gi])} · ${formatInt(v.victims[gi], ui.lang)} ${t('victims').toLowerCase()}`,
     }));
     if (idxs.length > MAX_ROWS) {
       rows.push({
@@ -259,30 +399,10 @@
     };
   }
 
-  // resolve the directly-picked event's global index from a wound/scar pick
-  function pickedGi(info: PickingInfo): number {
-    const code = (info.layer?.id ?? '').replace(/^(wound-core|scar)-/, '');
-    const mm = modByCode.get(code);
-    return mm ? mm.start + info.index : -1;
-  }
-
-  // deck hover entry for the wound/scar dot layers
-  function woundHover(info: PickingInfo) {
-    if (!info.picked || info.index < 0) {
-      app.hover = null;
-      return;
-    }
-    memoriaPickAt(info.x, info.y, pickedGi(info));
-  }
-
-  // deck click entry: pin every event under the click in the detail panel.
-  // The deeper clickDepth only here — picking runs one render pass per depth
-  // level over a small region, fine for a discrete click but too costly for
-  // the hover path (memoriaPickAt fires on pointer movement and per colour
-  // bucket), which keeps the shallower hoverDepth.
-  function woundClick(info: PickingInfo) {
-    if (!info.picked || info.index < 0) return;
-    const idxs = gatherEventsAt(info.x, info.y, pickedGi(info), P.clickDepth);
+  // click: pin every event under the click in the detail panel (newest first,
+  // capped by the tier's clickDepth so the panel stays bounded)
+  function memoriaClickAt(x: number, y: number) {
+    const idxs = gatherEventsAt(x, y).slice(0, P.clickDepth);
     if (idxs.length === 0) return;
     app.hover = null;
     app.selected = idxs;
@@ -309,7 +429,7 @@
     const hit = electionPointsCache.get(e);
     if (hit) return hit;
     const pts = e.m.map((mi, i) => {
-      const party = elections.parties[e.p[i]];
+      const party = elections!.parties[e.p[i]];
       return {
         position: [munis.lon[mi], munis.lat[mi]] as [number, number],
         color: hexToRgb(party.color),
@@ -368,17 +488,26 @@
     return { cum, yr: upto >= 0 && upto < row.length ? row[upto] : 0 };
   }
 
-  function defMuniHover(info: PickingInfo) {
-    const f = info.object as ShapeFeature | undefined;
-    const i = f?.properties?.i;
-    if (!info.picked || i == null) {
+  // Deforestation hover/click: CPU point-in-polygon (muniPick.ts), run from the
+  // pointer listeners below — deck's GPU pick (FBO + sync readPixels per pointer
+  // move) is the stall memoria already removed, and the muni outlines need no
+  // invisible pick fill this way.
+  const muniPickIndex = $derived(buildMuniPick(shapes));
+  function defMuniAt(x: number, y: number): number | null {
+    if (!map) return null;
+    const { lng, lat } = map.unproject([x, y]);
+    return pickMuni(muniPickIndex, lng, lat);
+  }
+  function defMuniHoverAt(x: number, y: number) {
+    const i = defMuniAt(x, y);
+    if (i == null) {
       app.hover = null;
       return;
     }
     const { cum, yr } = defLossAt(i);
     app.hover = {
-      x: info.x,
-      y: info.y,
+      x,
+      y,
       accent: 'rgb(232, 130, 30)',
       title: muniLabel(i),
       rows: [
@@ -393,10 +522,8 @@
       ],
     };
   }
-
-  function defMuniClick(info: PickingInfo) {
-    const f = info.object as ShapeFeature | undefined;
-    const i = f?.properties?.i;
+  function defMuniClickAt(x: number, y: number) {
+    const i = defMuniAt(x, y);
     if (i == null) return;
     app.hover = null;
     app.defMuni = i;
@@ -423,13 +550,114 @@
     return _lossFetch.fn;
   }
 
+  // Shared per-frame loss uniforms (see LossRasterLayer `live`): one object,
+  // mutated in buildLayers, never replaced.
+  const lossLive: LossLive = {
+    maxYear: 25,
+    spotDim: 0,
+    spotCode: 0,
+    spotYear: 0,
+    filterDim: 0,
+    filterMask: 0,
+    ramp0: rampStopToVec4(defRamp[0]),
+    ramp1: rampStopToVec4(defRamp[1]),
+    ramp2: rampStopToVec4(defRamp[2]),
+    ramp3: rampStopToVec4(defRamp[3]),
+  };
+  const forestLowVec = $derived(hexToVec4(forestColors.lowCol));
+  const forestHighVec = $derived(hexToVec4(forestColors.highCol));
+
+  // The loss TileLayer is built ONCE per (PMTiles handle, tier budget) and the
+  // SAME instance is handed to deck every frame — deck treats a re-used instance
+  // as a no-op update (`oldLayer === newLayer`), so nothing about the tileset or
+  // its sublayers is touched by scrubbing. Per-frame values flow through
+  // `lossLive`; only a tier change (cache/request budget) or a new dataset
+  // rebuilds it.
+  let _lossLayer: { key: string; pmt: unknown; layer: Layer } | null = null;
+  function lossTileLayer(d: DeforestationData): Layer {
+    const key = `${P.tileCache}/${P.tileRequests}`;
+    if (_lossLayer && _lossLayer.pmt === d.lossTiles && _lossLayer.key === key) {
+      return _lossLayer.layer;
+    }
+    const layer = new TileLayer({
+      id: 'loss-raster',
+      // PMTiles pyramid → only viewport tiles at the matching zoom are on the GPU,
+      // so the finest level reaches ~native 30 m. getTileData identity is kept stable
+      // (keyed on the PMTiles handle) so scrubbing/spotlight changes never refetch.
+      getTileData: lossTileFetcher(d.lossTiles),
+      tileSize: 256,
+      minZoom: 5, // pyramid floor (overview fallback for the national view)
+      maxZoom: 12, // finest level ~38 m/px ≈ native 30 m
+      extent: d.meta.display_raster.bounds_lnglat,
+      // best-available (default): keep the coarse parent visible until the finer child
+      // loads → never blank during a zoom. Conserving overviews keep brightness steady.
+      refinementStrategy: 'best-available',
+      // tier-scaled VRAM/decode budget (perf.svelte.ts): 400/10 high → 128/6 low
+      maxRequests: P.tileRequests,
+      maxCacheSize: P.tileCache,
+      // deck creates the tile's GPU texture from the decoded ImageBitmap; once the
+      // tile is evicted the bitmap's native memory is ours to free. Without this the
+      // ImageBitmaps accumulate (GC is slow to reclaim native handles) and a long
+      // pan/zoom session creeps in memory. Fires only on real eviction (best-available
+      // keeps still-referenced parents loaded), so the texture is already independent.
+      onTileUnload: (tile: { data: ImageBitmap | null }) => {
+        if (tile.data && typeof tile.data.close === 'function') tile.data.close();
+      },
+      renderSubLayers: (props: Record<string, unknown>) => {
+        const tile = props.tile as { boundingBox: [[number, number], [number, number]] };
+        const data = props.data as ImageBitmap | null;
+        if (!data) return null;
+        const [[w, s], [e, n]] = tile.boundingBox;
+        return new LossRasterLayer({
+          id: props.id as string,
+          image: data,
+          bounds: [w, s, e, n],
+          // (west, north, lngSpan, latSpan): geo-locks the burn-front noise so it is
+          // continuous across tile seams and LOD swaps (see LossRasterLayer shader).
+          tileBounds: [w, n, e - w, s - n],
+          live: lossLive,
+          // Nearest, and NO mip blending: R year / B packed codes must never blend
+          // into a neighbour — nor into the averaged mip level deck generates
+          // (default mipmapFilter 'linear' → NEAREST_MIPMAP_LINEAR under minification,
+          // which happens at fractional zooms on dpr 1). The shader is spatially
+          // coherent so nearest does not strobe on pan.
+          textureParameters: { minFilter: 'nearest', magFilter: 'nearest', mipmapFilter: 'none' },
+          pickable: false,
+        } as never);
+      },
+    } as never);
+    _lossLayer = { key, pmt: d.lossTiles, layer };
+    return layer;
+  }
+
+  // Faint municipio outlines (orientation only). Not pickable — hover/click
+  // resolve on the CPU (muniPick.ts) — and not filled, so no full-country
+  // transparent fill is blended every frame. Memoized: constant props.
+  let _defMuniLayer: { shapes: MuniShapes; layer: Layer } | null = null;
+  function defMuniLayer(): Layer {
+    if (_defMuniLayer && _defMuniLayer.shapes === shapes) return _defMuniLayer.layer;
+    const layer = new GeoJsonLayer({
+      id: 'def-munis',
+      data: shapes as unknown as GeoJSON.FeatureCollection,
+      stroked: true,
+      filled: false,
+      getLineColor: [232, 130, 30, 22],
+      lineWidthMinPixels: 0.4,
+      pickable: false,
+    });
+    _defMuniLayer = { shapes, layer };
+    return layer;
+  }
+
   function buildLayers(): Layer[] {
     const layers: Layer[] = [];
 
-    // ---- deforestation: Hansen tree-cover-loss raster + muni pick targets ----
+    // ---- deforestation: Hansen tree-cover-loss raster + muni outlines ----
     if (app.tab === 'deforestation') {
       if (deforestation) {
-        // jungle-green canopy backdrop (year-2000 treecover) under the loss raster
+        // jungle-green canopy backdrop (year-2000 treecover) under the loss raster.
+        // Rebuilt per frame (one layer, image identity stable → a cheap diff); its
+        // changing maxYear prop is harmless (only read when sway > 0).
         if (deforestation.forestImage) {
           layers.push(
             new ForestLayer({
@@ -442,104 +670,40 @@
               // mid/low tier: single 3-octave fbm (~3 noise evals) instead of the
               // 8-eval two-frequency blend — the backdrop is a full-viewport quad
               // redrawn every scrub frame, the dominant fill-rate cost on weak GPUs.
-              cheap: P.dprCap < 2 ? 1 : 0,
-              lowCol: hexToVec4(forestColors.lowCol),
-              highCol: hexToVec4(forestColors.highCol),
+              cheap: P.forestCheap ? 1 : 0,
+              lowCol: forestLowVec,
+              highCol: forestHighVec,
               // smooth backdrop: canopy is continuous, linear filtering is fine
               textureParameters: { minFilter: 'linear', magFilter: 'linear' },
               pickable: false,
             } as never)
           );
         }
-        // Shared per-frame uniforms — captured by each tile's LossRasterLayer below.
-        const lossUniforms = {
-          maxYear: app.defPos - 2000, // float lossyear threshold → smooth crossfade
-          spotDim: app.defSpot.dim ? SPOT_DIM[app.defSpot.dim] : 0,
-          spotCode: app.defSpot.code,
-          spotYear: app.defSpotYear, // year mode restricts spotlight to one year; 0 = cumulative
-          filterDim: app.defFilter.dim,
-          filterMask: app.defFilter.mask,
-          ...defDbg, // recency-raster knobs (?debug panel tunes live)
-          ramp0: rampStopToVec4(defRamp[0]),
-          ramp1: rampStopToVec4(defRamp[1]),
-          ramp2: rampStopToVec4(defRamp[2]),
-          ramp3: rampStopToVec4(defRamp[3]),
-        };
-        layers.push(
-          new TileLayer({
-            id: 'loss-raster',
-            // PMTiles pyramid → only viewport tiles at the matching zoom are on the GPU,
-            // so the finest level reaches ~native 30 m. getTileData identity is kept stable
-            // (keyed on the PMTiles handle) so scrubbing/spotlight changes never refetch.
-            getTileData: lossTileFetcher(deforestation.lossTiles),
-            tileSize: 256,
-            minZoom: 5, // pyramid floor (overview fallback for the national view)
-            maxZoom: 12, // finest level ~38 m/px ≈ native 30 m
-            extent: deforestation.meta.display_raster.bounds_lnglat,
-            // best-available (default): keep the coarse parent visible until the finer child
-            // loads → never blank during a zoom. Conserving overviews keep brightness steady.
-            refinementStrategy: 'best-available',
-            // tier-scaled VRAM/decode budget (perf.svelte.ts): 400/10 high → 128/6 low
-            maxRequests: P.tileRequests,
-            maxCacheSize: P.tileCache,
-            // deck creates the tile's GPU texture from the decoded ImageBitmap; once the
-            // tile is evicted the bitmap's native memory is ours to free. Without this the
-            // ImageBitmaps accumulate (GC is slow to reclaim native handles) and a long
-            // pan/zoom session creeps in memory. Fires only on real eviction (best-available
-            // keeps still-referenced parents loaded), so the texture is already independent.
-            onTileUnload: (tile: { data: ImageBitmap | null }) => {
-              if (tile.data && typeof tile.data.close === 'function') tile.data.close();
-            },
-            // deck.gl ignores function-prop changes, so a new renderSubLayers closure does
-            // NOT regenerate sublayers — the captured uniforms (maxYear/spotlight/filter)
-            // would go stale and scrubbing would show no change. Drive regeneration via an
-            // updateTrigger over the dynamic uniforms (regenerates layers, no tile refetch;
-            // getTileData stays keyed on the handle so data is untouched).
-            updateTriggers: {
-              getTileData: deforestation.lossTiles,
-              renderSubLayers: JSON.stringify(lossUniforms),
-            },
-            renderSubLayers: (props: Record<string, unknown>) => {
-              const tile = props.tile as { boundingBox: [[number, number], [number, number]] };
-              const data = props.data as ImageBitmap | null;
-              if (!data) return null;
-              const [[w, s], [e, n]] = tile.boundingBox;
-              return new LossRasterLayer({
-                id: props.id as string,
-                image: data,
-                bounds: [w, s, e, n],
-                // (west, north, lngSpan, latSpan): geo-locks the burn-front noise so it is
-                // continuous across tile seams and LOD swaps (see LossRasterLayer shader).
-                tileBounds: [w, n, e - w, s - n],
-                ...lossUniforms,
-                // Nearest: R year / B packed codes must never blend into a neighbour. The
-                // shader is spatially coherent so this does not strobe on pan.
-                textureParameters: { minFilter: 'nearest', magFilter: 'nearest' },
-                pickable: false,
-              } as never);
-            },
-          } as never)
-        );
-        // transparent municipio polygons: invisible fill, faint outline, but
-        // pickable so click/hover resolve to a muni for the readout panel
-        layers.push(
-          new GeoJsonLayer({
-            id: 'def-munis',
-            data: shapes as unknown as GeoJSON.FeatureCollection,
-            stroked: true,
-            filled: true,
-            getFillColor: [0, 0, 0, 0],
-            getLineColor: [232, 130, 30, 22],
-            lineWidthMinPixels: 0.4,
-            pickable: true,
-            onHover: defMuniHover,
-            onClick: defMuniClick,
-          })
-        );
+        // Per-frame uniforms go into ONE shared object every loss tile reads at
+        // draw time (LossRasterLayer `live`, see its header). Mutated in place —
+        // the TileLayer and its per-tile sublayers see no prop change, so deck
+        // does not null + rebuild a layer per cached tile each scrub frame (it
+        // did: hundreds of constructions per frame after a pan/zoom session).
+        // This effect still reads every source below, so it re-runs per frame and
+        // the fresh `layers` array handed to setProps is what triggers the redraw.
+        lossLive.maxYear = app.defPos - 2000; // float lossyear threshold → smooth crossfade
+        lossLive.spotDim = app.defSpot.dim ? SPOT_DIM[app.defSpot.dim] : 0;
+        lossLive.spotCode = app.defSpot.code;
+        lossLive.spotYear = app.defSpotYear; // year mode restricts spotlight to one year; 0 = cumulative
+        lossLive.filterDim = app.defFilter.dim;
+        lossLive.filterMask = app.defFilter.mask;
+        Object.assign(lossLive, defDbg); // recency-raster knobs (?debug panel tunes live)
+        lossLive.ramp0 = rampStopToVec4(defRamp[0]);
+        lossLive.ramp1 = rampStopToVec4(defRamp[1]);
+        lossLive.ramp2 = rampStopToVec4(defRamp[2]);
+        lossLive.ramp3 = rampStopToVec4(defRamp[3]);
+        layers.push(lossTileLayer(deforestation));
+        layers.push(defMuniLayer());
       }
       return layers;
     }
 
+    if (!violence) return layers; // archive not loaded on this page
     const isMemoria = app.tab === 'memoria';
     const mods = violence.meta.modalities;
     const tDay = app.mday;
@@ -556,10 +720,28 @@
     // one SHARED tendril field (+ a finer second one), drawn twice: a scar pass
     // (normal blend, uniform settled alpha) and a fresh pass (additive flare)
     // widthScale partially compensates the sparser curve pools on lower tiers
+    // fields still building in their Worker are simply absent this frame
     const tendrilFieldList = [
-      { id: 't1', data: tendrilData, width: dbg.baseWidth * P.widthScale },
-      { id: 't2', data: tendrilData2, width: dbg.t2BaseWidth * P.widthScale },
+      { id: 't1', field: fieldA.field, width: dbg.baseWidth * P.widthScale },
+      { id: 't2', field: fieldB.field, width: dbg.t2BaseWidth * P.widthScale },
+    ].filter((f): f is { id: string; field: TendrilField; width: number } => f.field !== null);
+
+    // Dot layers draw only the instance range that can be visible (see
+    // rangeDraw.ts): events are year-sorted within each modality slice
+    // (pipeline contract, build_frontend_data.py), so a scar prefix / fresh
+    // window in YEARS bounds the per-event GPU filter (which stays exact).
+    const yT = yearProgress(tDay).year;
+    const yFresh0 = yearProgress(Math.max(0, tDay - dbg.fadeDays)).year;
+    const yearOf = violence.year;
+    const scarRange = (m: { start: number; end: number }): InstanceRange => [
+      0,
+      upperBound(yearOf, yT, m.start, m.end) - m.start,
     ];
+    const freshRangeOf = (m: { start: number; end: number }): InstanceRange => {
+      const lo = lowerBound(yearOf, yFresh0, m.start, m.end);
+      const hi = upperBound(yearOf, yT, lo, m.end);
+      return [lo - m.start, hi - lo];
+    };
 
     // ---- memoria: every event type as red wounds/scars/tendrils ----
     // Global z-order: mask, scar tendrils, scar dots (bottom), then fresh
@@ -582,38 +764,34 @@
     // same intensity over time, no matter how many victims (how much blood) fell.
     for (const f of tendrilFieldList) {
       layers.push(
-        new LineLayer({
+        new TendrilLayer({
           id: `${f.id}-scar`,
-          visible: isMemoria && f.data.length > 0,
-          data: f.data,
-          getColor: [255, 58, 28, 255],
-          getWidth: f.width,
-          widthUnits: 'pixels',
-          updateTriggers: { getWidth: f.width },
-          extensions: [tendrilExt, memoriaMask],
+          visible: isMemoria && f.field.nCurves > 0,
+          field: f.field,
+          baseWidth: f.width,
+          extensions: [memoriaMask],
           maskId: 'memoria-mask',
           tendrilTime: tDay,
           tendrilParams: { ...tendrilParams, enabledMask, scarMode: 1 },
-        })
+        } as never)
       );
     }
 
     // permanent scars: every event that has already happened stays marked
     for (const [i, m] of mods.entries()) {
       layers.push(
-        new ScatterplotLayer({
+        new RangedScatterplotLayer({
           id: `scar-${m.code}`,
           visible: isMemoria && app.enabled[m.code],
           data: scarDataByMod[i],
+          instanceRange: scarRange(m),
           getFillColor: [96, 16, 22, dbg.scarDotAlpha],
           radiusUnits: 'meters',
           radiusScale: dbg.scarScale,
           radiusMinPixels: 1.6,
           radiusMaxPixels: 14,
           stroked: false,
-          pickable: isMemoria,
-          onHover: woundHover,
-          onClick: woundClick,
+          pickable: false, // picked on the CPU — see gatherEventsAt
           extensions: [yearFilter],
           filterRange: [-0.5, tDay] as [number, number],
         })
@@ -625,30 +803,28 @@
     // dense/deadly wounds burn hotter. Same geometry as the scar pass above.
     for (const f of tendrilFieldList) {
       layers.push(
-        new LineLayer({
+        new TendrilLayer({
           id: `${f.id}-fresh`,
-          visible: isMemoria && f.data.length > 0,
-          data: f.data,
-          getColor: [255, 58, 28, 255],
-          getWidth: f.width, // base; the shader scales it up at the wound centre
-          widthUnits: 'pixels',
-          updateTriggers: { getWidth: f.width },
+          visible: isMemoria && f.field.nCurves > 0,
+          field: f.field,
+          baseWidth: f.width, // base; the shader scales it up at the wound centre
           parameters: ADDITIVE_BLEND,
-          extensions: [tendrilExt, memoriaMask],
+          extensions: [memoriaMask],
           maskId: 'memoria-mask',
           tendrilTime: tDay,
           tendrilParams: { ...tendrilParams, enabledMask, scarMode: 0 },
-        })
+        } as never)
       );
     }
 
     // wound glow: additive blending makes overlapping wounds burn hotter
     for (const [i, m] of mods.entries()) {
       layers.push(
-        new ScatterplotLayer({
+        new RangedScatterplotLayer({
           id: `glow-${m.code}`,
           visible: isMemoria && P.glow && app.enabled[m.code],
           data: woundDataByMod[i],
+          instanceRange: freshRangeOf(m),
           getFillColor: [255, 58, 28, dbg.glowAlpha],
           radiusUnits: 'meters',
           radiusScale: dbg.glowScale,
@@ -669,19 +845,18 @@
     // fades over ~3 years (filterTransformSize/Color) into the scar beneath
     for (const [i, m] of mods.entries()) {
       layers.push(
-        new ScatterplotLayer({
+        new RangedScatterplotLayer({
           id: `wound-core-${m.code}`,
           visible: isMemoria && app.enabled[m.code],
           data: woundDataByMod[i],
+          instanceRange: freshRangeOf(m),
           getFillColor: [255, 47, 64, dbg.coreAlpha],
           radiusUnits: 'meters',
           radiusScale: dbg.coreScale,
           radiusMinPixels: 2.2,
           radiusMaxPixels: dbg.coreMaxPx,
           stroked: false,
-          pickable: isMemoria,
-          onHover: woundHover,
-          onClick: woundClick,
+          pickable: false, // picked on the CPU — see gatherEventsAt
           extensions: [yearFilter],
           filterRange: freshRange,
           filterSoftRange: softRange,
@@ -689,7 +864,7 @@
       );
     }
 
-    const e = elections.bodies[app.body][app.electionIdx[app.body]];
+    const e = elections?.bodies[app.body][app.electionIdx[app.body]];
     if (e) {
       layers.push(
         new ScatterplotLayer<ElectionPoint>({
@@ -739,28 +914,79 @@
     // advances during playback. The UI panels are absolutely-positioned siblings
     // of this container, so moving onto them fires pointerleave here — clearing
     // the position keeps the re-pick from resurrecting a tooltip over chrome.
+    // Memoria hover/click run from these listeners on the CPU (gatherEventsAt),
+    // not from deck picking. Hover is coalesced to one evaluation per frame and
+    // skipped while a button is held (dragging the map).
+    let hoverRaf = 0;
+    const picksOnCpu = () => app.tab === 'memoria' || app.tab === 'deforestation';
     const onPointerMove = (e: PointerEvent) => {
       const r = container.getBoundingClientRect();
       lastPointer = { x: e.clientX - r.left, y: e.clientY - r.top };
+      if (!picksOnCpu() || e.buttons !== 0 || hoverRaf) return;
+      hoverRaf = requestAnimationFrame(() => {
+        hoverRaf = 0;
+        if (!lastPointer) return;
+        if (app.tab === 'memoria') memoriaPickAt(lastPointer.x, lastPointer.y);
+        else if (app.tab === 'deforestation') defMuniHoverAt(lastPointer.x, lastPointer.y);
+      });
     };
     const onPointerLeave = () => {
       lastPointer = null;
+      if (picksOnCpu()) app.hover = null;
+    };
+    // click vs drag: only a press that did not travel counts as a click
+    let downAt: { x: number; y: number } | null = null;
+    const onPointerDown = (e: PointerEvent) => {
+      downAt = { x: e.clientX, y: e.clientY };
+    };
+    const onClick = (e: MouseEvent) => {
+      if (!picksOnCpu() || !downAt) return;
+      const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+      downAt = null;
+      if (moved > 4) return;
+      const r = container.getBoundingClientRect();
+      if (app.tab === 'memoria') memoriaClickAt(e.clientX - r.left, e.clientY - r.top);
+      else defMuniClickAt(e.clientX - r.left, e.clientY - r.top);
     };
     container.addEventListener('pointermove', onPointerMove);
     container.addEventListener('pointerleave', onPointerLeave);
+    container.addEventListener('pointerdown', onPointerDown);
+    container.addEventListener('click', onClick);
 
     return () => {
+      cancelAnimationFrame(hoverRaf);
       container.removeEventListener('pointermove', onPointerMove);
       container.removeEventListener('pointerleave', onPointerLeave);
+      container.removeEventListener('pointerdown', onPointerDown);
+      container.removeEventListener('click', onClick);
       overlay = null;
       map?.remove();
       map = null;
     };
   });
 
+  // Per-frame layer updates go straight to the Deck instance, NOT through
+  // MapboxOverlay.setProps: the overlay re-forwards ALL its stored props each
+  // call, including useDevicePixels, and any Deck.setProps carrying that prop
+  // makes luma's CanvasContext re-measure the canvas (`_updateDrawingBufferSize`
+  // → getBoundingClientRect) — a forced style/layout flush. This effect runs
+  // every playback frame, right after the panels' DOM updates, so that was a
+  // full-page layout per frame (profiled: the single largest non-GL item,
+  // ~1.6 ms/frame on a desktop, ~10 ms under 6x CPU throttling). `_deck` is the
+  // overlay's private field (overlaid mode simply forwards layers to it);
+  // fall back to the public path if it is ever absent.
   $effect(() => {
     if (!mapReady || !overlay) return;
-    overlay.setProps({ layers: buildLayers(), useDevicePixels: dprCap });
+    const layers = buildLayers();
+    const deck = (overlay as unknown as { _deck?: { setProps(p: { layers: Layer[] }): void } })._deck;
+    if (deck) deck.setProps({ layers });
+    else overlay.setProps({ layers });
+  });
+
+  // useDevicePixels (dpr cap) changes only on a governor demotion — its own effect.
+  $effect(() => {
+    if (!mapReady || !overlay) return;
+    overlay.setProps({ useDevicePixels: dprCap });
   });
 
   // basemap resolution follows governor demotions (deck's follows via the
@@ -785,7 +1011,7 @@
   // beneath it change without the card refreshing. Re-pick at the last cursor
   // position each colour bucket (the granularity the choropleth updates at) so
   // the card tracks what is actually under the cursor instead of going stale.
-  // Tier throttle: each re-pick is hoverDepth picking passes — skipped
+  // Tier throttle: each re-pick is a CPU scan over the events (~1 ms) — skipped
   // entirely on 'low' (the tooltip still refreshes on pointer movement).
   $effect(() => {
     void colorBucket;

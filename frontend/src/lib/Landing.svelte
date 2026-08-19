@@ -558,7 +558,7 @@
     transform: translateX(6px);
   }
   /* the only colour in the type, and only on engagement: each side's own flare
-     (TendrilExtension.ts) / ember (LossRasterLayer.ts ramp) */
+     (TendrilLayer.ts) / ember (LossRasterLayer.ts ramp) */
   .violence:hover .cta,
   .violence:focus .cta {
     color: #ff3a1c;

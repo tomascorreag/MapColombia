@@ -15,8 +15,14 @@ page.on('console', (msg) => {
   if (msg.type() === 'error') errors.push(msg.text());
 });
 page.on('pageerror', (err) => errors.push(String(err)));
+// Every archive request the page makes — each section must fetch only its own
+// archive (violence.bin / elections.json never on the deforestation page;
+// elections.json nowhere).
+const fetched = new Set();
 page.on('response', (r) => {
   const u = r.url();
+  const m = /\/data\/([^?]+)$/.exec(u);
+  if (m) fetched.add(m[1]);
   // .pmtiles is range-requested (206) — only flag hard failures (4xx/5xx)
   if (/deforestation\.json|deforestation_lossyear\.pmtiles/.test(u) && r.status() >= 400) {
     bad.push(`${r.status()} ${u}`);
@@ -133,6 +139,14 @@ await page.getByRole('button', { name: /reproducir|play/i }).click();
 await page.waitForTimeout(2200);
 await shot('defor-playing');
 
+// LOAD GATE: the deforestation page must not pull the violence/elections archives
+const defFetched = [...fetched];
+console.log('deforestation page fetched:', defFetched.join(', '));
+for (const f of ['violence.bin', 'violence_meta.json', 'elections.json']) {
+  if (fetched.has(f)) bad.push(`deforestation page fetched ${f}`);
+}
+fetched.clear();
+
 // ---- violence view still works at its section URL ----
 await page.goto(`${BASE}/?section=violence`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(2500);
@@ -142,6 +156,9 @@ const welcome = await page
 console.log('violence welcome modal present:', welcome > 0);
 await shot('violence-still-ok');
 
+console.log('violence page fetched:', [...fetched].join(', '));
+if (fetched.has('elections.json')) bad.push('violence page fetched elections.json (dead archive)');
+if ([...fetched].some((f) => f.startsWith('deforestation'))) bad.push('violence page fetched a deforestation artifact');
 console.log('bad artifact responses:', bad.length ? bad : 'none');
 console.log('console errors:', errors.length ? errors : 'none');
 await browser.close();

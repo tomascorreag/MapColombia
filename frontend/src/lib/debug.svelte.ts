@@ -1,6 +1,6 @@
 // Hidden visual-tuning state for the Memoria tab. Enabled with `?debug` in
 // the URL; every value here is a display knob only — no data semantics.
-// Defaults mirror the shipped constants in tendrils.ts / TendrilExtension.ts /
+// Defaults mirror the shipped constants in tendrils.ts / TendrilLayer.ts /
 // MapView.svelte so the panel opens showing the current look.
 
 export const DBG_DEFAULTS = {

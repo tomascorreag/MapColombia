@@ -97,19 +97,10 @@
     else app.playing = true;
   }
 
-  // Hansen tree-cover-loss artifacts — only fetched when the deforestation view
-  // is active, so violence visitors never pay for them. $state.raw (it holds an
-  // ImageBitmap + typed rows that never need deep reactivity).
+  // Hansen tree-cover-loss artifacts — fetched only on the deforestation page
+  // (see the per-section load below). $state.raw (it holds an ImageBitmap +
+  // typed rows that never need deep reactivity).
   let deforestation = $state.raw<DeforestationData | null>(null);
-  let defRequested = false;
-  $effect(() => {
-    if (app.tab === 'deforestation' && !deforestation && !defRequested) {
-      defRequested = true;
-      loadDeforestation()
-        .then((d) => (deforestation = d))
-        .catch((err: Error) => (error = err.message));
-    }
-  });
 
   // First-visit onboarding: the welcome modal shows once (localStorage latch)
   // and stays reopenable via the "?" button. localStorage can throw in private
@@ -170,25 +161,26 @@
     }
   });
 
+  // Each page loads only what it renders: munis + shapes are shared (labels,
+  // outlines, CPU picking); the violence page adds violence.bin, the
+  // deforestation page adds the Hansen artifacts. elections.json is not
+  // fetched anywhere — the elections tab is unreachable (no tab switcher, its
+  // legend is not mounted), so it was ~1.4 MB of dead weight on every visit;
+  // the dormant layer/strip code stays behind null guards. The landing page
+  // renders no map and fetches nothing (smoke-landing.mjs gates that).
   $effect(() => {
-    // the landing page renders no map and must stay light — never fetch the
-    // multi-megabyte violence/elections/munis artifacts there
     if (section === null) return;
-    Promise.all([
-      loadViolence(),
-      loadJson<ElectionsData>('data/elections.json'),
+    const shared = Promise.all([
       loadJson<Munis>('data/munis.json'),
       loadJson<MuniShapes>('data/munis_shapes.json'),
-    ])
-      .then(([v, e, m, sh]) => {
-        // default each body to its most recent election
-        for (const b of ['presidencia', 'senado', 'camara'] as const) {
-          app.electionIdx[b] = e.bodies[b].length - 1;
-        }
-        violence = v;
-        elections = e;
+    ]);
+    const own = isDeforestation ? loadDeforestation() : loadViolence();
+    Promise.all([shared, own])
+      .then(([[m, sh], d]) => {
         munis = m;
         shapes = sh;
+        if (isDeforestation) deforestation = d as DeforestationData;
+        else violence = d as ViolenceData;
       })
       .catch((err: Error) => {
         error = err.message;
@@ -204,7 +196,7 @@
     <span class="eyebrow">{t('load_error')}</span>
     <p class="mono dim">{error}</p>
   </div>
-{:else if !violence || !elections || !munis || !shapes}
+{:else if !munis || !shapes || (isDeforestation ? !deforestation : !violence)}
   <div class="splash">
     <span class="eyebrow">{t('eyebrow')}</span>
     <h1>{t('title')}</h1>
@@ -249,7 +241,7 @@
           {#if deforestation}
             <LegendDeforestation {deforestation} />
           {/if}
-        {:else}
+        {:else if violence}
           <LegendMemoria {violence} />
         {/if}
       </aside>
@@ -264,7 +256,7 @@
       {#if deforestation}
         <DeforestationReadout {deforestation} {munis} />
       {/if}
-    {:else}
+    {:else if violence}
       <DetailPanel {violence} {munis} {details} {annotations} />
     {/if}
 

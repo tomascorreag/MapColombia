@@ -5,13 +5,16 @@
   import { t, ui, electionLabel } from './i18n.svelte';
   import { formatInt } from './data';
 
+  // Per-page archives: the violence page passes `violence`, the deforestation
+  // page passes `deforestation`; `elections` is never loaded today (no
+  // reachable tab) and stays optional for the dormant strip below.
   let {
-    violence,
-    elections,
+    violence = null,
+    elections = null,
     deforestation = null,
   }: {
-    violence: ViolenceData;
-    elections: ElectionsData;
+    violence?: ViolenceData | null;
+    elections?: ElectionsData | null;
     deforestation?: DeforestationData | null;
   } = $props();
 
@@ -24,11 +27,11 @@
     deforestation ? deforestation.years[deforestation.years.length - 1] : 2024
   );
 
-  const yearMin = $derived(violence.meta.yearMin);
-  const yearMax = $derived(violence.meta.yearMax);
+  const yearMin = $derived(violence?.meta.yearMin ?? 1958);
+  const yearMax = $derived(violence?.meta.yearMax ?? 2026);
   const nYears = $derived(yearMax - yearMin + 1);
 
-  const electionList = $derived(elections.bodies[app.body]);
+  const electionList = $derived(elections?.bodies[app.body] ?? []);
   const electionSel = $derived(electionList[app.electionIdx[app.body]]);
 
   // memoria: VICTIMS per year summed across the enabled modalities (the wound
@@ -36,6 +39,7 @@
   // changes, not per playback frame.
   const maHist = $derived.by(() => {
     const out = new Array<number>(nYears).fill(0);
+    if (!violence) return out;
     for (const m of violence.meta.modalities) {
       if (!app.enabled[m.code]) continue;
       for (let i = 0; i < m.n; i++) {

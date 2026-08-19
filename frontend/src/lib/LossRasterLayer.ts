@@ -10,7 +10,13 @@
 //
 // Packing into one texture sidesteps luma's second-sampler binding (a 2nd
 // BitmapLayer texture fails `_areTexturesRenderable` and silently skips the draw).
-// Nearest filtering is REQUIRED so the packed byte is never interpolated.
+// Nearest filtering is REQUIRED so the packed byte is never interpolated — and
+// that means `mipmapFilter: 'none'` too: deck generates mipmaps for every image
+// texture and merges a default `mipmapFilter: 'linear'` into the sampler, so bare
+// `minFilter: 'nearest'` becomes GL NEAREST_MIPMAP_LINEAR. TileLayer picks the tile
+// zoom by rounding, so tiles are minified up to ~0.71x at dpr 1, where that mode
+// BLENDS mip level 0 with the box-averaged level 1 — averaged years and averaged
+// packed codes, i.e. wrong data at fractional zooms on a 1x laptop.
 //
 // FLOAT uniforms drive everything on the GPU per frame without re-uploading:
 //   maxYear  — fractional calendar position; thresholds the cumulative reveal.
@@ -18,6 +24,18 @@
 //              3 legality, 4 coca); spotCode — the code within that dimension to
 //              spotlight. Matched cells take the dimension's colour and pop; the
 //              rest fade to faint context. One code path serves every lens.
+//
+// The per-frame values (playhead, spotlight, filter, debug knobs, ramp) reach the
+// shader through ONE shared mutable `live` object rather than per-layer props.
+// TileLayer instantiates one of these layers per cached tile (up to P.tileCache,
+// hundreds after a pan/zoom session); changing a prop on all of them — which is
+// what an `updateTriggers.renderSubLayers` string does — makes deck null every
+// tile's sublayer and construct + clone a fresh layer per tile, every scrub frame.
+// Reading `live` inside draw() instead leaves the TileLayer and its sublayers
+// untouched across frames: the owner mutates the object and triggers a redraw
+// (MapView passes a fresh `layers` array each frame, which deck treats as
+// "layers changed" → needsRedraw). Static per-tile inputs (image, bounds,
+// tileBounds) stay ordinary props.
 import { BitmapLayer } from '@deck.gl/layers';
 import type { BitmapLayerProps } from '@deck.gl/layers';
 
@@ -323,6 +341,21 @@ const lossModule = {
   }),
 } as const;
 
+/** Per-frame uniform values shared by every loss tile (see header). Plain
+ * mutable object — mutate in place, never replace, so deck sees no prop change. */
+export type LossLive = Partial<FireKnobs> & {
+  maxYear: number;
+  spotDim: number;
+  spotCode: number;
+  spotYear: number;
+  filterDim: number;
+  filterMask: number;
+  ramp0: Vec4;
+  ramp1: Vec4;
+  ramp2: Vec4;
+  ramp3: Vec4;
+};
+
 export type LossRasterLayerProps = BitmapLayerProps &
   Partial<FireKnobs> & {
     maxYear?: number;
@@ -336,6 +369,8 @@ export type LossRasterLayerProps = BitmapLayerProps &
     ramp1?: Vec4;
     ramp2?: Vec4;
     ramp3?: Vec4;
+    /** shared per-frame values; when set, takes precedence over the scalar props */
+    live?: LossLive | null;
   };
 
 export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
@@ -359,6 +394,8 @@ export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
     ramp1: { type: 'array', value: RAMP_VEC4[1] } as const,
     ramp2: { type: 'array', value: RAMP_VEC4[2] } as const,
     ramp3: { type: 'array', value: RAMP_VEC4[3] } as const,
+    // compared by identity: the SAME object every frame, mutated in place
+    live: { type: 'object', value: null, compare: false } as const,
   };
 
   getShaders() {
@@ -368,25 +405,28 @@ export class LossRasterLayer extends BitmapLayer<LossRasterLayerProps> {
 
   draw(opts: Parameters<BitmapLayer['draw']>[0]) {
     const p = this.props;
+    // per-frame values come from the shared `live` object when present (read at
+    // draw time, so a mutation made this frame is what gets uploaded)
+    const u: Partial<LossLive> = p.live ?? p;
     this.setShaderModuleProps({
       loss: {
-        maxYear: p.maxYear ?? 25,
-        spotDim: p.spotDim ?? 0,
-        spotCode: p.spotCode ?? 0,
-        spotYear: p.spotYear ?? 0,
-        filterDim: p.filterDim ?? 0,
-        filterMask: p.filterMask ?? 0,
-        fadeIn: p.fadeIn ?? FIRE_DEFAULTS.fadeIn,
-        cool: p.cool ?? FIRE_DEFAULTS.cool,
-        jitter: p.jitter ?? FIRE_DEFAULTS.jitter,
-        noiseScale: p.noiseScale ?? FIRE_DEFAULTS.noiseScale,
-        baseAge: p.baseAge ?? FIRE_DEFAULTS.baseAge,
-        baseGrey: p.baseGrey ?? FIRE_DEFAULTS.baseGrey,
+        maxYear: u.maxYear ?? 25,
+        spotDim: u.spotDim ?? 0,
+        spotCode: u.spotCode ?? 0,
+        spotYear: u.spotYear ?? 0,
+        filterDim: u.filterDim ?? 0,
+        filterMask: u.filterMask ?? 0,
+        fadeIn: u.fadeIn ?? FIRE_DEFAULTS.fadeIn,
+        cool: u.cool ?? FIRE_DEFAULTS.cool,
+        jitter: u.jitter ?? FIRE_DEFAULTS.jitter,
+        noiseScale: u.noiseScale ?? FIRE_DEFAULTS.noiseScale,
+        baseAge: u.baseAge ?? FIRE_DEFAULTS.baseAge,
+        baseGrey: u.baseGrey ?? FIRE_DEFAULTS.baseGrey,
         tileBounds: p.tileBounds ?? COUNTRY_BOUNDS,
-        ramp0: p.ramp0 ?? RAMP_VEC4[0],
-        ramp1: p.ramp1 ?? RAMP_VEC4[1],
-        ramp2: p.ramp2 ?? RAMP_VEC4[2],
-        ramp3: p.ramp3 ?? RAMP_VEC4[3],
+        ramp0: u.ramp0 ?? RAMP_VEC4[0],
+        ramp1: u.ramp1 ?? RAMP_VEC4[1],
+        ramp2: u.ramp2 ?? RAMP_VEC4[2],
+        ramp3: u.ramp3 ?? RAMP_VEC4[3],
       },
     });
     super.draw(opts);

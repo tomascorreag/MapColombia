@@ -21,7 +21,7 @@
 // project's data-integrity rule (CLAUDE.md) is why this comment is this long.
 //
 // What IS faithful is the shape of the maths: the flow field (shared verbatim
-// via noise.ts), the taper/pulse/envelope profiles from TendrilExtension.ts, and
+// via noise.ts), the taper/pulse/envelope profiles from TendrilLayer.ts, and
 // the fire ramp and burn maths from LossRasterLayer.ts (shared verbatim via
 // fireRamp.ts). Constants below are marked [verbatim] where they are quoted from
 // the real layer and [landing] where they are retuned for a looping 2D field —
@@ -99,7 +99,7 @@ function dprOf(): number {
 }
 
 // ===========================================================================
-// Scar field — tendrils.ts geometry + TendrilExtension.ts timing
+// Scar field — tendrils.ts geometry + TendrilLayer.ts timing
 // ===========================================================================
 
 const STEPS = 22; // [verbatim] tendrils.ts segments per curve
@@ -116,7 +116,7 @@ const STEP_KM = 4.2; // [verbatim] -> curves ~92 km long
 const REACH_KM = 80; // [verbatim] the SHIPPED value (debug.svelte.ts), not the 55 in tendrils.ts
 const VICTIM_NORM = 5; // [verbatim]
 
-// [verbatim] TendrilExtension.ts width/alpha profile
+// [verbatim] TendrilLayer.ts width/alpha profile
 const WIDTH_BOOST = 7.5;
 const WIDTH_FALLOFF = 2.7;
 const SCAR_WIDTH = 1.0; // note: 1.0 means fresh and scar share a width; only colour/alpha/blend differ
@@ -131,7 +131,7 @@ const PULSE_SPEED_KM_PER_DAY = 0.4;
 const PULSE_WIDTH_KM = 24;
 const FULL_DAYS = 30;
 
-// [verbatim] TendrilExtension.ts:137 — fs:DECKGL_FILTER_COLOR
+// [verbatim] TendrilLayer.ts fragment shader
 const SCAR_RGB = [96, 16, 22]; // vec3(0.376, 0.063, 0.086)
 const FLARE_RGB = [255, 58, 28]; // vec3(1.0, 0.227, 0.110)
 
@@ -220,7 +220,7 @@ interface ScarGeom {
 /** Ambient blood-tendril field. Scars are permanent, so they rasterise ONCE to
  * an offscreen canvas and are thereafter a single drawImage; only the wounds
  * currently flaring stroke per frame. That is not a shortcut around the real
- * semantics — it IS them (TendrilExtension.ts: the scar pass never fades). */
+ * semantics — it IS them (TendrilLayer.ts: the scar pass never fades). */
 export function createScarField(canvas: HTMLCanvasElement, side: Side): AmbientField {
   const ctx = ctx2d(canvas);
   const scarCanvas = document.createElement('canvas');

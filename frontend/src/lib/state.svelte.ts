@@ -69,9 +69,10 @@ class AppState {
   // is the integer year derived from it for the discrete panels/readouts —
   // hectare figures are annual and never interpolated, only the visuals are.
   defPos = $state(2025);
-  get defYear() {
-    return Math.floor(this.defPos);
-  }
+  // $derived, not a getter: a getter re-reads defPos, so every defYear consumer
+  // (readout sums, sparkline, year labels) would re-run on each playback frame;
+  // a derived only propagates when the floored value actually changes.
+  defYear = $derived(Math.floor(this.defPos));
   defMuni = $state<number | null>(null);
   // Unified spotlight selector for the loss raster. A legend lens sets {dim, code}
   // on hover; MapView maps it to the LossRasterLayer's spotDim/spotCode uniforms,
