@@ -470,8 +470,8 @@
   .seam {
     position: absolute;
     left: 50%;
-    top: var(--seam-top, 30vh);
-    bottom: var(--seam-bottom, 8vh);
+    top: var(--seam-top, 30dvh);
+    bottom: var(--seam-bottom, 8dvh);
     width: 1px;
     background: var(--hairline);
     pointer-events: none;
@@ -486,7 +486,7 @@
     /* constant viewport-based width, anchored to the half's OUTER edge, so the
        headline never re-wraps as the viewport changes */
     width: 50vw;
-    padding: 0 6vw 9vh;
+    padding: 0 6vw 9dvh;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -574,7 +574,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: min(86vh, 92vw);
+    height: min(86dvh, 92vw);
     width: auto;
     pointer-events: none;
     z-index: 2;
@@ -600,7 +600,7 @@
   /* ---------- masthead ---------- */
   .masthead {
     position: absolute;
-    top: 8vh;
+    top: 8dvh;
     left: 0;
     right: 0;
     z-index: 3;
@@ -703,7 +703,7 @@
     .content {
       /* stacked halves are full-width — the desktop fixed 50vw no longer applies */
       width: 100%;
-      padding-bottom: 5vh;
+      padding-bottom: 5dvh;
       gap: 5px;
     }
     .ashes .content {
@@ -713,12 +713,12 @@
       text-align: left;
     }
     .masthead {
-      top: 3vh;
+      top: 3dvh;
       /* keep the eyebrow clear of the ES/EN toggle pinned top-right */
       padding: 0 56px;
     }
     .silhouette {
-      height: 60vh;
+      height: 60dvh;
       --sil-o: 0.5;
     }
   }

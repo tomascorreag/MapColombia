@@ -319,8 +319,11 @@
 
   .readout {
     display: flex;
+    /* narrow boxes: the speed buttons drop to a second row instead of
+       overflowing the card (play + year + dial + 3 speeds is ~380px) */
+    flex-wrap: wrap;
     align-items: baseline;
-    gap: 14px;
+    gap: 6px 14px;
   }
 
   .play {
@@ -541,5 +544,45 @@
 
   .tick:hover {
     color: var(--paper);
+  }
+
+  /* stacked layouts: a shorter card leaves the map more rows */
+  @media (max-width: 900px) {
+    .timebar {
+      padding: 8px 12px 10px;
+    }
+
+    .hist {
+      height: 40px;
+    }
+
+    .play {
+      width: 38px;
+      height: 38px;
+      font-size: 14px;
+    }
+
+    .year {
+      font-size: 22px;
+    }
+  }
+
+  /* touch: a taller slider box so the thumb can be grabbed with a finger */
+  @media (pointer: coarse) {
+    .slider {
+      height: 34px;
+    }
+
+    .slider::-webkit-slider-thumb {
+      width: 12px;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 12px;
+    }
+
+    .spd {
+      padding: 8px 11px;
+    }
   }
 </style>

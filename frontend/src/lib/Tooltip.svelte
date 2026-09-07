@@ -21,9 +21,10 @@
     const w = 280;
     const flipX = x + w + 24 > window.innerWidth;
     const flipY = y + 180 > window.innerHeight;
+    // clamped: on a narrow viewport the flipped position can go negative
     return {
-      left: flipX ? x - w - 14 : x + 14,
-      top: flipY ? y - 150 : y + 12,
+      left: Math.max(8, flipX ? x - w - 14 : x + 14),
+      top: Math.max(8, flipY ? y - 150 : y + 12),
     };
   });
 </script>

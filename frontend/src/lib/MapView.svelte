@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, untrack } from 'svelte';
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
   import { MapboxOverlay } from '@deck.gl/mapbox';
@@ -45,12 +45,18 @@
     munis,
     shapes,
     deforestation = null,
+    stacked = false,
+    chrome = null,
   }: {
     violence?: ViolenceData | null;
     elections?: ElectionsData | null;
     munis: Munis;
     shapes: MuniShapes;
     deforestation?: DeforestationData | null;
+    /** stacked (<=900px) layout — the chrome spans the full width top and bottom */
+    stacked?: boolean;
+    /** measured chrome insets (px from the top / bottom edge) on stacked layouts */
+    chrome?: { top: number; bottom: number } | null;
   } = $props();
 
   // Dev/MVP basemap: CARTO dark matter (attribution required). The production
@@ -920,6 +926,10 @@
     let hoverRaf = 0;
     const picksOnCpu = () => app.tab === 'memoria' || app.tab === 'deforestation';
     const onPointerMove = (e: PointerEvent) => {
+      // Touch: no hover. A finger has no hover state, pointerleave never fires
+      // for it (so a card would stick), and the card would sit under the
+      // finger anyway; a tap goes through pointerdown -> click below.
+      if (e.pointerType === 'touch') return;
       const r = container.getBoundingClientRect();
       lastPointer = { x: e.clientX - r.left, y: e.clientY - r.top };
       if (!picksOnCpu() || e.buttons !== 0 || hoverRaf) return;
@@ -938,6 +948,11 @@
     let downAt: { x: number; y: number } | null = null;
     const onPointerDown = (e: PointerEvent) => {
       downAt = { x: e.clientX, y: e.clientY };
+      // a hover evaluation queued by the move that preceded this press would
+      // run on the next frame — AFTER the click handler cleared app.hover —
+      // and resurrect the card beside the freshly opened panel
+      cancelAnimationFrame(hoverRaf);
+      hoverRaf = 0;
     };
     const onClick = (e: MouseEvent) => {
       if (!picksOnCpu() || !downAt) return;
@@ -981,6 +996,48 @@
     const deck = (overlay as unknown as { _deck?: { setProps(p: { layers: Layer[] }): void } })._deck;
     if (deck) deck.setProps({ layers });
     else overlay.setProps({ layers });
+  });
+
+  // Stacked layouts: the desktop centre/zoom (tuned for a wide canvas) puts the
+  // country under the header and timebar — at 390px wide, zoom 5.1 is ~630px of
+  // Colombia. Fit the mainland municipio centroids between the measured chrome
+  // instead. San Andrés y Providencia (dept 88) is excluded: it would drag the
+  // frame ~800 km west for a 52 km² island. Centroids outside a generous
+  // Colombia window are skipped too: munis.json carries at least one corrupt
+  // centroid (73443 Mariquita: lat 525, lon -74916667 — a source-side decimal
+  // slip), and a single one of those turns the bounds into an invalid LngLat.
+  // Framing only — no data is derived. Runs once per layout switch
+  // (mapReady / stacked), never on legend or panel toggles: after the first
+  // frame the view is the user's.
+  const mainlandBounds = $derived.by((): [[number, number], [number, number]] => {
+    let w = 180;
+    let s = 90;
+    let e = -180;
+    let n = -90;
+    for (let i = 0; i < munis.codes.length; i++) {
+      if (Math.floor(munis.codes[i] / 1000) === 88) continue;
+      const lon = munis.lon[i];
+      const lat = munis.lat[i];
+      if (!(lat > -6 && lat < 15 && lon > -80 && lon < -66)) continue;
+      if (lon < w) w = lon;
+      if (lon > e) e = lon;
+      if (lat < s) s = lat;
+      if (lat > n) n = lat;
+    }
+    // centroids sit inside the border: pad ~30 km so the outline is in frame
+    const PAD = 0.3;
+    return [
+      [w - PAD, s - PAD],
+      [e + PAD, n + PAD],
+    ];
+  });
+  $effect(() => {
+    if (!mapReady || !map || !stacked) return;
+    const c = untrack(() => chrome);
+    map.fitBounds(mainlandBounds, {
+      padding: { top: (c?.top ?? 120) + 8, bottom: c?.bottom ?? 200, left: 8, right: 8 },
+      animate: false,
+    });
   });
 
   // useDevicePixels (dpr cap) changes only on a governor demotion — its own effect.

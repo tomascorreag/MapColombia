@@ -109,6 +109,19 @@
     z-index: 12;
     width: 300px;
     padding: 14px 16px 12px;
+    max-height: calc(100% - 18px - var(--timebar-h, 180px) - var(--timebar-bottom, 22px) - 10px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--hairline) transparent;
+  }
+
+  @media (max-width: 900px) {
+    .readout {
+      left: 18px;
+      right: 18px;
+      width: auto;
+      max-height: min(60%, calc(100% - var(--timebar-h, 180px) - var(--timebar-bottom, 36px) - 28px));
+    }
   }
 
   .x {

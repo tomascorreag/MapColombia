@@ -210,7 +210,9 @@
     right: 18px;
     z-index: 20;
     width: 332px;
-    max-height: calc(100vh - 170px);
+    /* capped above the timebar band, like the rail (App.svelte measures
+       --timebar-h; the 170px it replaced was short of the real ~200px band) */
+    max-height: calc(100% - 18px - var(--timebar-h, 180px) - var(--timebar-bottom, 22px) - 10px);
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--hairline) transparent;
@@ -373,7 +375,9 @@
       left: 18px;
       right: 18px;
       width: auto;
-      max-height: 40vh;
+      /* covers the rail (header + legend) while open — reading mode; the ×
+         brings the chrome back. Bounded so some map stays above the timebar. */
+      max-height: min(60%, calc(100% - var(--timebar-h, 180px) - var(--timebar-bottom, 36px) - 28px));
     }
   }
 </style>

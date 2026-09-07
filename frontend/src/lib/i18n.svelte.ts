@@ -164,6 +164,8 @@ const dict: Record<string, { es: string; en: string }> = {
   },
 
   sources: { es: 'Fuentes', en: 'Sources' },
+  // stacked layouts only: the legend collapses behind this header button
+  legend_btn: { es: 'Leyenda', en: 'Legend' },
   credits_btn: { es: 'créditos y avisos', en: 'credits & notices' },
 
   // welcome modal (first-visit onboarding; reopened via the "?" button)

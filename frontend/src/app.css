@@ -177,6 +177,24 @@ hr.rule {
   margin: 10px 0;
 }
 
+/* touch: the small text buttons get a finger-sized box (their hairline look
+   is unchanged — only the hit area grows) */
+@media (pointer: coarse) {
+  .lang,
+  .close,
+  .readmore,
+  .enter,
+  .x {
+    min-height: 32px;
+    min-width: 32px;
+  }
+
+  .row,
+  .drow {
+    min-height: 30px;
+  }
+}
+
 /* maplibre chrome, muted to fit the archive */
 .maplibregl-ctrl-attrib {
   background: rgba(11, 13, 17, 0.7) !important;

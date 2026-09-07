@@ -133,6 +133,52 @@
     }
   }
 
+  // ---- responsive chrome ----
+  // Stacked layout (<=900px, phones and portrait tablets): header, legend and
+  // timebar would otherwise share the height with the map, and on a phone the
+  // three of them left no map at all. So the legend collapses behind a header
+  // button, and the map is told the chrome insets so it can fit the country
+  // between them (MapView). matchMedia rather than a resize listener: one
+  // boolean flip per layout switch, no per-resize work.
+  const STACKED = '(max-width: 900px)';
+  let stacked = $state(typeof matchMedia === 'function' ? matchMedia(STACKED).matches : false);
+  $effect(() => {
+    if (typeof matchMedia !== 'function') return;
+    const mq = matchMedia(STACKED);
+    const sync = () => (stacked = mq.matches);
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  });
+  let legendOpen = $state(false);
+  const showLegend = $derived(!stacked || legendOpen);
+
+  // The timebar owns the bottom band; the rail and the click panels cap their
+  // height above it (`--timebar-h` in the stylesheets). Its height moves with
+  // the tab, the language and how the readout row wraps, so it is measured, not
+  // authored. The same measurement feeds the map's fit insets.
+  let mainEl: HTMLElement | undefined = $state();
+  let railEl: HTMLElement | undefined = $state();
+  let timebarEl: HTMLElement | undefined = $state();
+  let chrome = $state<{ top: number; bottom: number } | null>(null);
+  $effect(() => {
+    const main = mainEl;
+    const rail = railEl;
+    const tb = timebarEl;
+    if (!main || !rail || !tb) return;
+    const sync = () => {
+      const h = tb.offsetHeight;
+      main.style.setProperty('--timebar-h', `${h}px`);
+      // offsetTop/offsetHeight: untransformed layout, so the `rise` entrance
+      // (which translates the boxes) can't be measured mid-flight
+      chrome = { top: rail.offsetTop + rail.offsetHeight, bottom: h + 40 };
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(rail);
+    ro.observe(tb);
+    return () => ro.disconnect();
+  });
+
   // Victim-detail buffers are large (~9 MB) and only needed once a panel opens —
   // fetch them lazily the first time the user selects an event, never on initial
   // load. $state.raw for the same reason as the other artifacts.
@@ -203,12 +249,12 @@
     <p class="mono dim pulse">{t('loading')}</p>
   </div>
 {:else}
-  <main>
-    <MapView {violence} {elections} {munis} {shapes} {deforestation} />
+  <main bind:this={mainEl}>
+    <MapView {violence} {elections} {munis} {shapes} {deforestation} {stacked} {chrome} />
 
     <!-- header + legend share one flex rail so the panel always flows below
          the header, whatever height the current language wraps to -->
-    <div class="rail" class:wide={app.tab === 'deforestation'}>
+    <div class="rail" class:wide={app.tab === 'deforestation'} bind:this={railEl}>
       <header class="ficha rise" style="animation-delay: 0.05s">
       <div class="head-row">
         <div>
@@ -217,6 +263,13 @@
           <p class="sub">{app.tab === 'deforestation' ? t('def_subtitle') : t('subtitle')}</p>
         </div>
         <div class="hbtns">
+          <button
+            class="lang mono legend-toggle"
+            onclick={() => (legendOpen = !legendOpen)}
+            aria-expanded={legendOpen}
+          >
+            {t('legend_btn')}
+          </button>
           <button
             class="lang mono"
             onclick={() => (app.overlay = 'welcome')}
@@ -236,18 +289,20 @@
       </div>
       </header>
 
-      <aside class="ficha rise panel" style="animation-delay: 0.15s">
-        {#if app.tab === 'deforestation'}
-          {#if deforestation}
-            <LegendDeforestation {deforestation} />
+      {#if showLegend}
+        <aside class="ficha rise panel" style="animation-delay: 0.15s">
+          {#if app.tab === 'deforestation'}
+            {#if deforestation}
+              <LegendDeforestation {deforestation} />
+            {/if}
+          {:else if violence}
+            <LegendMemoria {violence} />
           {/if}
-        {:else if violence}
-          <LegendMemoria {violence} />
-        {/if}
-      </aside>
+        </aside>
+      {/if}
     </div>
 
-    <div class="ficha rise timebar-wrap" style="animation-delay: 0.25s">
+    <div class="ficha rise timebar-wrap" style="animation-delay: 0.25s" bind:this={timebarEl}>
       <TimeBar {violence} {elections} {deforestation} />
     </div>
 
@@ -287,11 +342,13 @@
 
     <footer class="mono">
       <span class="dim">{t('sources')}:</span>
-      {#if app.tab === 'deforestation'}
-        Hansen/UMD GFC · IDEAM · DANE ·
-      {:else}
-        CNMH/SIEVCAC · CEDE · DANE · MinSalud ·
-      {/if}
+      <span class="srcs">
+        {#if app.tab === 'deforestation'}
+          Hansen/UMD GFC · IDEAM · DANE ·
+        {:else}
+          CNMH/SIEVCAC · CEDE · DANE · MinSalud ·
+        {/if}
+      </span>
       <button class="credits-btn" onclick={() => (app.overlay = 'credits')}>
         {t('credits_btn')}
       </button>
@@ -331,6 +388,10 @@
     position: relative;
     height: 100%;
     overflow: hidden;
+    /* the timebar's offset from the bottom edge — one number the timebar,
+       the rail and both click panels (they inherit it) all read, so the
+       caps above the band track it when a media query moves the band */
+    --timebar-bottom: 22px;
   }
 
   /* ---------- fade-from-black arrival veil ---------- */
@@ -396,9 +457,20 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* extend to the bottom of the viewport (18px top + 18px bottom margin); the
-       centered timebar is horizontally clear of this left column on desktop */
-    max-height: calc(100vh - 36px);
+    /* The bottom band belongs to the timebar: cap the rail above it. The
+       centred timebar is horizontally clear of this column only above ~1470px
+       (it is 620px wide, centred, and the rail is 332/398px), so between 900px
+       and that the two overlapped by up to 200px and the legend's tail sat
+       under the histogram. `--timebar-h` is measured by the script (the box
+       varies with tab/language/wrapping); the fallback covers the first frame.
+       Percentages, not vh: <main> is height:100% of the layout viewport, which
+       on phones is the visible area, whereas 100vh includes the URL bar. */
+    max-height: calc(100% - 18px - var(--timebar-h, 180px) - var(--timebar-bottom, 22px) - 10px);
+  }
+
+  /* stacked layouts only: the legend collapses behind this button */
+  .legend-toggle {
+    display: none;
   }
 
   /* deforestation legend is denser — give it ~20% more width */
@@ -475,15 +547,18 @@
     left: 0;
     right: 0;
     margin-inline: auto;
-    bottom: 22px;
+    bottom: var(--timebar-bottom);
     width: min(620px, calc(100vw - 420px));
   }
 
   /* ---------- footer ---------- */
+  /* bottom-LEFT: bottom-right is MapLibre's attribution control, and the two
+     overlapped at every width (the footer ran under the expanded attribution
+     text). The rail is capped above the timebar band, so this corner is free. */
   footer {
     position: absolute;
     z-index: 9;
-    right: 10px;
+    left: 18px;
     bottom: 2px;
     font-size: 9px;
     color: var(--paper-faint);
@@ -511,28 +586,67 @@
   @media (max-width: 900px) {
     .rail,
     .rail.wide {
-      width: calc(100vw - 36px);
-      max-height: calc(100vh - 150px);
+      width: calc(100% - 36px);
+      /* header + (opened) legend may take at most ~60% of the height; the map
+         keeps the rest above the timebar */
+      max-height: min(62%, calc(100% - var(--timebar-h, 180px) - var(--timebar-bottom, 36px) - 28px));
     }
 
-    .panel {
-      max-height: 30vh;
+    .legend-toggle {
+      display: inline-block;
+    }
+
+    h1 {
+      font-size: 22px;
+    }
+
+    header {
+      padding: 12px 14px 2px;
     }
 
     .timebar-wrap {
-      width: calc(100vw - 36px);
-      bottom: 8px;
+      width: calc(100% - 36px);
+      /* --timebar-bottom (36px, set above) clears the footer (bottom 0, 19px)
+         and the attribution button (24px + 10px margin) which both sit under it */
     }
 
-    /* keep attribution reachable on small screens (license requirement);
-       drop only the "Fuentes:" label */
+    /* The bottom strip is shared with MapLibre's attribution, which opens
+       expanded (~256px) until the first map interaction: on one phone-wide
+       line the two texts collide, so only the credits link stays — it opens
+       the modal that carries every source and license in full. */
     footer {
-      right: 4px;
+      left: 4px;
       bottom: 0;
+      max-width: calc(100% - 270px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    footer .dim {
+    footer .dim,
+    footer .srcs {
       display: none;
+    }
+  }
+
+  /* below ~1100px the centred timebar reaches under MapLibre's attribution
+     (bottom-right, expanded until the first map interaction): lift it clear */
+  @media (max-width: 1100px) {
+    main {
+      --timebar-bottom: 36px;
+    }
+  }
+
+  /* short viewports (phones in landscape): the header's subtitle goes, the
+     title tightens — the map needs the rows more than the strapline */
+  @media (max-width: 900px) and (max-height: 520px) {
+    .sub {
+      display: none;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 2px 0 6px;
     }
   }
 </style>

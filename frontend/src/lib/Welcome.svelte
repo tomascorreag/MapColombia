@@ -81,7 +81,7 @@
   .card {
     position: relative;
     width: min(560px, 100%);
-    max-height: min(78vh, 720px);
+    max-height: min(78dvh, 720px);
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--hairline) transparent;
