@@ -210,7 +210,7 @@
     right: 18px;
     z-index: 20;
     width: 332px;
-    /* capped above the timebar band, like the rail (App.svelte measures
+    /* capped above the timebar band, like the rail (Archive.svelte measures
        --timebar-h; the 170px it replaced was short of the real ~200px band) */
     max-height: calc(100% - 18px - var(--timebar-h, 180px) - var(--timebar-bottom, 22px) - 10px);
     overflow-y: auto;

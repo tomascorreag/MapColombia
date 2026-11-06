@@ -7,7 +7,9 @@
 // same trap applies here, twice. So we assert:
 //   1. each flank actually paints, in its own colour family
 //   2. the landing fetches NO archive data (App.svelte must keep short-circuiting)
-//   3. the two ?section= doors still open
+//   3. the map overlay is dark off the country and paints the right archive's
+//      mark on each side of the seam
+//   4. the two ?section= doors still open
 import { chromium } from 'playwright';
 
 const BASE = process.env.SMOKE_URL ?? 'http://localhost:5173';
@@ -30,6 +32,15 @@ page.on('request', (r) => {
   if (/violence\.bin|violence_details\.bin|elections\.json|munis(_shapes)?\.json|memoria\.json|deforestation.*\.(json|png|pmtiles)/.test(r.url())) {
     dataHits.push(r.url());
   }
+});
+
+// LOAD GATE: the landing must not pull the archive JS chunk (MapLibre + deck.gl,
+// ~90% of the bundle). App.svelte imports Archive.svelte dynamically; a static
+// import of it — or of anything map-side from Landing — folds it back in.
+// Matches the dev module (/src/Archive.svelte) and the built chunk (Archive-*.js).
+const chunkHits = [];
+page.on('request', (r) => {
+  if (/\/Archive[^/]*\.(svelte|js)|maplibre-gl|@deck\.gl/.test(r.url())) chunkHits.push(r.url());
 });
 
 const shot = async (name) => {
@@ -121,8 +132,57 @@ await page.locator('.ashes').hover();
 await page.waitForTimeout(1800);
 await shot('landing-ashes-hover');
 
+// MAP OVERLAY GATE. The map fields must be invisible unless the cursor is on the
+// country, and the side of the seam must pick the archive. Read the eased vars
+// the rAF loop writes, plus canvas pixels (a blank canvas at opacity 1 would
+// pass a vars-only check).
+const mapState = () =>
+  page.evaluate(() => {
+    const m = document.querySelector('.map');
+    const lit = (sel) => {
+      const cv = document.querySelector(sel);
+      if (!cv || !cv.width) return 0;
+      const tmp = document.createElement('canvas');
+      tmp.width = 200;
+      tmp.height = 200;
+      const ctx = tmp.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(cv, 0, 0, 200, 200);
+      const d = ctx.getImageData(0, 0, 200, 200).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 8) n++;
+      return n;
+    };
+    return {
+      v: Number(m.style.getPropertyValue('--fx-v') || 0),
+      a: Number(m.style.getPropertyValue('--fx-a') || 0),
+      scarLit: lit('canvas.mapfx.scars'),
+      emberLit: lit('canvas.mapfx.embers'),
+    };
+  });
+// intensity is proximity to the map, 0 at the screen edge: park the cursor there
+await page.mouse.move(1, 450);
+await page.waitForTimeout(1800);
+const offMap = await mapState();
+console.log('map overlay, cursor at the screen edge:', JSON.stringify(offMap));
+if (offMap.v > 0.05 || offMap.a > 0.05) bad.push(`map fx visible with cursor at the screen edge: ${JSON.stringify(offMap)}`);
+const mb = await page.locator('.map').boundingBox();
+for (const [side, u, v, key, litKey] of [
+  ['violence', 0.42, 0.45, 'v', 'scarLit'],
+  ['ashes', 0.62, 0.55, 'a', 'emberLit'],
+]) {
+  await page.mouse.move(mb.x + mb.width * u, mb.y + mb.height * v);
+  await page.waitForTimeout(1800);
+  const s = await mapState();
+  console.log(`map overlay, cursor on ${side} side:`, JSON.stringify(s));
+  if (s[key] < 0.8) bad.push(`map ${side} fx did not show (${key}=${s[key]})`);
+  if (s[litKey] < 200) bad.push(`map ${side} canvas appears EMPTY (${s[litKey]} lit px)`);
+  await shot(`landing-map-${side}`);
+}
+
 console.log('archive data requests from landing:', dataHits.length ? dataHits : 'none (correct)');
 if (dataHits.length) bad.push(`landing fetched archive data: ${dataHits.join(', ')}`);
+console.log('archive code requests from landing:', chunkHits.length ? chunkHits : 'none (correct)');
+if (chunkHits.length) bad.push(`landing loaded archive code: ${chunkHits.slice(0, 3).join(', ')}`);
 
 // ---- both doors still open ----
 for (const [section, sel] of [

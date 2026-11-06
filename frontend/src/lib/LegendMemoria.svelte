@@ -124,8 +124,13 @@
     text-transform: uppercase;
   }
 
+  /* the global button reset inherits font-family only, so without these the
+     buttons render at the UA's ~13px, mixed case, beside a 9px separator */
   .bulk button {
     color: var(--paper-dim);
+    font-size: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
   }
 
   .bulk button:hover {
@@ -194,9 +199,23 @@
     font-size: 11.5px;
   }
 
+  /* Each swatch is its own size (13/10/8px dots, a 13px stroke), so without a
+     fixed column every label started at a different x. Centre each mark in a
+     common 14px column instead. */
   .w {
     flex: none;
     border-radius: 50%;
+    margin: 0 calc((14px - var(--ww)) / 2);
+  }
+  .w.fresh,
+  .w.tendril {
+    --ww: 13px;
+  }
+  .w.mid {
+    --ww: 10px;
+  }
+  .w.scar {
+    --ww: 8px;
   }
 
   .w.fresh {

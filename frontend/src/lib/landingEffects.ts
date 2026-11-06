@@ -12,11 +12,14 @@
 // reason to. Every wound point, loss year and density here is SYNTHETIC, drawn
 // from a seeded PRNG and value noise.
 //
-// So these effects must never be readable as a map. Two rules enforce that:
-//   1. Landing.svelte masks each field to the OUTER FLANK of its half — the
-//      Colombia silhouette stays untouched, and no strand or ember is ever laid
-//      over real geography.
-//   2. Nothing here is labelled, scaled, or captioned as a quantity.
+// So these effects must never be readable as a map. The rules that keep them so:
+//   1. The ambient fields are masked to the OUTER FLANK of each half.
+//   2. The 'fill' instances (FieldOptions.fill) DO paint inside the Colombia
+//      silhouette — an owner decision (2026-11). They show only while the
+//      cursor is on the country, at full extent, with wounds scattered uniformly
+//      and embers from value noise: no position, cluster or density carries any
+//      relation to where the real archives put violence or loss.
+//   3. Nothing here is labelled, scaled, or captioned as a quantity.
 // They are an evocation of each archive's visual language, nothing more. The
 // project's data-integrity rule (CLAUDE.md) is why this comment is this long.
 //
@@ -51,6 +54,16 @@ export interface AmbientField {
 
 export type Side = 'left' | 'right';
 
+export interface FieldOptions {
+  /** Cover the whole canvas, growing from its centre, instead of hugging the
+   * half's outer flank. Used for the map overlay. */
+  fill?: boolean;
+  /** Fill mode only: is a normalised (0..1) canvas point inside the shape the
+   * canvas is masked to? Scar wounds are only seeded where it is true, so no
+   * strand budget is spent on curves the mask would hide. */
+  inside?: (u: number, v: number) => boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Field reach — the "extend further out" that ignite pulls on, shared by both
 // fields so they grow by the same rule.
@@ -76,18 +89,46 @@ const FIELD_REACH_REST = 0.4;
 const FIELD_REACH_HOT = 0.82; // past MASK_EDGE on purpose: the CSS mask is the bound
 const FIELD_REACH_EDGE = 0.3; // soft rim, so the field grows rather than wipes
 
-/** Normalised distance from the field's mask centre: 0 at the centre, 1 at the
- * ellipse, MASK_EDGE where the CSS mask has faded out entirely. */
-function maskRadius(pxX: number, pxY: number, w: number, h: number, side: Side): number {
-  const cx = (side === 'left' ? MASK_CX : 1 - MASK_CX) * w;
-  const cy = MASK_CY * h;
-  const dx = (pxX - cx) / (MASK_RX * w);
-  const dy = (pxY - cy) / (MASK_RY * h);
+// Fill mode (the map overlay): no CSS ellipse to mirror — the bound is the
+// country mask. Reach is measured against a centred ellipse touching the box
+// edges, so 1 is the edge midpoints and ~1.41 the corners. Landing drives these
+// fields at half ignite (MAP_HEAT), where this gives reach 1.65 with full
+// strength out to ~1.16 — the whole country, with only the box corners (outside
+// it) in the soft rim.
+const FILL_REACH_REST = 0.3;
+const FILL_REACH_HOT = 3.0;
+
+interface ReachGeom {
+  cx: number; // centre, fraction of width
+  cy: number;
+  rx: number; // radii, fraction of width/height
+  ry: number;
+  rest: number;
+  hot: number;
+}
+
+function reachGeom(side: Side, fill: boolean): ReachGeom {
+  if (fill) return { cx: 0.5, cy: 0.5, rx: 0.5, ry: 0.5, rest: FILL_REACH_REST, hot: FILL_REACH_HOT };
+  return {
+    cx: side === 'left' ? MASK_CX : 1 - MASK_CX,
+    cy: MASK_CY,
+    rx: MASK_RX,
+    ry: MASK_RY,
+    rest: FIELD_REACH_REST,
+    hot: FIELD_REACH_HOT,
+  };
+}
+
+/** Normalised distance from the field's reach centre: 0 at the centre, 1 at the
+ * ellipse (for flank fields, MASK_EDGE is where the CSS mask has faded out). */
+function maskRadius(pxX: number, pxY: number, w: number, h: number, m: ReachGeom): number {
+  const dx = (pxX - m.cx * w) / (m.rx * w);
+  const dy = (pxY - m.cy * h) / (m.ry * h);
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-function fieldReach(ignite: number): number {
-  return FIELD_REACH_REST + (FIELD_REACH_HOT - FIELD_REACH_REST) * ignite;
+function fieldReach(ignite: number, m: ReachGeom): number {
+  return m.rest + (m.hot - m.rest) * ignite;
 }
 
 function ctx2d(canvas: HTMLCanvasElement): CanvasRenderingContext2D | null {
@@ -221,7 +262,13 @@ interface ScarGeom {
  * an offscreen canvas and are thereafter a single drawImage; only the wounds
  * currently flaring stroke per frame. That is not a shortcut around the real
  * semantics — it IS them (TendrilLayer.ts: the scar pass never fades). */
-export function createScarField(canvas: HTMLCanvasElement, side: Side): AmbientField {
+export function createScarField(
+  canvas: HTMLCanvasElement,
+  side: Side,
+  opts: FieldOptions = {}
+): AmbientField {
+  const fill = !!opts.fill;
+  const rg = reachGeom(side, fill);
   const ctx = ctx2d(canvas);
   const scarCanvas = document.createElement('canvas');
   const sctx = ctx2d(scarCanvas);
@@ -233,7 +280,7 @@ export function createScarField(canvas: HTMLCanvasElement, side: Side): AmbientF
   let simDay = 0;
 
   function build(w: number, h: number): ScarGeom {
-    const rand = mulberry32(FLOW.seed ^ (side === 'left' ? 0 : 0x5eed));
+    const rand = mulberry32(FLOW.seed ^ (side === 'left' ? 0 : 0x5eed) ^ (fill ? 0xf111 : 0));
 
     // Synthetic wounds, biased to the outer flank (where the mask reveals the
     // field). Deterministic — the same field every load, like the speck grid it
@@ -244,9 +291,23 @@ export function createScarField(canvas: HTMLCanvasElement, side: Side): AmbientF
     const wVict = new Float32Array(nW);
     const woundPhase = new Float32Array(nW);
     for (let i = 0; i < nW; i++) {
-      const fx = -0.04 + rand() * 0.56; // flank-weighted
-      wx[i] = (side === 'left' ? fx : 1 - fx) * w;
-      wy[i] = (0.04 + rand() * 0.72) * h;
+      if (fill) {
+        // uniform over the box, rejection-sampled into the masked shape — no
+        // placement here is meant to say anything about where
+        let u = 0;
+        let v = 0;
+        let tries = 0;
+        do {
+          u = 0.05 + rand() * 0.9;
+          v = 0.04 + rand() * 0.92;
+        } while (opts.inside && !opts.inside(u, v) && ++tries < 60);
+        wx[i] = u * w;
+        wy[i] = v * h;
+      } else {
+        const fx = -0.04 + rand() * 0.56; // flank-weighted
+        wx[i] = (side === 'left' ? fx : 1 - fx) * w;
+        wy[i] = (0.04 + rand() * 0.72) * h;
+      }
       wVict[i] = 1.6 + rand() * 7.4; // stands in for sqrt(victims); drives reach + curve share
       woundPhase[i] = rand() * WOUND_PERIOD_DAYS; // stagger so they never fire in unison
     }
@@ -486,15 +547,15 @@ export function createScarField(canvas: HTMLCanvasElement, side: Side): AmbientF
     ctx.save();
     // unit circle -> the mask's ellipse, so this falloff is concentric with the
     // CSS mask instead of fighting it
-    ctx.translate((side === 'left' ? MASK_CX : 1 - MASK_CX) * cssW, MASK_CY * cssH);
-    ctx.scale(MASK_RX * cssW, MASK_RY * cssH);
-    const reach = fieldReach(ignite);
+    ctx.translate(rg.cx * cssW, rg.cy * cssH);
+    ctx.scale(rg.rx * cssW, rg.ry * cssH);
+    const reach = fieldReach(ignite, rg);
     const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, reach);
     grad.addColorStop(0, 'rgba(0,0,0,1)');
     grad.addColorStop(Math.max(0.001, 1 - FIELD_REACH_EDGE), 'rgba(0,0,0,1)');
     grad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = grad;
-    // in unit space the canvas is at most ~1/MASK_R across; 4 covers it from any centre
+    // in unit space the canvas is at most ~1/r across; 4 covers it from any centre
     ctx.fillRect(-4, -4, 8, 8);
     ctx.restore();
     ctx.globalCompositeOperation = 'source-over';
@@ -633,7 +694,13 @@ function fireRamp(r: number): [number, number, number] {
 /** Ambient burning-pixel field. An ImageData grid upscaled with smoothing off —
  * the real layer mandates nearest filtering, so the blocky look is the faithful
  * one, not a corner cut. */
-export function createEmberField(canvas: HTMLCanvasElement, side: Side): AmbientField {
+export function createEmberField(
+  canvas: HTMLCanvasElement,
+  side: Side,
+  opts: FieldOptions = {}
+): AmbientField {
+  const fill = !!opts.fill;
+  const rg = reachGeom(side, fill);
   const ctx = ctx2d(canvas);
   const grid = document.createElement('canvas');
   const gctx = ctx2d(grid);
@@ -703,7 +770,7 @@ export function createEmberField(canvas: HTMLCanvasElement, side: Side): Ambient
     const covLen = COV_LEN_PX / cell;
     const yearLen = YEAR_LEN_PX / cell;
 
-    const seed = side === 'left' ? 0xa5e1 : 0xc0ca;
+    const seed = (side === 'left' ? 0xa5e1 : 0xc0ca) ^ (fill ? 0x3a9 : 0);
     for (let y = 0; y < gh; y++) {
       for (let x = 0; x < gw; x++) {
         const i = y * gw + x;
@@ -730,7 +797,7 @@ export function createEmberField(canvas: HTMLCanvasElement, side: Side): Ambient
         cellGrit[i] = 0.55 + 0.45 * grit;
 
         // real (unmirrored) position, so the reach grows from the actual flank
-        cellRad[i] = maskRadius(x * cell + cell / 2, y * cell + cell / 2, w, h, side);
+        cellRad[i] = maskRadius(x * cell + cell / 2, y * cell + cell / 2, w, h, rg);
       }
     }
     // NOTE: the real shader also pre-ages the 2001/2002 cohorts (baseAge/baseGrey)
@@ -771,7 +838,7 @@ export function createEmberField(canvas: HTMLCanvasElement, side: Side): Ambient
     // REACH — the same rule the scar field trims itself with, but applied per
     // cell here rather than as a composite pass, since this loop already writes
     // alpha. The burnt ground itself spreads out across the flank with ignite.
-    const reach = fieldReach(ignite);
+    const reach = fieldReach(ignite, rg);
     const reachIn = reach * (1 - FIELD_REACH_EDGE);
 
     for (let i = 0; i < bT.length; i++) {

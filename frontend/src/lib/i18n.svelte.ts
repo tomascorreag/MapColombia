@@ -251,7 +251,7 @@ const dict: Record<string, { es: string; en: string }> = {
     es: 'Colombia · dos archivos de la pérdida',
     en: 'Colombia · two archives of loss',
   },
-  landing_title: { es: 'La memoria de la tierra', en: 'The memory of the land' },
+  landing_title: { es: 'La memoria de la tierra', en: 'The Memory of the Land' },
   landing_sub: {
     es: 'Dos archivos cartográficos: la violencia humana y ecológica.',
     en: "Two cartographic archives: human and ecological violence.",
@@ -260,7 +260,7 @@ const dict: Record<string, { es: string; en: string }> = {
   landing_file: { es: 'Expediente', en: 'File' },
 
   // deforestation view
-  def_title: { es: 'Cenizas de muerte', en: 'Ashes of death' },
+  def_title: { es: 'Cenizas de muerte', en: 'Ashes of Death' },
   def_eyebrow: {
     es: 'Pérdida de cobertura arbórea · Colombia 2001–2025',
     en: 'Tree-cover loss · Colombia 2001–2025',

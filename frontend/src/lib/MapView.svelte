@@ -36,7 +36,7 @@
   import { muniLabel as fmtMuniLabel, responsible, abParticipants, abInitiative } from './eventFormat';
 
   // Each section loads only its own archive: the violence page passes
-  // `violence`, the deforestation page passes `deforestation` (App.svelte).
+  // `violence`, the deforestation page passes `deforestation` (Archive.svelte).
   // `elections` is never fetched today (no reachable elections tab) and stays
   // optional so the dormant layer code can be revived without a rewrite.
   let {
@@ -47,6 +47,7 @@
     deforestation = null,
     stacked = false,
     chrome = null,
+    onready,
   }: {
     violence?: ViolenceData | null;
     elections?: ElectionsData | null;
@@ -57,6 +58,8 @@
     stacked?: boolean;
     /** measured chrome insets (px from the top / bottom edge) on stacked layouts */
     chrome?: { top: number; bottom: number } | null;
+    /** fires once, when the basemap and this page's layers are drawn (see below) */
+    onready?: () => void;
   } = $props();
 
   // Dev/MVP basemap: CARTO dark matter (attribution required). The production
@@ -1040,10 +1043,56 @@
     });
   });
 
+  // First-paint readiness, for Archive.svelte's loading veil: the veil only lifts
+  // once everything is on screen, so the page appears whole instead of the
+  // basemap first and the fire / strands seconds later. Polled per frame
+  // because the signals live in three places with no common event: MapLibre
+  // (style + basemap tiles), deck's loss TileLayer (`isLoaded` = every
+  // viewport tile fetched and decoded; false until the first tile selection),
+  // and the two tendril Workers. Once all hold, wait SETTLE_FRAMES more so the
+  // first draws (shader compile, texture upload) also happen behind the veil.
+  // Fires once; Archive caps the wait in case a tile request never settles.
+  const SETTLE_FRAMES = 6;
+  let readyFired = false;
+  $effect(() => {
+    if (!mapReady || !map || readyFired) return;
+    const m = map;
+    let raf = 0;
+    let settled = 0;
+    const layersReady = () => {
+      if (app.tab === 'deforestation') {
+        return !!_lossLayer && (_lossLayer.layer as unknown as { isLoaded: boolean }).isLoaded;
+      }
+      if (violence) return fieldA.field !== null && fieldB.field !== null;
+      return true;
+    };
+    const tick = () => {
+      const ok = m.loaded() && m.areTilesLoaded() && !m.isMoving() && layersReady();
+      settled = ok ? settled + 1 : 0;
+      if (settled >= SETTLE_FRAMES) {
+        readyFired = true;
+        onready?.();
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  });
+
   // useDevicePixels (dpr cap) changes only on a governor demotion — its own effect.
+  // Straight to the Deck, like the layers above: `overlay.setProps` re-forwards
+  // the overlay's STORED props, whose `layers` is still the construction-time []
+  // (layer updates bypass the overlay). This effect runs right after the layers
+  // effect when mapReady flips, so going through the overlay wiped every layer.
+  // The violence scene rebuilt them on its next animation frame; the
+  // deforestation scene is static until playback, so its loss TileLayer never
+  // existed, `isLoaded` never held, and the veil sat at its 15 s cap every visit.
   $effect(() => {
     if (!mapReady || !overlay) return;
-    overlay.setProps({ useDevicePixels: dprCap });
+    const deck = (overlay as unknown as { _deck?: { setProps(p: { useDevicePixels: number }): void } })._deck;
+    if (deck) deck.setProps({ useDevicePixels: dprCap });
+    else overlay.setProps({ useDevicePixels: dprCap });
   });
 
   // basemap resolution follows governor demotions (deck's follows via the

@@ -39,6 +39,8 @@ const shot = async (name) => {
 
 // ---- deforestation view ----
 await page.goto(`${BASE}/?section=deforestation`, { waitUntil: 'networkidle' });
+// loading veil lifts once map + loss tiles are drawn (Archive.svelte reveal)
+await page.waitForSelector('main[data-ready]', { state: 'attached' });
 await page.waitForTimeout(7000); // style + PMTiles range fetches + deck first frame + tile decode
 
 // header should read the deforestation title, not the violence one

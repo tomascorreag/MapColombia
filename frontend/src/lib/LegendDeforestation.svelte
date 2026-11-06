@@ -480,21 +480,26 @@
     min-width: 0;
   }
 
+  /* matches LegendMemoria's .bulk, so the two archives' toggles are one control */
   .bulk {
     flex: none;
-    font-size: 10px;
-    letter-spacing: 0.06em;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     white-space: nowrap;
   }
 
+  /* the global button reset inherits font-family only — size must be explicit
+     or the buttons render at the UA's ~13px */
   .bulk button {
     background: none;
     border: 0;
     padding: 0 2px;
     color: var(--paper-dim);
     cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-size: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
   }
 
   .bulk button:hover {

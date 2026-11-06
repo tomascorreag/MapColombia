@@ -12,9 +12,11 @@
   // carries the shared chrome (silhouette, eyebrow). Colour stays out of the
   // type entirely; the atmosphere carries each side's identity.
   //
-  // The effects are masked to each half's OUTER FLANK: they never cross the
-  // silhouette, because they contain no data and must not read as a map. See the
-  // header of landingEffects.ts.
+  // The ambient effects are masked to each half's OUTER FLANK. A second pair of
+  // 'fill' instances paints INSIDE the silhouette, but only while the cursor is
+  // on the country (or a half has keyboard focus): the side of the seam the
+  // cursor is on picks which archive's mark appears. They are synthetic and
+  // spread without regard to real geography — see the header of landingEffects.ts.
   import { t, ui, toggleLang } from './i18n.svelte';
   import { COLOMBIA_VIEWBOX, COLOMBIA_PATH } from './colombiaOutline';
   import { createScarField, createEmberField, type AmbientField } from './landingEffects';
@@ -28,7 +30,7 @@
   // The OS reduce-motion pref is IGNORED site-wide (owner decision) — the CSS
   // clamp in app.css is commented out and this guard is pinned false, so the rAF
   // loop and the fade-to-black veil always run. To honor the pref again, restore
-  // the query here, in App.svelte, and the app.css clamp together.
+  // the query here, in Archive.svelte, and the app.css clamp together.
   // const reduceMotion =
   //   typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const reduceMotion = false;
@@ -38,6 +40,45 @@
   // the two <a class="half"> elements — the rAF loop writes --ignite onto them
   let violenceHalf: HTMLElement | undefined = $state();
   let ashesHalf: HTMLElement | undefined = $state();
+
+  // ---- map overlay ----
+  let mapEl: HTMLElement | undefined = $state();
+  let mapScarCanvas: HTMLCanvasElement | undefined = $state();
+  let mapEmberCanvas: HTMLCanvasElement | undefined = $state();
+  // 0 = violence, 1 = deforestation; same easing scheme as ignite
+  const mapTarget = [0, 0];
+  const mapNow = [0, 0];
+  const mapVar = ['', ''];
+  const MAP_VARS = ['--fx-v', '--fx-a'];
+  // Ignite the map fields are driven at when fully shown. Full ignite is tuned
+  // for the cursor sitting ON a flank: over the map's whole box it saturates the
+  // scar flares to white and burns nearly every ember cell, so the country reads
+  // as one blot instead of a texture. Opacity still goes to 1.
+  const MAP_HEAT = 0.5;
+  // cached in fit(), like the field anchors — no layout reads on pointermove
+  const mapBox = { left: 0, top: 0, width: 0, height: 0 };
+  let midX = 0;
+
+  const [, , VB_W, VB_H] = COLOMBIA_VIEWBOX.split(/\s+/).map(Number);
+  // The canvases share the outline's box, and the mask cuts them to the country.
+  // preserveAspectRatio none + a 100% 100% mask-size is exact because .map's
+  // aspect-ratio is the viewBox's.
+  const MAP_MASK = `url("data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='${COLOMBIA_VIEWBOX}' preserveAspectRatio='none'><path d='${COLOMBIA_PATH}'/></svg>`
+  )}")`;
+
+  // Point-in-country test in viewBox units. isPointInPath ignores the canvas's
+  // size, so a 1x1 scratch context is enough.
+  let hitPath: Path2D | null = null;
+  let hitCtx: CanvasRenderingContext2D | null = null;
+  function insideCountry(u: number, v: number): boolean {
+    if (u < 0 || u > 1 || v < 0 || v > 1) return false;
+    if (!hitCtx) {
+      hitPath = new Path2D(COLOMBIA_PATH);
+      hitCtx = document.createElement('canvas').getContext('2d');
+    }
+    return !!(hitCtx && hitPath && hitCtx.isPointInPath(hitPath, u * VB_W, v * VB_H));
+  }
 
   // Stacked layout drops the ambient fields entirely. Not a perf concession —
   // a correctness one. Once the halves stack, the silhouette spans nearly the
@@ -139,6 +180,28 @@
     for (let i = 0; i < igniteTarget.length; i++) {
       igniteTarget[i] = Math.max(focused[i] ? 1 : 0, proximity(i, cx, cy));
     }
+    // Map: proximity to the map box, per side of the seam. 0 at the screen edge,
+    // 1 on reaching the box (and anywhere inside it). The side picks the archive;
+    // the eased follow in the loop crossfades the two as the cursor crosses.
+    const side = cx < midX ? 0 : 1;
+    const near = mapProximity(cx, cy, side);
+    for (let i = 0; i < mapTarget.length; i++) {
+      mapTarget[i] = Math.max(focused[i] ? 1 : 0, i === side ? near : 0);
+    }
+  }
+
+  function mapProximity(cx: number, cy: number, side: number): number {
+    if (mapBox.width <= 0) return 0;
+    const right = mapBox.left + mapBox.width;
+    const bottom = mapBox.top + mapBox.height;
+    // distance to the box, 0 inside it
+    const dx = Math.max(mapBox.left - cx, 0, cx - right);
+    const dy = Math.max(mapBox.top - cy, 0, cy - bottom);
+    const d = Math.hypot(dx, dy);
+    // Normalised by the gap between this side's screen edge and the box, so the
+    // effect starts exactly at the edge whatever the viewport width.
+    const span = Math.max(1, side === 0 ? mapBox.left : window.innerWidth - right);
+    return smoothstep(0, 1, 1 - Math.min(1, d / span));
   }
 
   function onPointerMove(ev: PointerEvent) {
@@ -149,23 +212,33 @@
   // The pointer leaving the window fires no further moves, so without this the
   // fields would stay frozen at whatever the last in-window position lit.
   function onPointerLeaveWindow() {
-    for (let i = 0; i < igniteTarget.length; i++) igniteTarget[i] = focused[i] ? 1 : 0;
+    for (let i = 0; i < igniteTarget.length; i++) {
+      igniteTarget[i] = focused[i] ? 1 : 0;
+      mapTarget[i] = focused[i] ? 1 : 0;
+    }
   }
 
   function setFocus(i: number, on: boolean) {
     focused[i] = on;
-    if (on) igniteTarget[i] = 1;
-    else igniteTarget[i] = 0; // next pointermove re-applies proximity
+    // off: next pointermove re-applies proximity / map hover
+    igniteTarget[i] = on ? 1 : 0;
+    mapTarget[i] = on ? 1 : 0;
   }
 
   $effect(() => {
-    if (!scarCanvas || !emberCanvas) return;
+    if (!scarCanvas || !emberCanvas || !mapScarCanvas || !mapEmberCanvas) return;
     const canvases = [scarCanvas, emberCanvas];
     const halves = [violenceHalf, ashesHalf];
     const fields: AmbientField[] = [
       createScarField(scarCanvas, 'left'),
       createEmberField(emberCanvas, 'right'),
     ];
+    const mapCanvases = [mapScarCanvas, mapEmberCanvas];
+    const mapFields: AmbientField[] = [
+      createScarField(mapScarCanvas, 'left', { fill: true, inside: insideCountry }),
+      createEmberField(mapEmberCanvas, 'right', { fill: true }),
+    ];
+    const mapHost = mapEl;
 
     // Anchors are cached here rather than measured per pointermove: a
     // getBoundingClientRect() on every move would force layout on the hot path.
@@ -180,10 +253,20 @@
         }
       }
       anchorSpan = Math.max(1, Math.hypot(anchorX[1] - anchorX[0], anchorY[1] - anchorY[0]));
+      // both map canvases share one box (inset: 0 in .map)
+      const m = mapCanvases[0].getBoundingClientRect();
+      mapBox.left = m.left;
+      mapBox.top = m.top;
+      mapBox.width = m.width;
+      mapBox.height = m.height;
+      if (m.width > 0 && m.height > 0) mapFields.forEach((f) => f.resize(m.width, m.height));
+      // the seam is the page's centre line (.seam { left: 50% })
+      midX = window.innerWidth / 2;
       fieldsLive = true;
     };
     // dt = 0, ignite = 0 renders the settled frame: scars fully accumulated and
-    // cold, embers scattered mid-cool, nothing flaring.
+    // cold, embers scattered mid-cool, nothing flaring. Map fields are invisible
+    // at rest, so they are not painted until first shown.
     const settle = () => fields.forEach((f) => f.render(0, 0));
 
     fit();
@@ -210,6 +293,17 @@
         if (v !== igniteVar[i]) {
           igniteVar[i] = v;
           halves[i]?.style.setProperty('--ignite', v);
+        }
+      }
+      for (let i = 0; i < mapFields.length; i++) {
+        mapNow[i] += (mapTarget[i] - mapNow[i]) * Math.min(1, dt * 4);
+        // Invisible (opacity is mapNow) -> skip the paint entirely. The ember
+        // map is ~100k cells; neither field may cost a frame while nobody sees it.
+        if (mapNow[i] > 0.004) mapFields[i].render(dt, mapNow[i] * MAP_HEAT);
+        const v = mapNow[i] < 0.004 ? '0' : mapNow[i].toFixed(3);
+        if (v !== mapVar[i]) {
+          mapVar[i] = v;
+          mapHost?.style.setProperty(MAP_VARS[i], v);
         }
       }
       raf = requestAnimationFrame(loop);
@@ -242,6 +336,7 @@
       }, 150);
     });
     canvases.forEach((c) => ro.observe(c));
+    ro.observe(mapCanvases[0]);
 
     return () => {
       stop();
@@ -249,6 +344,8 @@
       ro.disconnect();
       document.removeEventListener('visibilitychange', onVis);
       fields.forEach((f) => f.destroy());
+      mapFields.forEach((f) => f.destroy());
+      mapBox.width = 0; // no map hits once the canvases go
       fieldsLive = false; // anchors are stale the moment the canvases go
     };
   });
@@ -336,12 +433,28 @@
        this was .ashes' border-left: above the halves, under the country. -->
   <div class="seam" aria-hidden="true"></div>
 
-  <!-- country silhouette: one faint gold watermark, centered on the viewport.
-       "One country, split two ways" — and the only element either archive's
-       atmosphere is forbidden to touch. -->
-  <svg class="silhouette" viewBox={COLOMBIA_VIEWBOX} aria-hidden="true" focusable="false">
-    <path d={COLOMBIA_PATH} />
-  </svg>
+  <!-- country silhouette, centred on the viewport: "one country, split two
+       ways". Fill below, the hover fields (cut to the country by the mask) in
+       the middle, the outline and its travelling light on top. -->
+  <div class="map" bind:this={mapEl} style:--map-mask={MAP_MASK} aria-hidden="true">
+    <svg class="sil fill" viewBox={COLOMBIA_VIEWBOX} focusable="false">
+      <path d={COLOMBIA_PATH} />
+    </svg>
+    {#if !narrow}
+      <canvas class="mapfx scars" bind:this={mapScarCanvas}></canvas>
+      <canvas class="mapfx embers" bind:this={mapEmberCanvas}></canvas>
+    {/if}
+    <svg class="sil line" viewBox={COLOMBIA_VIEWBOX} focusable="false">
+      <path class="edge" d={COLOMBIA_PATH} />
+    </svg>
+    <!-- Shine: bright strokes revealed by a rotating conic mask, so a soft
+         light circles the outline. Its own layer because the mask must cover
+         only these strokes, not the base outline. -->
+    <svg class="sil shine" viewBox={COLOMBIA_VIEWBOX} focusable="false">
+      <path class="halo" d={COLOMBIA_PATH} />
+      <path class="core" d={COLOMBIA_PATH} />
+    </svg>
+  </div>
 
   <header class="masthead" bind:this={mastheadEl}>
     <span class="eyebrow">{t('landing_eyebrow')}</span>
@@ -568,25 +681,127 @@
     color: #ff8a1f;
   }
 
-  /* ---------- silhouette watermark ---------- */
-  .silhouette {
+  /* ---------- silhouette ---------- */
+  .map {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     height: min(86dvh, 92vw);
-    width: auto;
+    /* the viewBox's aspect — the mask and the hit test both assume it */
+    aspect-ratio: 1000 / 1375.6;
     pointer-events: none;
     z-index: 2;
     opacity: 0;
     animation: silhouetteIn 1.4s ease 0.3s forwards;
+    /* --fx-v / --fx-a: eased 0..1 map-hover per archive, written by the rAF loop */
+    --fx: max(var(--fx-v, 0), var(--fx-a, 0));
+    /* Fade the north under the masthead so the title keeps its contrast. The
+       title's bottom lands around 25-30% down the map at desktop sizes. Applies
+       to everything in the box (fill, outline, shine, hover fields); it
+       multiplies with the country mask on the canvases. */
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0%, #000 34%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0%, #000 34%);
   }
-  .silhouette path {
-    fill: rgba(201, 162, 39, 0.03);
+  .sil,
+  .mapfx {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .sil {
+    overflow: visible; /* the outline's glow straddles the box edge */
+  }
+  .fill path {
+    fill: rgba(201, 162, 39, calc(0.07 + 0.05 * var(--fx)));
+  }
+  .mapfx {
+    -webkit-mask: var(--map-mask) center / 100% 100% no-repeat;
+    mask: var(--map-mask) center / 100% 100% no-repeat;
+  }
+  .scars {
+    opacity: var(--fx-v, 0);
+  }
+  .embers {
+    opacity: var(--fx-a, 0);
+  }
+
+  .edge {
+    fill: none;
     stroke: var(--gold);
-    stroke-width: 1.2;
-    stroke-opacity: 0.4;
+    stroke-width: 1.4;
     vector-effect: non-scaling-stroke;
+    animation: breathe 6s ease-in-out infinite alternate;
+  }
+  @keyframes breathe {
+    from {
+      stroke-opacity: 0.55;
+    }
+    to {
+      stroke-opacity: 0.85;
+    }
+  }
+
+  /* Shine. The conic mask is a lit sector rotating about the box centre: a long
+     soft tail ramping up to the head, then a short falloff, so the light reads
+     as travelling clockwise. Angular, so it moves a little faster along the far
+     edges than the near ones. A registered --shine-a is what lets the angle
+     animate; an unregistered custom property would jump, not interpolate.
+     Stroke widths are viewBox units (1000 wide, ~0.55 px each at 1500x900). */
+  .shine {
+    /* two identical sectors 180deg apart: a light on opposite sides at once */
+    -webkit-mask-image: conic-gradient(
+      from var(--shine-a) at 50% 50%,
+      transparent 0deg,
+      rgba(0, 0, 0, 0.3) 28deg,
+      #000 54deg,
+      transparent 68deg,
+      transparent 180deg,
+      rgba(0, 0, 0, 0.3) 208deg,
+      #000 234deg,
+      transparent 248deg,
+      transparent 360deg
+    );
+    mask-image: conic-gradient(
+      from var(--shine-a) at 50% 50%,
+      transparent 0deg,
+      rgba(0, 0, 0, 0.3) 28deg,
+      #000 54deg,
+      transparent 68deg,
+      transparent 180deg,
+      rgba(0, 0, 0, 0.3) 208deg,
+      #000 234deg,
+      transparent 248deg,
+      transparent 360deg
+    );
+    /* 1.5x the original 40s lap speed */
+    animation: orbit 26.67s linear infinite;
+  }
+  .shine path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .halo {
+    stroke: var(--gold);
+    stroke-width: 12;
+    stroke-opacity: 0.25;
+  }
+  .core {
+    stroke: var(--paper);
+    stroke-width: 3;
+    stroke-opacity: 0.9;
+  }
+  @property --shine-a {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+  @keyframes orbit {
+    to {
+      --shine-a: 360deg;
+    }
   }
   /* resolves against --sil-o so the mobile dim below actually lands: an
      `animation-fill-mode: forwards` end state outranks a plain `opacity`
@@ -717,7 +932,7 @@
       /* keep the eyebrow clear of the ES/EN toggle pinned top-right */
       padding: 0 56px;
     }
-    .silhouette {
+    .map {
       height: 60dvh;
       --sil-o: 0.5;
     }

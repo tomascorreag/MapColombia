@@ -100,7 +100,7 @@ body {
 
 /* DISABLED (owner decision): the OS reduce-motion pref is ignored site-wide —
    everyone gets the full motion. The JS-side guards are flipped off at the same
-   time (`reduceMotion = false` in Landing.svelte and App.svelte); flip all three
+   time (`reduceMotion = false` in Landing.svelte and Archive.svelte); flip all three
    back together, they are one decision.
 
    To restore, re-enable the clamp below. Note the delay clamps were load-bearing,
@@ -200,6 +200,12 @@ hr.rule {
   background: rgba(11, 13, 17, 0.7) !important;
   font-family: var(--font-mono);
   font-size: 9px !important;
+}
+
+/* unlinked attribution text ("contributors") otherwise keeps maplibre's
+   near-black, invisible on the dark basemap */
+.maplibregl-ctrl-attrib-inner {
+  color: var(--paper-faint);
 }
 
 .maplibregl-ctrl-attrib a {

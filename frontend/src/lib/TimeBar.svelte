@@ -146,6 +146,21 @@
   }
 </script>
 
+<!-- SVG, not the ▶/❚❚ glyphs: a glyph's position comes from the font's
+     baseline and side bearings, so it never sat at the circle's centre (and
+     some platforms draw ▶ as an emoji). The triangle is nudged right of the
+     box centre so its visual weight (centroid) is centred, not its bbox. -->
+{#snippet playIcon(playing: boolean)}
+  <svg class="pi" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    {#if playing}
+      <rect x="3.5" y="2.5" width="3" height="11" rx="0.6" />
+      <rect x="9.5" y="2.5" width="3" height="11" rx="0.6" />
+    {:else}
+      <path d="M5 2.4 L13.6 8 L5 13.6 Z" stroke-linejoin="round" />
+    {/if}
+  </svg>
+{/snippet}
+
 <div class="timebar">
   {#if app.tab === 'memoria'}
     <div class="readout">
@@ -159,7 +174,7 @@
         aria-label={app.playing ? t('pause') : t('play')}
         title={app.playing ? t('pause') : t('play')}
       >
-        {app.playing ? '❚❚' : '▶'}
+        {@render playIcon(app.playing)}
       </button>
       <span class="year mono">{yearProgress(app.mday).year}</span>
       <!-- how much of the year has passed — wordless, no month name -->
@@ -224,7 +239,7 @@
         aria-label={app.playing ? t('pause') : t('play')}
         title={app.playing ? t('pause') : t('play')}
       >
-        {app.playing ? '❚❚' : '▶'}
+        {@render playIcon(app.playing)}
       </button>
       <span class="year mono">{app.defYear}</span>
       {#if deforestation}
@@ -276,7 +291,7 @@
         onclick={() => (app.playing = !app.playing)}
         aria-label={app.playing ? t('pause') : t('play')}
       >
-        {app.playing ? '❚❚' : '▶'}
+        {@render playIcon(app.playing)}
       </button>
       <span class="year mono">{electionSel ? electionLabel(electionSel) : ''}</span>
       <span class="count mono dim">{t(app.body)}</span>
@@ -333,9 +348,20 @@
     border-radius: 50%;
     width: 44px;
     height: 44px;
-    line-height: 1;
+    padding: 0;
     flex: none;
     align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pi {
+    width: 16px;
+    height: 16px;
+    display: block;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 0.8;
   }
 
   .play:hover {
@@ -478,6 +504,9 @@
     margin-left: auto;
     display: flex;
     gap: 4px;
+    /* the row aligns on text baselines (year + count); the buttons are boxes,
+       and baseline-aligned they sat ~4px above the play button's centre */
+    align-self: center;
   }
 
   .spd {

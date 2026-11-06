@@ -32,6 +32,8 @@ const shot = async (name) => {
 };
 
 await page.goto(`${BASE}/?section=violence`, { waitUntil: 'networkidle' });
+// loading veil lifts once map + tendril fields are drawn (Archive.svelte reveal)
+await page.waitForSelector('main[data-ready]', { state: 'attached' });
 await page.waitForTimeout(4500); // map style + tiles + deck first frame
 
 // fresh context = first visit: the welcome modal is up — capture, then enter
