@@ -196,6 +196,7 @@ const dict: Record<string, { es: string; en: string }> = {
   },
   welcome_enter: { es: 'Entrar al archivo', en: 'Enter the archive' },
   about_btn: { es: 'Acerca de este mapa', en: 'About this map' },
+  home_btn: { es: 'Volver a la portada', en: 'Back to the front page' },
   hint_play: { es: 'Pulse ▶ para recorrer los años', en: 'Press ▶ to move through the years' },
   round_1: { es: '1ª vuelta', en: 'first round' },
   round_2: { es: '2ª vuelta', en: 'runoff' },

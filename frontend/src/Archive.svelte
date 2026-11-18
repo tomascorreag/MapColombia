@@ -256,9 +256,21 @@
           <!-- each ' · ' segment is unbreakable and carries its own leading
                dot, so a wrap falls between segments: never inside a year range
                ("2001–" / "2025") and never leaving a dot at a line end -->
+          <!-- the first segment ("Archivo cartográfico") doubles as the way home:
+               a breadcrumb up to the landing, which indexes both archives. Not a
+               button in .hbtns: a fourth button there overran the header card on
+               phones (EN clipped at 375px), since the title's min-content holds
+               the other column. Query-only href keeps the path (GH Pages base)
+               and drops ?section=, which is what routes to the landing. -->
           <span class="eyebrow">
             {#each (app.tab === 'deforestation' ? t('def_eyebrow') : t('eyebrow')).split(' · ') as part, i (i)}
-              {#if i}{' '}{/if}<span class="nw">{i ? '· ' : ''}{part}</span>
+              {#if i}{' '}<span class="nw">· {part}</span>{:else}<!-- wraps (not .nw):
+                  unbroken, "← Archivo cartográfico" is the widest word in the
+                  column and pushes the buttons off the card at 375px --><a
+                  class="crumb"
+                  href={`?lang=${ui.lang}`}
+                  title={t('home_btn')}>← {part}</a
+                >{/if}
             {/each}
           </span>
           <h1>{app.tab === 'deforestation' ? t('def_title') : t('title')}</h1>
@@ -565,6 +577,17 @@
     border: 1px solid var(--hairline);
     border-radius: 2px;
     padding: 4px 8px;
+  }
+
+  .crumb {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .crumb:hover,
+  .crumb:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .lang:hover {

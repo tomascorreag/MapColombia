@@ -130,7 +130,8 @@
 <svelte:window {onkeydown} />
 
 {#if cards.length > 0}
-  <aside class="ficha rise detail" bind:this={panelEl}>
+  <!-- data-detail-panel: MapView measures this to aim the selection leader line -->
+  <aside class="ficha rise detail" data-detail-panel bind:this={panelEl}>
     <div class="head">
       <div class="title">
         {formatInt(cards.length, ui.lang)}

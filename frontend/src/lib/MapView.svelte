@@ -412,11 +412,223 @@
   // capped by the tier's clickDepth so the panel stays bounded)
   function memoriaClickAt(x: number, y: number) {
     const idxs = gatherEventsAt(x, y).slice(0, P.clickDepth);
-    if (idxs.length === 0) return;
+    if (idxs.length === 0) {
+      // empty map: deselect (same as the panel's close button). Drags never
+      // reach here — onClick drops presses that travelled > 4 px.
+      app.selected = [];
+      app.selectedDay = null;
+      return;
+    }
     app.hover = null;
     app.selected = idxs;
     app.selectedDay = app.mday; // snapshot for the panel's "hasta {month}" header
   }
+
+  // ---- selection highlight: a steady bright mark + a leader line to the panel ----
+  // DOM/SVG over the map, not a deck layer: the line ends on the detail panel,
+  // which lives in screen space, so both ends share one coordinate frame. Steady,
+  // never pulsing — motion on this map means "recent" (the wound flare), and a
+  // selected event can be decades old. Re-projected on every map 'move' (pan,
+  // zoom, and their animations), so the line stays on the event; the panel's
+  // rect is cached and re-measured only when the panel itself resizes/settles.
+  //
+  // Routing: a cluster's events each curve into one hub just right of the
+  // cluster; from the hub a single line runs right to a vertical just left of
+  // the panel, turns toward the panel's header row, and elbows in. A single
+  // event starts that line itself (right, up, right).
+  //
+  // Cost: nothing runs per playback frame (the map does not move then). Per
+  // map 'move': <= SEL_MAX_MARKS projections plus a few path strings. The GPU
+  // cost is the two blended SVGs, re-composited against the canvas each frame
+  // it redraws — bounded by selBox, and skipped on the low tier (selBlend).
+  const SEL_MAX_MARKS = 24; // a click pins up to P.clickDepth events; most share a centroid
+  const TRUNK_GAP = 28; // px between the trunk and the panel's left edge
+  const ANCHOR_DY = 22; // px below the panel top where the line enters (header row)
+  const CORNER = 8; // px corner radius on the elbows
+  let selMarks = $state<{ x: number; y: number }[]>([]);
+  let selPaths = $state<string[]>([]);
+  let selEnd = $state<{ x: number; y: number } | null>(null);
+  // container-px box the overlay SVGs occupy (see setSelBox)
+  let selBox = $state<{ x: number; y: number; w: number; h: number } | null>(null);
+  // Blend modes need a backdrop read-back per frame while the canvas animates.
+  // The low tier draws the same strokes with normal compositing instead.
+  const selBlend = $derived(perf.tier !== 'low');
+  const HUB_GAP = 36; // px right of the cluster's rightmost event where branches join
+  // panel rect in container px, cached between moves (null: no panel / not measured)
+  let panelBox: { l: number; t: number; r: number; b: number } | null = null;
+  // distinct event positions of the selection, newest first (selection order)
+  const selLngLats = $derived.by(() => {
+    if (!violence || app.selected.length === 0) return [];
+    const seen = new Set<string>();
+    const out: [number, number][] = [];
+    for (const gi of app.selected) {
+      const lon = violence.pos[gi * 2];
+      const lat = violence.pos[gi * 2 + 1];
+      const k = `${lon.toFixed(5)},${lat.toFixed(5)}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push([lon, lat]);
+      if (out.length >= SEL_MAX_MARKS) break;
+    }
+    return out;
+  });
+  function measurePanel() {
+    const panel = document.querySelector<HTMLElement>('[data-detail-panel]');
+    if (!panel) {
+      panelBox = null;
+      return;
+    }
+    const c = container.getBoundingClientRect();
+    const r = panel.getBoundingClientRect();
+    panelBox = { l: r.left - c.left, t: r.top - c.top, r: r.right - c.left, b: r.bottom - c.top };
+  }
+  // Untracked, always: 'move' also fires synchronously from map.resize(), which
+  // the setPixelRatio effect calls. Run tracked from there, this read
+  // selLngLats/selMarks and wrote selMarks inside that effect, so the effect
+  // depended on its own write and re-ran ~1000x (each a full map resize) — a
+  // 17 s freeze on the first click.
+  function placeSelection() {
+    untrack(placeSelectionNow);
+  }
+  function placeSelectionNow() {
+    const pts = selLngLats;
+    if (!map || pts.length === 0) {
+      selMarks = [];
+      selPaths = [];
+      selEnd = null;
+      selBox = null;
+      return;
+    }
+    const m = map;
+    const marks = pts.map(([lon, lat]) => {
+      const p = m.project([lon, lat]);
+      return { x: p.x, y: p.y };
+    });
+    selMarks = marks;
+    const pb = panelBox;
+    if (!pb) {
+      selPaths = [];
+      selEnd = null;
+      setSelBox(marks);
+      return;
+    }
+    const trunkX = pb.l - TRUNK_GAP;
+    const ay = Math.min(pb.t + ANCHOR_DY, pb.b);
+    const inPanel = (p: { x: number; y: number }) =>
+      p.x >= pb.l && p.x <= pb.r && p.y >= pb.t && p.y <= pb.b;
+    const paths: string[] = [];
+    // points whose hull holds every path vertex and curve control point (selBox)
+    const hull: { x: number; y: number }[] = [...marks];
+    const branched: { x: number; y: number }[] = [];
+    for (const p of marks) {
+      if (inPanel(p)) continue; // hidden under the panel: nothing to point at
+      if (p.x < trunkX - CORNER) {
+        branched.push(p);
+      } else {
+        // between the trunk and the panel (or a stacked layout, where the panel
+        // spans the width and there is no room left of it): straight line to
+        // the nearest point on the panel
+        const x2 = Math.min(Math.max(p.x, pb.l), pb.r);
+        const y2 = Math.min(Math.max(p.y, pb.t), pb.b);
+        paths.push(`M${p.x},${p.y}L${x2},${y2}`);
+        hull.push({ x: x2, y: y2 });
+      }
+    }
+    if (branched.length > 0) {
+      // hub: where the branches join, just right of the cluster at its mean
+      // height. One event IS the hub (no branches). From the hub a single line
+      // runs right to the trunk, turns toward the anchor, and elbows into the panel.
+      let sy = 0;
+      let xMax = -Infinity;
+      for (const p of branched) {
+        sy += p.y;
+        if (p.x > xMax) xMax = p.x;
+      }
+      sy /= branched.length;
+      const single = branched.length === 1;
+      const hx = single ? branched[0].x : Math.min(xMax + HUB_GAP, trunkX - 2 * CORNER);
+      const hy = single ? branched[0].y : sy;
+      const dir = Math.sign(hy - ay); // +1: hub below the anchor
+      const r = Math.min(CORNER, Math.abs(hy - ay));
+      paths.push(
+        r < 1
+          ? `M${hx},${hy}L${pb.l},${ay}`
+          : `M${hx},${hy}L${trunkX - r},${hy}Q${trunkX},${hy} ${trunkX},${hy - dir * r}` +
+              `L${trunkX},${ay + dir * r}Q${trunkX},${ay} ${trunkX + r},${ay}L${pb.l},${ay}`
+      );
+      // branches: each event eases into the hub (cubic, horizontal tangent at
+      // the hub) so the cluster visibly converges on one point
+      if (!single) {
+        for (const p of branched) {
+          const k = Math.max(8, (hx - p.x) / 2);
+          paths.push(`M${p.x},${p.y}C${p.x + k},${p.y} ${hx - k},${hy} ${hx},${hy}`);
+        }
+      }
+    }
+    selPaths = paths;
+    selEnd = branched.length > 0 ? { x: pb.l, y: ay } : null;
+    // routed line: the hub/trunk sit between the marks and the anchor in x,
+    // and between the marks' y and the anchor's y, so the anchor closes the hull
+    if (branched.length > 0) hull.push({ x: pb.l, y: ay });
+    setSelBox(hull);
+  }
+  // Tight box around everything drawn. The blended SVGs are sized to it, not to
+  // the viewport: a blend mode composites the element's whole box against the
+  // map canvas on every frame the canvas redraws — every playback frame — so a
+  // full-viewport blend layer would cost two full-screen read-back passes per
+  // frame on exactly the GPUs that can least afford it.
+  function setSelBox(pts: { x: number; y: number }[]) {
+    let x0 = Infinity;
+    let y0 = Infinity;
+    let x1 = -Infinity;
+    let y1 = -Infinity;
+    for (const p of pts) {
+      if (p.x < x0) x0 = p.x;
+      if (p.x > x1) x1 = p.x;
+      if (p.y < y0) y0 = p.y;
+      if (p.y > y1) y1 = p.y;
+    }
+    // halo radius + shadow offset + stroke, with slack; clipped to the container
+    const PAD = 12;
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    x0 = Math.max(0, Math.floor(x0 - PAD));
+    y0 = Math.max(0, Math.floor(y0 - PAD));
+    x1 = Math.min(cw, Math.ceil(x1 + PAD));
+    y1 = Math.min(ch, Math.ceil(y1 + PAD));
+    selBox = x1 > x0 && y1 > y0 ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : null;
+  }
+  $effect(() => {
+    void selLngLats;
+    if (!mapReady || !map) return;
+    const m = map;
+    const remeasure = () => {
+      untrack(measurePanel);
+      placeSelection();
+    };
+    // the panel mounts in the same flush as the selection; measure after it
+    let panel: HTMLElement | null = null;
+    let ro: ResizeObserver | null = null;
+    const raf = requestAnimationFrame(() => {
+      remeasure();
+      panel = document.querySelector<HTMLElement>('[data-detail-panel]');
+      if (panel) {
+        ro = new ResizeObserver(remeasure);
+        ro.observe(panel);
+        // the panel's `rise` entrance translates it; re-aim once it settles
+        panel.addEventListener('animationend', remeasure);
+      }
+    });
+    m.on('move', placeSelection);
+    window.addEventListener('resize', remeasure);
+    return () => {
+      cancelAnimationFrame(raf);
+      m.off('move', placeSelection);
+      window.removeEventListener('resize', remeasure);
+      ro?.disconnect();
+      panel?.removeEventListener('animationend', remeasure);
+    };
+  });
 
   interface ElectionPoint {
     position: [number, number];
@@ -1130,7 +1342,103 @@
 
 <div class="map" bind:this={container}></div>
 
+{#if selMarks.length > 0 && selBox}
+  {@const vb = `${selBox.x} ${selBox.y} ${selBox.w} ${selBox.h}`}
+  {@const box = `left:${selBox.x}px;top:${selBox.y}px;width:${selBox.w}px;height:${selBox.h}px`}
+  <!-- Three SVGs, not three groups in one: an <svg> (like any stacking
+       context) is an isolated group, so a mix-blend-mode on a child only
+       blends with the SVG's own transparent backdrop — never the map. The blend
+       has to sit on the SVG element itself, whose backdrop is the map canvas.
+       Each SVG is the tight selBox, viewBox-matched so paths stay in container px. -->
+  {#if selPaths.length > 0}
+    <!-- drop shadow: same routes and width, 2px down, MULTIPLIED onto the map
+         so the additive line has a dark edge under it even over dense red -->
+    <svg class="sel shadow" class:blend={selBlend} style={box} viewBox={vb} aria-hidden="true">
+      <g transform="translate(0 2)">
+        {#each selPaths as d, i (i)}
+          <path {d} fill="none" />
+        {/each}
+      </g>
+    </svg>
+    <!-- the line, ADDED onto the map. Inside the SVG the strokes are opaque and
+         overlap normally (crossings read as one stroke); the flattened result
+         is what blends, at the SVG's opacity -->
+    <svg class="sel leaders" class:blend={selBlend} style={box} viewBox={vb} aria-hidden="true">
+      {#each selPaths as d, i (i)}
+        <path class="leader" {d} fill="none" />
+      {/each}
+      {#if selEnd}
+        <circle class="leader-end" cx={selEnd.x} cy={selEnd.y} r="4" />
+      {/if}
+    </svg>
+  {/if}
+  <svg class="sel" style={box} viewBox={vb} aria-hidden="true">
+    {#each selMarks as p, i (i)}
+      <circle class="sel-halo" cx={p.x} cy={p.y} r="7" />
+      <circle class="sel-dot" cx={p.x} cy={p.y} r="3.2" />
+    {/each}
+  </svg>
+{/if}
+
 <style>
+  /* above the map canvas, below every panel (rail/timebar 9-10, detail 20) */
+  /* left/top/width/height come from selBox (inline style) */
+  .sel {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* wound-core red, lifted: brighter than any settled scar, steady */
+  .sel-dot {
+    fill: #ff6470;
+    stroke: #ffe4dc;
+    stroke-width: 1;
+  }
+
+  .sel-halo {
+    fill: none;
+    stroke: rgba(255, 100, 112, 0.55);
+    stroke-width: 1;
+  }
+
+  /* additive (plus-lighter) so the line brightens whatever it crosses instead
+     of disappearing into the red field; warmer than the marks, so over red
+     it sums toward pale salmon rather than saturating to the same red.
+     Opacity on the SVG applies once to the flattened union, so it doesn't
+     stack where branches cross. */
+  .leaders {
+    opacity: 0.85;
+  }
+
+  .leaders.blend {
+    mix-blend-mode: plus-lighter;
+  }
+
+  .shadow.blend {
+    mix-blend-mode: multiply;
+  }
+
+  .shadow path {
+    stroke: rgb(150, 18, 28);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .leader {
+    fill: none;
+    stroke: rgb(255, 150, 130);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .leader-end {
+    fill: rgb(255, 150, 130);
+  }
+
   .map {
     position: absolute;
     inset: 0;
